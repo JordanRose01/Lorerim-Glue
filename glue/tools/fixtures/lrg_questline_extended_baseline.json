@@ -9,7 +9,80 @@
         "fixture_md5": "0cab53aa75dbba346040bcde4c22c6d9"
     },
     "about": "tools/test_questline.php --extended: each line's outcome on the code named in `measured` - say / say_model / misses lines and the measurer's must-resolve rows (fast / tkey / ask / show / nothing / sibling / wrong), never_red rows (red / green); keyed set|beat|kind|sentence. A later --extended run lists every line that got worse, by group and gap, and fails a verbatim or first-evening one (research/pt19h-harness.md, round 2). To accept a change: re-baseline with --ext-baseline-out, or add an `accepted` entry {\"<key>\": {\"now\": \"<outcome>\", \"why\": \"<the ruling>\"}}",
-    "accepted": {},
+    "accepted": {
+        "main|MGR20.business|resolve_red:G4|anything need doing?": {
+            "now": "ask",
+            "why": "Urag's list carries two radiant starts (Is there any College business I can assist with? / Are there any special books you're looking for?): a work ask makes her ask which (reach P2, dialogue.reach.work.entry) - the measurer's generic G4 probe named one of them [ruled 2026-09-25, round 2]"
+        },
+        "main|MGR20.business|resolve_red:G4|can I help?": {
+            "now": "ask",
+            "why": "Urag's list carries two radiant starts (Is there any College business I can assist with? / Are there any special books you're looking for?): a work ask makes her ask which (reach P2, dialogue.reach.work.entry) - the measurer's generic G4 probe named one of them [ruled 2026-09-25, round 2]"
+        },
+        "main|MGR20.business|resolve_red:G4|do you have any work for me?": {
+            "now": "ask",
+            "why": "Urag's list carries two radiant starts (Is there any College business I can assist with? / Are there any special books you're looking for?): a work ask makes her ask which (reach P2, dialogue.reach.work.entry) - the measurer's generic G4 probe named one of them [ruled 2026-09-25, round 2]"
+        },
+        "main|MGR20.business|resolve_red:G4|got a job for me?": {
+            "now": "ask",
+            "why": "Urag's list carries two radiant starts (Is there any College business I can assist with? / Are there any special books you're looking for?): a work ask makes her ask which (reach P2, dialogue.reach.work.entry) - the measurer's generic G4 probe named one of them [ruled 2026-09-25, round 2]"
+        },
+        "main|MGR20.business|resolve_red:G4|got any work for me?": {
+            "now": "ask",
+            "why": "Urag's list carries two radiant starts (Is there any College business I can assist with? / Are there any special books you're looking for?): a work ask makes her ask which (reach P2, dialogue.reach.work.entry) - the measurer's generic G4 probe named one of them [ruled 2026-09-25, round 2]"
+        },
+        "main|MGR20.business|resolve_red:G4|got any work?": {
+            "now": "ask",
+            "why": "Urag's list carries two radiant starts (Is there any College business I can assist with? / Are there any special books you're looking for?): a work ask makes her ask which (reach P2, dialogue.reach.work.entry) - the measurer's generic G4 probe named one of them [ruled 2026-09-25, round 2]"
+        },
+        "main|MGRitual05.start|resolve_red:G4|anything need doing?": {
+            "now": "wrong",
+            "why": "the beat's target (Is there anything more I can learn about Alteration magic?) offers no work; 'You look like you could use a hand.' is the offer of help on that list, and the work ask picks it (reach P2: the fixer called this pick defensible) - the G4 probe rows are generic [ruled 2026-09-25, round 2]"
+        },
+        "main|MGRitual05.start|resolve_red:G4|can I help?": {
+            "now": "wrong",
+            "why": "the beat's target (Is there anything more I can learn about Alteration magic?) offers no work; 'You look like you could use a hand.' is the offer of help on that list, and the work ask picks it (reach P2: the fixer called this pick defensible) - the G4 probe rows are generic [ruled 2026-09-25, round 2]"
+        },
+        "main|MGRitual05.start|resolve_red:G4|do you have any work for me?": {
+            "now": "wrong",
+            "why": "the beat's target (Is there anything more I can learn about Alteration magic?) offers no work; 'You look like you could use a hand.' is the offer of help on that list, and the work ask picks it (reach P2: the fixer called this pick defensible) - the G4 probe rows are generic [ruled 2026-09-25, round 2]"
+        },
+        "main|MGRitual05.start|resolve_red:G4|got a job for me?": {
+            "now": "wrong",
+            "why": "the beat's target (Is there anything more I can learn about Alteration magic?) offers no work; 'You look like you could use a hand.' is the offer of help on that list, and the work ask picks it (reach P2: the fixer called this pick defensible) - the G4 probe rows are generic [ruled 2026-09-25, round 2]"
+        },
+        "main|MGRitual05.start|resolve_red:G4|got any work for me?": {
+            "now": "wrong",
+            "why": "the beat's target (Is there anything more I can learn about Alteration magic?) offers no work; 'You look like you could use a hand.' is the offer of help on that list, and the work ask picks it (reach P2: the fixer called this pick defensible) - the G4 probe rows are generic [ruled 2026-09-25, round 2]"
+        },
+        "main|MGRitual05.start|resolve_red:G4|got any work?": {
+            "now": "wrong",
+            "why": "the beat's target (Is there anything more I can learn about Alteration magic?) offers no work; 'You look like you could use a hand.' is the offer of help on that list, and the work ask picks it (reach P2: the fixer called this pick defensible) - the G4 probe rows are generic [ruled 2026-09-25, round 2]"
+        },
+        "main|MGRitual05.start|resolve_red:G4|put me to work": {
+            "now": "wrong",
+            "why": "the beat's target (Is there anything more I can learn about Alteration magic?) offers no work; 'You look like you could use a hand.' is the offer of help on that list, and the work ask picks it (reach P2: the fixer called this pick defensible) - the G4 probe rows are generic [ruled 2026-09-25, round 2]"
+        },
+        "main|C06.eorlund.honor|resolve_red:G16|here are the fragments": {
+            "now": "sibling",
+            "why": "both lines hand the fragments over; his words ('here are the fragments', 'here, take the fragments') name the sibling hand-over 'Here, take them. (Give fragments)', which is clicked as he said it (the harness's own sibling reading, not a wrong click) [ruled 2026-09-25, round 2]"
+        },
+        "main|C06.eorlund.honor|resolve_red:G16|here's the fragments": {
+            "now": "sibling",
+            "why": "both lines hand the fragments over; his words ('here are the fragments', 'here, take the fragments') name the sibling hand-over 'Here, take them. (Give fragments)', which is clicked as he said it (the harness's own sibling reading, not a wrong click) [ruled 2026-09-25, round 2]"
+        },
+        "main|C06.eorlund.honor|resolve_red:G16|here, take the fragments": {
+            "now": "sibling",
+            "why": "both lines hand the fragments over; his words ('here are the fragments', 'here, take the fragments') name the sibling hand-over 'Here, take them. (Give fragments)', which is clicked as he said it (the harness's own sibling reading, not a wrong click) [ruled 2026-09-25, round 2]"
+        },
+        "main|CW02A.tullius.handled|resolve_red:G3|nothing i could and handle": {
+            "now": "nothing",
+            "why": "'nothing i could and handle' is an STT garble of the class-back line 'Nothing I couldn't handle.' with its negation lost: a refusal-shaped fragment that says the opposite - her words answer, nothing is clicked [ruled 2026-09-25, round 2]"
+        },
+        "main|DA10.logrolf.bribe|resolve_red:G2|does it madder here": {
+            "now": "nothing",
+            "why": "'does it madder here' is the bribe line itself with one STT slip, priced 100 septims by the engine (<BribeCost>): his words name no sum, so the money lane's G13 rail has her name her price in words and nothing moves until he accepts it (S4.10: 100 septims or more always asks first) - the harness counts her words as nothing, not as an ask [ruled 2026-09-25, round 2]"
+        }
+    },
     "lines": {
         "main|C00.aela.boasting|never_red:G1:recheck|not now, i don't care for boasting later": "red",
         "main|C00.aela.boasting|say|I don't care for boasting": "fast",

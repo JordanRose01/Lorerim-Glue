@@ -140,8 +140,51 @@ mode against those baselines (below).
 
 Filled in from the final `--extended` run of this session (see the run log in `CLOUD_HANDOFF.md`):
 
-RULINGS_PLACEHOLDER
+Eighteen `accepted` entries on five beats in `tools/fixtures/lrg_questline_extended_baseline.json` (the words baseline needs
+none: its one change, "i'd like to rent a groom" resolve -> ask, is a protected line asking first, which the comparison allows):
+
+| beat | rows | was -> now | ruling |
+|---|---|---|---|
+| MGR20.business | the six G4 work asks ("got any work?", "can I help?", ...) | tkey -> ask | Urag's list carries two radiant starts (College business / the special books): a work ask makes her ask which (reach P2) - the measurer's generic probe named one of them |
+| MGRitual05.start | the seven G4 work asks | tkey -> wrong | the target ("Is there anything more I can learn about Alteration magic?") offers no work; "You look like you could use a hand." is the offer of help on that list and the work ask picks it - the fixer called this pick defensible (reach P2) |
+| C06.eorlund.honor | "here are the fragments", "here's the fragments", "here, take the fragments" | ask -> sibling | both lines hand the fragments over; his words name the sibling "Here, take them. (Give fragments)", clicked as he said it (the harness's own sibling reading) |
+| CW02A.tullius.handled | "nothing i could and handle" | ask -> nothing | an STT garble of the class-back "Nothing I couldn't handle." with its negation lost: a refusal-shaped fragment that says the opposite - her words answer |
+| DA10.logrolf.bribe | "does it madder here" | ask -> nothing | the bribe line itself with one STT slip, priced 100 by the engine: his words name no sum, so the G13 rail has her name her price in words (S4.10: 100 septims or more asks first); the harness counts her words as nothing |
+
+Not ruled, left as the fixture reports them - the `never_red` rows still red (36, all red on the 06:00 code too; none came back):
+- G1 (5): "no, i won't condemn an innocent man", "no, nah, I'll make my own way, thanks", "no, i won't disappoint you, Astrid ..." - his
+  "no" agrees with a line that itself refuses (the safety fixer's G1-3 ruling: the click is right); "tell me about the first contracts"
+  (x2) on Nazir's "I'm ready for the first set of contracts." - a request for what the line starts; kept reported.
+- G5 (27): mostly the coverage team's "wait, <line>?" and "<line>?" probes on SINGLE-entry layers whose line is unfinished ("... I mean
+  I...", "Astrid...", "Surely the Night Mother wouldn't misdirect us...") - S4.5 reads the line said whole, and an unfinished line
+  completed with a rising "?" is that line (safety P5); plus "forget the deed" / "forget Mercer" / "no problem" on singles (15 of them
+  are the breath - the auto-advance of an unscripted single, not a click on his words), and "is there any work in Riverwood" on
+  CR14's work line (a work ask by kind).
+- G9 (3): "what's a wayshrine?" / "Wayshrine?", "can't you take us to it now?" / "Does that mean you can take us to it now?",
+  "who is the Gourmet here?" / "Now, now, Gianna. Who's the Gourmet here?" - the same question on a single.
+- G11 (1): "my wealth is my own business" / "My wealth is none of your business." (a paraphrase of a protected line, intent).
+- quarantine: G9 2, G10 1, G11 1 (the same shapes), G13 2 ("how much would it cost?" - her KEY releases the bribe; the fast path is
+  green).
 
 ## The runs
 
-RUNS_PLACEHOLDER
+Every run strictly one process at a time. (Two harness processes at once read each other's lines out of the shared
+`log/lorerim_glue.log` - `qlxFastAsked` and the dialogue suite's marker checks grep it - and report false failures: eight in
+`test_dialogue` v30, one in the plain questline, one in `--words`, and the "ask (words)" rows of the first extended pass, all
+of which vanished when the same suites ran alone.)
+
+Run 1 (the final tree, code as committed):
+- test_gates 852 / 0; test_dialogue 1295 / 0 (25 round-2 rows among them); test_services 136 / 0; test_intent 470 / 0;
+  test_phrases 47 / 0; test_prompt_index 107 / 0; test_mcm_wiring 49 / 0; test_latency_prompt (a measurement, mean 2306 chars
+  / 576 tokens per turn over 10 fixtures).
+- test_questline plain 1956 / 0; `--words` 2194 / 0 (39 say lines worse than the 06:00 baseline, none verbatim or first-evening,
+  26 better); `--first-evening` 467 / 0; `--first-evening --words` 534 / 0 (1 worse: the groom row, a protected line asking first).
+- flows 87 of 89 scenarios: `[18]` needs the MO2 profile (its warm scene-index build), `d68` pending by design (gate B).
+- `--extended` 2808 / 0: `never` 2,463 asserted, click 0; `not_target` 343, click 0; `never_red` 1,860 reported, still red 36 (13 on
+  a protected line - the list above); 22,088 lines against the 06:00 baseline: 1,298 worse (fast->tkey 884, tkey->ask 207,
+  fast->ask 121, tkey->nothing 45, ask->nothing 25, tkey->wrong 7, fast->nothing 6, ask->sibling 3), 1,368 better; not a failure:
+  "it now does what its via names" 623, "a protected line now asks first" 283, "he cannot pay it" 31, alias-tag targets 7;
+  a verbatim or first-evening line got worse: 0; `never_red` rows green on the baseline code and red now: 0.
+- Not runnable here: `test_scene_index.php` (the MO2 profile) - the owner's machine.
+
+Run 2 (the same tree, the rulings written): RUN2_PLACEHOLDER
