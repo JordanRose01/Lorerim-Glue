@@ -136,7 +136,10 @@ fx_scenario('d68', '[pt19 v1.0.1 / S6.2 - gate B] the bounded bonus in septims: 
     $t->must('a driven click on the reward row opens the reward window', !empty(lrgDlgRewardWindow($npc)));
     // her reply names the N the check granted; the reply she might have given instead names another sum (N + 100)
     $sayN = static fn(int $n): string => 'Very well - ' . $n . ' septims, from my own purse.';
-    $r = fx68Ask($npc, '800', $ask, static fn(array $c) => $sayN((int) ($c['give'] ?? 0)), [static fn(array $c) => $sayN((int) ($c['give'] ?? 0) + 100)]);
+    $d2wrong = [static fn(array $c) => 'I will give you ' . ((int) ($c['give'] ?? 0) + 100) . ' septims.', static fn(array $c) => 'Here are ' . ((int) ($c['give'] ?? 0) + 100) . ' septims.',
+        static fn(array $c) => "You'll have your " . (int) ($c['give'] ?? 0) . ' septims tomorrow.'];
+    $d2right = [static fn(array $c) => 'Here are ' . (int) ($c['give'] ?? 0) . ' septims.', static fn(array $c) => 'Take these ' . (int) ($c['give'] ?? 0) . ' septims.'];
+    $r = fx68Ask($npc, '800', $ask, static fn(array $c) => $sayN((int) ($c['give'] ?? 0)), array_merge([static fn(array $c) => $sayN((int) ($c['give'] ?? 0) + 100)], $d2wrong, $d2right));
     $give = $r['awards'] ? (int) array_values($r['awards'])[0] : 0;
     $t->must('inside the window, Speech 100: a real persuade check at reward stakes PASSES', ($r['check']['result'] ?? '') === 'pass' && !empty($r['check']['reward']), $js($r));
     $t->must('...and exactly ONE do=award;...;give=N goes out, 0 < N <= 100 (his named sum) <= her purse (800) <= 500',
@@ -150,6 +153,13 @@ fx_scenario('d68', '[pt19 v1.0.1 / S6.2 - gate B] the bounded bonus in septims: 
     $t->must('...while a reply naming ANOTHER sum ("' . $sayN($give + 100) . '") is REJECTED before it is spoken (never-false, class reward, "the bonus is '
         . $give . ' septims", logged verdict=rejected) - Lane B\'s reward class (lib/lrg_replies.php)',
         $give > 0 && isset($r['nf'][$sayN($give + 100)]) && fx68Rejected($r['nf'][$sayN($give + 100)], $npc, 'the bonus is ' . $give . ' septims'), $js($r));
+    // [v1.0.1 / D2] plain grant sentences with no bonus word: a wrong sum or a LATER payment is rejected; the right sum, now, passes
+    $d2w = array_map(static fn($f) => $f($r['check']), $d2wrong);
+    $d2r = array_map(static fn($f) => $f($r['check']), $d2right);
+    $t->must('[D2] "' . implode('" / "', $d2w) . '" are REJECTED (a giving frame + money is a claim; a later payment is false whatever the sum)',
+        $give > 0 && !array_filter($d2w, static fn($l) => empty($r['nf'][$l]) || ($r['nf'][$l]['ok'] ?? true) || (($r['nf'][$l]['reject']['class'] ?? '') !== 'reward')), $js($r));
+    $t->must('[D2] ...while "' . implode('" / "', $d2r) . '" (the granted ' . $give . ', handed over now) pass',
+        $give > 0 && !array_filter($d2r, static fn($l) => empty($r['nf'][$l]['ok'])), $js($r));
     // 3. ONCE per quest: a second ask in the same window gives nothing, and she is told the reward is fixed
     fxAdvance(10);
     $r = fx68Ask($npc, '800', 'I deserve more than this, fifty septims', 'I have given what I will.');
@@ -173,6 +183,12 @@ fx_scenario('d68', '[pt19 v1.0.1 / S6.2 - gate B] the bounded bonus in septims: 
         fx68Rejected($r['nf'][$false], $npc, 'no bonus was granted'), $js($r));
     $t->must('...as "' . $control . '" is (the rail runs on this turn - the control)',
         fx68Rejected($r['nf'][$control], $npc, 'no bonus was granted'), $js($r));
+    // [v1.0.1 / D1] a polite DECLINE inside the window - the most natural sentence at Balgruuf's reward line - runs no check and
+    // moves nothing; the fact she is handed is the fixed-reward line, never "you add"
+    $npc = fx68World($rows, $reward, 100, '800');
+    $r = fx68Ask($npc, '800', 'No need for a reward, I was glad to help', 'As you wish. Whiterun is in your debt.');
+    $t->must('[D1] "No need for a reward, I was glad to help" inside the window (Speech 100): NO reward check, no do=award, no "you add"',
+        $r['awards'] === [] && empty($r['check']['reward']) && (string) ($r['check']['kind'] ?? '') === '' && !str_contains($r['talk'], 'you add'), $js($r));
 
     // 5. an EMPTY purse: no check at all, no award, and her fact says she carries no coin and must never promise it later
     $npc = fx68World($rows, $reward, 100, '0');

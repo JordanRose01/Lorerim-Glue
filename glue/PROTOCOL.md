@@ -2577,3 +2577,13 @@ Papyrus change, no floor moved. By rule:
   started; quiet mode's floor is 5). The inn kind gains `best room` / `finest room` / `best bed` for real innkeepers.
   Tests: test_dialogue v25 "[Helgen]" rows; questline `W.ap.start` (park on "hey I'd like your best room", never on a
   price question / refusal) and `F.open.ap.bestroom` (marker=override at clicks_ok 0, no vendor faction).
+- **[v1.0.1, 2026-09-25 - the directors' final sign-off, `research/pt19-oversight-final.md`]** v1.0 as built: both directors
+  APPROVED WITH NOTES. Gate B was refused as first switched on (D1, D2) and is fixed before it ships: **D1**
+  `lrgDlgRewardDeclines` (lrg_speech.php, read by `lrgDlgRewardBargain`): the clause holding his ask phrase is no bargain when
+  it negates his want before the phrase, defers (later / maybe / think about), states sufficiency or a waiver (more than
+  enough, keep the), or is an information question about the reward (is there / what is / did you already give); a
+  proposal-shaped question ("don't I deserve more?", "can you sweeten it?", "what's in it for me?") and "that's not enough"
+  stay bargains - test_dialogue v27 "[D1]" (14 declines, 8 bargains), flow d68 (the decline at Balgruuf). **D2** the rail's
+  reward pseudo-row (`lrgNfClassify`) reads any giving frame + money as a claim, with or without a bonus word ("I will give you
+  200 septims", "Here are fifty septims", "Take these..."), never money she denies ("no more gold"), and `lrgNfVerdict` judges a
+  LATER payment false whatever the sum ("you'll have your N septims tomorrow") - flow d68 "[D2]" rows.

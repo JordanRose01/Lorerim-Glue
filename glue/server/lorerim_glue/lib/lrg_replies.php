@@ -854,8 +854,15 @@ function lrgNfClassify(string $s, array $row): array
     // [pt19 v1.0 / S6.2, gate B] the reward pseudo-row: a GIVING verb + money + a bonus word ("I'll add fifty septims on top")
     if ((string) ($row['id'] ?? '') === 'reward') {
         if (!in_array('reward', $classes, true)) { return []; }
-        if (preg_match("/\b(?:i(?:'ll| will| can| shall)? (?:add|give|pay|throw in|hand you|double)|here(?:'s| is)|take (?:these|this|it)|you(?:'ll| will) (?:get|have|receive))\b[^.!?]*\b(?:\d+|septims?|gold|coins?|purse)\b/", $s, $m)
-            && preg_match('/\b(?:on top|extra|more|bonus|additional|added|double|besides|as well)\b/', $s)) { return ['reward' => (string) $m[0]]; }
+        $money = '(?:\d[\d,]*|septims?|gold|coins?|purse)';
+        // [v1.0.1 / directors' final sign-off D2] money she DENIES is no grant ("I can give you no more gold", "not a septim more")
+        if (preg_match('/\b(?:no|not a(?:nother)?|not one|nothing|never|not (?:a )?(?:single )?)(?: more| extra| further)? ?(?:septims?|gold|coins?|money|coin)\b/', $s)) { return []; }
+        // [D2] a GIVING frame + money anywhere in the sentence, with or without a bonus word: "I will give you two hundred septims.",
+        // "Here are fifty septims.", "Take these hundred septims.", "You'll have your hundred septims tomorrow." (a later payment
+        // is judged false in lrgNfVerdict: she pays now or never)
+        if (preg_match("/\b(?:i(?:'ll| will| can| shall| would)? (?:add|give|pay|hand|throw in|double|spare|offer)(?: you| him| her| them)?|"
+                . "here(?:'s| is| are| you go| you are)|take (?:these|this|it|them)|you(?:'ll| will| shall| can| may) (?:get|have|receive|find|take)|"
+                . "(?:this|these|that|it) (?:is|are)(?: all)? yours|yours to keep)\b[^.!?]*\b" . $money . '\b/', $s, $m)) { return ['reward' => (string) $m[0]]; }
         // [v1.0.1, gate B on - flow d68] a sum she hands over with no giving verb and no bonus word is still a grant: a sum paid
         // "from my own purse" / "out of my pocket", or a sum right after her assent ("Very well - a hundred septims.")
         $sum = '(?:\d[\d,]*|(?:a |an )?(?:one|two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)(?:[ -](?:hundred|thousand|and|one|two|three|four|five|six|seven|eight|nine|ten|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety))*)';
@@ -967,6 +974,11 @@ function lrgNfVerdict(string $cls, string $s, array $ctx, array $row, string $ro
         // which passed ANY spelled-out bonus as true), "1,000 septims" is 1000 (it read 1); a bare digit group is the fallback
         $said = function_exists('lrgIntentAmount') ? (int) lrgIntentAmount(strtolower($s), false) : 0;
         if ($said === 0 && preg_match('/\b(\d{1,3}(?:,\d{3})+|\d+)\b/', $s, $m)) { $said = (int) str_replace(',', '', $m[1]); }
+        // [v1.0.1 / D2] a LATER payment is false whatever the sum: she pays now (CmdAward moves it this turn) or never (S6.2)
+        if (preg_match('/\b(?:tomorrow|later|next (?:week|month|time|morning)|when you (?:return|come back|get back)|once (?:you|the|this|that)|'
+                . 'after (?:this|that|you|the)|in (?:a|two|three|a few) (?:days?|weeks?)|soon)\b/', $s)) {
+            return ['verdict' => 'false', 'fact' => 'she pays now or never - no later payment; ' . ($give > 0 ? 'the bonus is ' . $give . ' septims, handed over now' : 'no bonus was granted')];
+        }
         $ok = $give > 0 && ($said === 0 || $said === $give);
         return ['verdict' => $ok ? 'true' : 'false', 'fact' => $give > 0 ? 'the bonus is ' . $give . ' septims' : 'no bonus was granted'];
     }

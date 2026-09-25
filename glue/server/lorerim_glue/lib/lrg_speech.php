@@ -1531,8 +1531,64 @@ function lrgDlgRewardBargain(array $t, string $utter = ''): array
     if ($utter === '') { $utter = (string) ((lrgDlgState($npc)['utter'] ?? [])['text'] ?? ''); }
     $ask = lrgDlgRewardAsk($utter, $t);
     if ($ask === '' || !lrgDlgQuestTurn($t)) { return []; }
+    // [v1.0.1 / directors' final sign-off D1] a decline, a deferral, a sufficiency or an information question is no bargain
+    if (lrgDlgRewardDeclines($utter, $ask)) {
+        lrgDlgLog('check: reward ask "' . substr($ask, 0, 30) . '" declined by his own clause - no check, nothing moves (D1)', (string) ($t['cid'] ?? ''));
+        return [];
+    }
     $win = lrgDlgRewardWindow($npc, true);
     return $win ? ['ask' => $ask, 'window' => (string) $win['why']] : [];
+}
+
+/**
+ * [v1.0.1 / directors' final sign-off, D1] Does the clause holding his ask phrase DECLINE the reward rather than bargain for it?
+ * A negation of his want before the phrase ("I don't want a reward", "no need for a reward", "I'm not asking for more gold", "I
+ * never wanted a reward"), a deferral ("I'll think about the reward later", "maybe I should ask for a bonus"), a sufficiency or
+ * a waiver ("the reward is more than enough", "keep the reward, give it to the orphans"), or an INFORMATION question about the
+ * reward ("is there a reward for this?", "what is the reward?", "did you already give me the reward?"). A proposal-shaped
+ * question stays a bargain ("how about a little more?", "can you sweeten the deal?", "don't I deserve more gold?", "what's in
+ * it for me?"), and so does "that's not enough, I want more gold". True = no check runs and nothing moves. The clauses are
+ * lrgDlgRewardClauses' (split at . ! ? ; : , and "but"); a clause that does not hold the phrase is not read, so "I don't have
+ * time for this, I deserve more" stays a bargain; a named sum with no phrase reads every clause for a deferral or a waiver.
+ */
+function lrgDlgRewardDeclines(string $utter, string $ask): bool
+{
+    $clauses = lrgDlgRewardClauses(lrgDlgMoneyFold($utter));
+    if (!$clauses) { return false; }
+    $pt = ($ask !== '' && $ask !== 'a named sum') ? lrgDlgRewardToks($ask) : [];
+    $neg = defined('LRG_DLG_NEG') ? (array) LRG_DLG_NEG : ['not', 'no', 'never', 'dont', 'wont', 'cant', 'cannot', 'doesnt', 'didnt', 'isnt', 'arent', 'wasnt'];
+    $lead = '(?:so |well |and |then |now |oh |look |hey |uh |um )*';
+    foreach ($clauses as [$hay, $q]) {
+        $at = $pt ? lrgDlgTokenAt($hay, $pt) : -1;
+        if ($pt && $at < 0) { continue; }
+        $s = ' ' . implode(' ', $hay) . ' ';
+        if ($q) {
+            // a proposal-shaped question is his bargain
+            if (preg_match('/^ ' . $lead . '(?:how about|what about|why not|dont (?:i|we)|wouldnt you (?:say|agree|think)|isnt (?:it|that|this) worth|'
+                    . 'whats in it for (?:me|us)|what (?:do|will|would) (?:i|we) get|(?:can|could|will|would|wont|cant|couldnt|wouldnt) you (?:not )?'
+                    . '(?:sweeten|add|raise|double|pay|throw in|spare|make it|give me|do better|go higher|stretch|manage)|(?:will|do|am|are) (?:i|we) '
+                    . '(?:be |getting |get )?paid|how much (?:does|will|would) (?:it|this|that) pay|what(?:s| is) the pay|what does (?:it|this|that) pay|'
+                    . 'are you (?:going to|gonna) pay)\b/', $s)) { continue; }
+            // an information question about the reward is no bargain
+            if (preg_match('/^ ' . $lead . '(?:(?:is|was|isnt|wasnt) there (?:a |an |any |some |still )?|what(?:s| is| was| kind of| sort of) (?:the |my |a |any |your )?|'
+                    . '(?:did|have|has|had|didnt|havent|hasnt) you (?:already |even |not |ever )?(?:give|given|gave|pay|paid|hand|handed|send|sent|mention)|'
+                    . '(?:where|when)(?:s| is| was| do| does| did| will| can)\b|which |(?:do|does|did) (?:i|we|this|that|it) (?:get|come with|have|include)|'
+                    . '(?:is|was) (?:this|that|it) (?:the |my |all the |the whole |all )?)/', $s)
+                && preg_match('/\b(?:reward|rewards|bonus|pay|payment|gold|septims?|coins?|money|purse|compensation)\b/', $s)) { return true; }
+            continue;
+        }
+        if ($at >= 0 && array_intersect(array_slice($hay, 0, $at), $neg)) { return true; }
+        if (preg_match('/\b(?:no need|never mind|forget (?:the|about|it)|dont (?:bother|worry)|not (?:necessary|needed))\b/', $s)) { return true; }
+        // a deferral
+        if (preg_match('/\b(?:later|tomorrow|someday|some day|one day|another time|next time|not now|not yet|maybe|perhaps|possibly|eventually|'
+                . 'at some point|think about|think it over|let me think|sleep on it)\b/', $s)) { return true; }
+        // a sufficiency ("not enough" / "hardly enough" stay bargains) or a waiver
+        if (preg_match('/\b(?:more than enough|quite enough|plenty|(?:is|was|are|were|thats|its) (?:already |quite |more than )?enough|'
+                . 'enough (?:for me|for us|already|as it is)|generous enough|too generous|too kind)\b/', $s)
+            && !preg_match('/\b(?:not|isnt|wasnt|hardly|barely|never|far from|nowhere near) (?:nearly |quite |really )?enough\b/', $s)) { return true; }
+        if (preg_match('/\b(?:keep (?:the|your|it|that|those|them)|give it to|donate|no charge|free of charge)\b/', $s)) { return true; }
+    }
+    return false;
 }
 
 /**

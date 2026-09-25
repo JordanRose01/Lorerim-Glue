@@ -3610,6 +3610,21 @@ chk('v27 [lang P7] "I did you a favour, I deserve more septims", "I lost my hors
     $p7 === [], implode(' | ', $p7));
 chk('v27 the named amount is clamped: min(named, purse, one day of her wage, max_gold 500)', lrgDlgRewardAmount($rq('X R', 'x', 40), 'give me a thousand septims') <= 40
     && lrgDlgRewardAmount($rq('X R', 'x', 5000), 'give me a thousand septims') <= 500);
+// [v1.0.1 / directors' final sign-off D1] a decline, a deferral, a sufficiency, a waiver or an information question inside the
+// window is NO check (nothing moves, no affinity taken); a proposal-shaped question and a plain bargain still are
+$d1no = ["I don't want a reward, keep your gold", 'No need for a reward, I was glad to help', "That's all right, I don't need a bonus",
+    "I'm not asking for more gold", 'I never wanted a reward', 'Thank you, the reward is more than enough', 'Keep the reward, give it to the orphans',
+    "I'll think about the reward later", 'Perhaps later I will ask for more gold', 'Maybe I should ask for a bonus', 'I am not sure I deserve more gold',
+    'Is there a reward for this?', 'What is the reward?', 'Did you already give me the reward?'];
+$d1bad = [];
+foreach ($d1no as $s1) { if (lrgDlgCheckKind(['kind' => 'none', 'conf' => 'low'], '', $rq('Balgruuf R', $s1)) !== '') { $d1bad[] = $s1; } }
+chk('v27 [D1] 14 declines / deferrals / sufficiencies / information questions inside the window -> NO check', $d1bad === [], implode(' | ', $d1bad));
+$d1yes = ['I deserve more than this, a hundred septims', 'can you sweeten the deal a little', "what's in it for me, I expected more gold",
+    "don't I deserve more gold for this?", "that's not enough, I want more gold for this", 'how about a little more?',
+    "I don't have time for this, I deserve more septims", 'I want at least a hundred septims for this'];
+$d1miss = [];
+foreach ($d1yes as $s1) { if (lrgDlgCheckKind(['kind' => 'none', 'conf' => 'low'], '', $rq('Balgruuf R', $s1)) !== 'persuade') { $d1miss[] = $s1; } }
+chk('v27 [D1] ...while 8 bargains (proposal questions, "not enough", a decline in ANOTHER clause) are still the check', $d1miss === [], implode(' | ', $d1miss));
 $GLOBALS['LRG_DLG_TEST_CFG'] = ['checks.reward.enabled' => false];   // the kill switch still works now that it ships ON
 chk('v27 gate A (the switch off): the same ask inside the window is no check', lrgDlgCheckKind(['kind' => 'none', 'conf' => 'low'], '', $rq('Balgruuf R', $askS[0])) === '');
 unset($GLOBALS['LRG_DLG_TEST_OVERRIDES'], $GLOBALS['LRG_DLG_TEST_CFG'], $GLOBALS['LRG_DLG_TURN']);
