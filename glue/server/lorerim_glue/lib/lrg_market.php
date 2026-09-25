@@ -966,7 +966,8 @@ function lrgMktVoicedWhy(string $reason, string $npc, string $player): string
  * CHIM's RentRoom row charges its own `cost_gold` (Action Editor > RentRoom > Gold Cost, default 10) while the game's
  * RoomCost global is what every real "rent a room (N gold)" line charges (25 here, LoreRim - Economy Overhaul). Once per
  * game session: a log line naming both (warn_rentroom_cost); with align_rentroom_cost the row is written from the live
- * global through CHIM's own config API (an owner-editable CHIM row - shipped OFF, the owner decides).
+ * global through CHIM's own config API (an owner-editable CHIM row - shipped ON since the pt19 ship: the owner asked for a
+ * dearer room; false keeps the owner's own Gold Cost).
  */
 function lrgMktRoomCheck(int $room, string $npc, string $sess): void
 {

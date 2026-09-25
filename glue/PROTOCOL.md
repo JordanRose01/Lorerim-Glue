@@ -2557,3 +2557,15 @@ Papyrus change, no floor moved. By rule:
   `--first-evening` / `--first-evening --words` / `--extended` against the 06:00 baselines (`tools/fixtures/*_baseline.json`;
   every `accepted` ruling is listed in `research/pt19h-r2-resolution.md`). `tools/test_scene_index.php` and flow `[18]` need
   the MO2 profile and run on the owner's machine only.
+
+### 10.29 addendum [v1.0.1, 2026-09-25] gate B ON - the bounded bonus ships enabled
+
+- `dialogue.checks.reward.enabled` now ships **true** (code default `lrg_speech.php` and `lrg_config.default.json`): the
+  owner asked to haggle a quest reward in septims. Everything in S6.2 / `give=` above applies unchanged; `false` in
+  `config/lrg_config.json` is the kill switch (test_dialogue v27 proves it). No wire change, no `.psc` change - script
+  513 already carries `CmdAward give=`.
+- The never-false rail's `reward` pseudo-row (`lrgNfClassify`, `lib/lrg_replies.php`) also reads a sum handed over with no
+  giving verb and no bonus word as a grant: a sum paid "from my own purse / out of my pocket", or a sum right after her
+  assent ("Very well - a hundred septims."). Flow d68 is no longer PENDING: 15/15, including both false-promise rejections.
+- `dialogue.market.align_rentroom_cost` ships true (it did since the pt19 ship; the readme text said off): CHIM's
+  RentRoom Gold Cost follows the game's RoomCost global (25 here).

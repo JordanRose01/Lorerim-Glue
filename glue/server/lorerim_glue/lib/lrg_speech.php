@@ -144,10 +144,11 @@ function lrgDlgCheckDefaults(): array
                     "i'll take", 'i will take', "i'd take", 'septims more', 'septim more', 'gold more', 'coins more', 'coin more', 'deal',
                     'extra', 'bonus']],
         ],
-        // [pt19 v1.0 / S6.2] THE BOUNDED BONUS - gate B (v1.0.1). Off in gate A: nothing below runs until `enabled` is true.
+        // [pt19 v1.0 / S6.2] THE BOUNDED BONUS - gate B, ON since v1.0.1 (owner 2026-09-25: haggle a quest reward in septims).
+        // `enabled` false is the kill switch: nothing below runs.
         // window_seconds: how long after a reward line / a moved-on quest of hers / gold into his purse the window stays open;
         // max_gold: the hard cap of one bonus, in septims (also capped by her purse and one day of her wage).
-        'reward' => ['enabled' => false, 'window_seconds' => 180, 'max_gold' => 500],
+        'reward' => ['enabled' => true, 'window_seconds' => 180, 'max_gold' => 500],
         // stance: added to the base band. A guard is not immune but gets the hardest band.
         'stance' => ['guard' => 2, 'merchant' => 1, 'hostile' => 2, 'jarl' => 2, 'court' => 1, 'vigilant' => 2,
             'priest_mara' => 1, 'beggar' => -1, 'tavern_folk' => -1, 'commoner' => 0, 'follower' => -2],

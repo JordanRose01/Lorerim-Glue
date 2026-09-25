@@ -238,10 +238,28 @@ Also tell us, for the first list that came up, whether you heard her short word 
   list with no way back out of it is yours to leave by hand; she tells you so. Food and drink need no window at all:
   "A mead, please" to an innkeeper, and she names what she has with the price in septims and asks which one.
 - **A different reward.** What a quest pays is fixed by the game, and she is told so when you bargain. If the list has
-  a line about your reward, she will point you to it. In v1.0 nothing checks her words on this afterwards: if she ever
-  promises you a house, a title or extra septims, nothing is paid - that is a slip; please send the log.
-- **Extra septims.** In v1.0 she should only refuse. In v1.0.1 you can talk her into a small extra from her own purse
-  after a real Speech check - never more than she carries, never more than a day of her wages, once per quest.
+  a line about your reward, she will point you to it. An item, a house, a title or a favour is never hers to add, and
+  she says so.
+- **Extra septims (on since v1.0.1).** Within about three minutes of being handed a reward, ask for more in your own
+  words ("I deserve more than this, a hundred septims", "can you sweeten it"). A real Speech check runs. If you pass,
+  she gives you the extra from her own purse: never more than she carries, never more than a day of her wages, never
+  more than 500 septims, and only once per quest. If you fail, or her purse is empty, she says so and gives nothing.
+  If she ever claims to add septims the check did not grant, that line is stopped before she speaks it. The same words
+  outside a reward window are no check at all (haggling with a merchant is never turned into one). To switch it off:
+  `"dialogue": {"checks": {"reward": {"enabled": false}}}` in `config/lrg_config.json`, no rebuild.
+
+### If the Helgen keep locks you in (the known Unbound stall, not the glue)
+
+Symptom: you enter the keep after the dragon, Hadvar or Ralof never shows up, and you cannot activate anything (no
+chests, no doors). The companion's keep scene never started, so the game never gave your controls back. Open the
+console (`~`) and type:
+
+1. `prid 0002BFA2` (Hadvar) or `prid 0002BF9E` (Ralof), then `moveto player`. Close the console and stand still for
+   10 to 20 seconds; the scene should start and the quest carries on.
+2. If nothing starts within a minute: `enableplayercontrols`. That gives activation back at once.
+
+On a new game, before you rent the room at the Helgen inn, Alternate Perspective's Messenger can skip the dragon
+attack entirely. Once the room is rented that skip is gone, so use the console steps above. Full diagnosis: `research/pt19-helgen.md`.
 
 ---
 
@@ -287,9 +305,9 @@ Each has a default, so nothing needs deciding to play.
    breath. A lone line that moves a quest along never plays by itself; it waits for you to say it, or "yes". Default:
    on, the key is Left Ctrl, dialogue subtitles on. Say so if you want every line to wait for your voice, or if your
    CHIM push-to-talk is not Left Ctrl.
-3. **Extra septims (v1.0.1).** The most she gives is what she carries, and at most one day of her wages: 40 septims
-   for a farmhand, 100 septims for a merchant, 500 septims at a jarl's court. Once per quest, after a real Speech check.
-   Default: on in v1.0.1 at those numbers.
+3. **Extra septims (on since v1.0.1).** The most she gives is what she carries, and at most one day of her wages: 40
+   septims for a farmhand, 100 septims for a merchant, 500 septims at a jarl's court. Once per quest, after a real
+   Speech check. Default: on at those numbers.
 4. **Conversations that begin inside a running quest scene** are picked by voice from the moment the first line has
    been picked for you on this install (it checks this itself). Until then she tells you to choose on the list.
    Default: on. Say so if you would rather they always stay yours to click. That is one line in LoreRim Glue's config

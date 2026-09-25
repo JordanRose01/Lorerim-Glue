@@ -391,8 +391,9 @@ Covers MS13, MS01, MS02, MS14, MS11, MS08, MS09, MS10, MS06/MS06Start, MS04, the
 
 ### Not mapped by any group
 
-- The Dark Brotherhood after DB01/DB02. A `pt19x-brotherhood` work folder exists, but there is no group file in this
-  folder.
+- ~~The Dark Brotherhood after DB01/DB02.~~ Mapped afterwards by the retry run (structure-first, index keys): see
+  `brotherhood.md` / `brotherhood.json` / `brotherhood.verified.json` in this folder; its 260 beats are merged into
+  `lrg_questline_extended.json` (group `brotherhood`). The tables above predate that merge.
 - The Bards College beyond MS05.
 - Hearthfire, and minor city misc quests.
 

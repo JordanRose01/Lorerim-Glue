@@ -3196,9 +3196,9 @@ $st40 = lrgDlgGroundTruth('Brynjolf S', lrgDlgState('Brynjolf S'));
 check('[F2] she stopped driving (a fight began): one line in <what_just_happened>, told once',
     str_contains($st40, 'The menu was left to Jordan because a fight began.') && lrgDlgGroundTruth('Brynjolf S', lrgDlgState('Brynjolf S')) === '', $st40);
 
-echo "41. [pt19 v1.0 / S6.2, gate B, OFF] the bounded bonus: do=award give=, gave= read back, a short-fall told once\n";
+echo "41. [pt19 v1.0 / S6.2, gate B, ON since v1.0.1] the bounded bonus: do=award give=, gave= read back, a short-fall told once\n";
 $GLOBALS['LRG_DLG_STATE'] = [];
-check('gate A: checks.reward.enabled ships false, window 180 s, max 500 septims', lrgDlgCfg('checks.reward.enabled') === false
+check('gate B: checks.reward.enabled ships true (owner, 2026-09-25: haggle a quest reward in septims), window 180 s, max 500 septims', lrgDlgCfg('checks.reward.enabled') === true
     && (int) lrgDlgCfg('checks.reward.window_seconds') === 180 && (int) lrgDlgCfg('checks.reward.max_gold') === 500);
 $aw = lrgDlgAwardLine(['npc' => 'Irileth', 'cid' => 'a41', 'check' => ['kind' => 'persuade', 'reward' => 1, 'give' => 50, 'award' => true, 'xp' => 1, 'stat' => '', 'take' => 0]]);
 $awKv = lrgParseKv(rtrim(substr($aw, (int) strpos($aw, '@') + 1), "\r\n"));

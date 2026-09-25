@@ -3573,7 +3573,7 @@ chk('v27 [lang P7] "I did you a favour, I deserve more septims", "I lost my hors
     $p7 === [], implode(' | ', $p7));
 chk('v27 the named amount is clamped: min(named, purse, one day of her wage, max_gold 500)', lrgDlgRewardAmount($rq('X R', 'x', 40), 'give me a thousand septims') <= 40
     && lrgDlgRewardAmount($rq('X R', 'x', 5000), 'give me a thousand septims') <= 500);
-unset($GLOBALS['LRG_DLG_TEST_CFG']);
+$GLOBALS['LRG_DLG_TEST_CFG'] = ['checks.reward.enabled' => false];   // the kill switch still works now that it ships ON
 chk('v27 gate A (the switch off): the same ask inside the window is no check', lrgDlgCheckKind(['kind' => 'none', 'conf' => 'low'], '', $rq('Balgruuf R', $askS[0])) === '');
 unset($GLOBALS['LRG_DLG_TEST_OVERRIDES'], $GLOBALS['LRG_DLG_TEST_CFG'], $GLOBALS['LRG_DLG_TURN']);
 $GLOBALS['LRG_DLG_STATE'] = [];

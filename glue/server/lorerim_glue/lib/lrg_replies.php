@@ -853,9 +853,17 @@ function lrgNfClassify(string $s, array $row): array
     if ((string) ($row['id'] ?? '') === 'vendor') { return $price; }
     // [pt19 v1.0 / S6.2, gate B] the reward pseudo-row: a GIVING verb + money + a bonus word ("I'll add fifty septims on top")
     if ((string) ($row['id'] ?? '') === 'reward') {
-        return (in_array('reward', $classes, true)
-            && preg_match("/\b(?:i(?:'ll| will| can| shall)? (?:add|give|pay|throw in|hand you|double)|here(?:'s| is)|take (?:these|this|it)|you(?:'ll| will) (?:get|have|receive))\b[^.!?]*\b(?:\d+|septims?|gold|coins?|purse)\b/", $s, $m)
-            && preg_match('/\b(?:on top|extra|more|bonus|additional|added|double|besides|as well)\b/', $s)) ? ['reward' => (string) $m[0]] : [];
+        if (!in_array('reward', $classes, true)) { return []; }
+        if (preg_match("/\b(?:i(?:'ll| will| can| shall)? (?:add|give|pay|throw in|hand you|double)|here(?:'s| is)|take (?:these|this|it)|you(?:'ll| will) (?:get|have|receive))\b[^.!?]*\b(?:\d+|septims?|gold|coins?|purse)\b/", $s, $m)
+            && preg_match('/\b(?:on top|extra|more|bonus|additional|added|double|besides|as well)\b/', $s)) { return ['reward' => (string) $m[0]]; }
+        // [v1.0.1, gate B on - flow d68] a sum she hands over with no giving verb and no bonus word is still a grant: a sum paid
+        // "from my own purse" / "out of my pocket", or a sum right after her assent ("Very well - a hundred septims.")
+        $sum = '(?:\d[\d,]*|(?:a |an )?(?:one|two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand)(?:[ -](?:hundred|thousand|and|one|two|three|four|five|six|seven|eight|nine|ten|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety))*)';
+        if (preg_match('/\b' . $sum . ' (?:more |extra )?(?:septims?|gold|coins?)\b[^.!?]*\b(?:from|out of) (?:my|me) (?:own )?(?:purse|pocket|coffers?|coin|gold|savings|treasury)\b/', $s, $m)
+            || preg_match('/\b(?:very well|fine|deal|agreed|all right|alright|done|so be it)\b[\s,;:.\x{2013}\x{2014}-]+' . $sum . ' (?:more |extra )?(?:septims?|gold|coins?)\b/u', $s, $m)) {
+            return ['reward' => (string) $m[0]];
+        }
+        return [];
     }
     $ranks = lrgNfAlt((array) ($row['ranks'] ?? []));
     $facWords = [];

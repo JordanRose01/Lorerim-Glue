@@ -54,12 +54,21 @@ Items 1-5 above are done as far as the cloud can take them; the code is server-o
    every suite, every questline mode and the flows green twice on the final tree, the extended coverage green on it
    (`test_scene_index.php` and flow `[18]` need the MO2 profile and can only run on the owner's machine).
 
+## v1.0.1 (the cloud session, 2026-09-25, later) - server only, no `.psc` changed
+- Reward haggling in septims (gate B) switched ON; the never-false rail now also stops "Very well - a hundred septims,
+  from my own purse" when no bonus was granted (flow d68 15/15). PROTOCOL 10.29 addendum; owner page section 4.
+- Owner page: the Helgen keep rescue console steps (section 4). Room price: `align_rentroom_cost` was already ON (the
+  readme said off) - CHIM's RentRoom charges the game's 25.
+- Directors' final sign-off: `research/pt19-oversight-final.md`.
+- Runs on a staged copy: every unit suite, every questline mode (incl. --extended 2808/0, --stage=B 39/0) and the flows
+  88/89 (only [18], which needs the MO2 profile).
+
 ## What remains, in order (the local session)
-1. `git pull` the branch `claude/eager-wozniak-gvumed` (or merge it into main).
+1. `git pull` the branch `main-tjrlmc` (or merge it into main).
 2. Run `tools/test_scene_index.php` and `tools/flows/run_flows.php --quiet` once locally (the two environment-bound
    checks), then `tools/compile.ps1` (no `.psc` changed: it must be a no-op, but prove it), `tools/deploy_server.ps1`
-   with the CHIM launcher running, and the hash-verified copy into `F:\Modlists\LoreRim\mods\LoreRim Glue` (MO2 open is
-   fine, Skyrim closed).
+   with the CHIM launcher running, and the hash-verified copy into `F:\Modlists\LoreRim\mods\LoreRim Glue` via `tools/install_mo2.ps1`
+   (close BOTH MO2 and Skyrim first - the script edits the profile files and refuses while either is open).
 3. The first evening, per `glue/OWNER_MENULESS_V1.md` section 3; keep `lorerim_glue.log` and `AIAgent.log`.
 
 ## Rules that never bend
