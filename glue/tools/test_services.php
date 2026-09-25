@@ -448,8 +448,15 @@ chk('[G4] the coverage team\'s near-miss "do you need help" (a question about HE
     . 'his offer "can I help?" is', $kp($jz, 'do you need help')['entry'] === null && $pickText($kp($jz, 'can I help?')) === 'What did you need help with?');
 $urag = [$rE("Are there any special books you're looking for?", 'plain', 0), $rE('This is quite an impressive library.', 'plain', 1),
     $rE('You take your work very seriously.', 'plain', 2)];
-chk('[G4] no work line on the list -> the kind pick stands aside (nothing), and "You take your work very seriously." is not his line',
-    $kp($urag, 'put me to work')['entry'] === null && !lrgDlgWordsCarry('put me to work', $urag[2]));
+// [pt19h r2 / reach P2] Urag's "Are there any special books you're looking for?" IS his scripted radiant start (MGR21): alone it is the
+// work line; beside "Is there any College business I can assist with?" she asks which - never the College-business start for a book errand
+chk('[G4 / r2 reach P2] Urag\'s book errand is a work line: "put me to work" picks it when it is the only one, and "You take your work very seriously." is not his line',
+    $pickText($kp($urag, 'put me to work')) === "Are there any special books you're looking for?" && !lrgDlgWordsCarry('put me to work', $urag[2]));
+$urag2 = [$rE("Are there any special books you're looking for?", 'plain', 0), $rE('Is there any College business I can assist with?', 'plain', 1),
+    $rE('This is quite an impressive library.', 'plain', 2)];
+$r = $kp($urag2, 'got any work?');
+chk('[G4 / r2 reach P2] MGR21.ask: two College work lines (the books, the College business) -> nothing picked, she asks which (was: the College-business start on every G4 probe)',
+    $r['entry'] === null && str_contains((string) $r['why'], 'asks which'), json_encode($r));
 // ---- G4 before the model: the pre-LLM open's root clause opens her list for a work ask when her cached root has the ONE work line
 $bm = static function (string $npc, array $rootEntries, string $say): array {
     $GLOBALS['LRG_DLG_STATE'] = [];
@@ -463,8 +470,14 @@ $bm = static function (string $npc, array $rootEntries, string $say): array {
 [$m2, $l2] = $bm('Urag gro-Shub', $urag, 'put me to work');
 [$m3, $l3] = $bm('Gunmar', array_slice($rh01, 0, 3), "I don't need any work");
 chk('[G4] the pre-LLM open (narrow marker, clause 3): "got any work for me?" opens Gunmar\'s cached root for "What can I do to help?"; "put me to work" '
-    . 'opens nothing on a root with no work line; "I don\'t need any work" opens nothing', $m1 === 'root' && $l1 === 'What can I do to help?' && $m2 === ''
-    && $m3 === '', json_encode([$m1, $l1, $m2, $l2, $m3]));
+    . 'opens Urag\'s for his book errand (r2: a work line); "I don\'t need any work" opens nothing', $m1 === 'root' && $l1 === 'What can I do to help?'
+    && $m2 === 'root' && $l2 === "Are there any special books you're looking for?" && $m3 === '', json_encode([$m1, $l1, $m2, $l2, $m3]));
+// [pt19h r2 / reach P1] ... and the open never fires on a deferral, a refusal or a question about HER
+[$m4] = $bm('Gunmar', array_slice($rh01, 0, 3), "I'll help you out later");
+[$m5] = $bm('Gunmar', array_slice($rh01, 0, 3), 'help you out? not a chance');
+[$m6] = $bm('Gunmar', array_slice($rh01, 0, 3), 'could you lend a hand?');
+chk('[G4 / r2 reach P1] the pre-LLM open (clause 3) opens nothing on "I\'ll help you out later" / "help you out? not a chance" / "could you lend a hand?"',
+    $m4 === '' && $m5 === '' && $m6 === '', json_encode([$m4, $m5, $m6]));
 unset($GLOBALS['LRG_DLG_TEST_STORE'], $GLOBALS['LRG_TEST_NPCSTATE']);
 $GLOBALS['LRG_DLG_STATE'] = [];
 // ---- Nazir's contract turn-ins: a report that names its target
@@ -553,8 +566,8 @@ $w[] = ['[G6] ...but on his COMPANION\'s list (teammate) a follower verb still s
     $rWant('Barbas', ['Sounds easy enough. Let\'s go find him.', 'What happened between you and Clavicus?'], "let's go find him", [], ['mate' => '1']), ''];
 $w[] = ['[G4 / measurer] "got any work for me?" at Gunmar clicks "What can I do to help?"',
     $rWant('Gunmar', ['What can I do to help?', 'I need training in Heavy Armor.', 'What have you got for sale?'], 'got any work for me?'), 'What can I do to help?'];
-$w[] = ['[G4 / measurer] "put me to work" at Urag with no work line clicks NOTHING (was: "You take your work very seriously.")',
-    $rWant('Urag gro-Shub', ["Are there any special books you're looking for?", 'This is quite an impressive library.', 'You take your work very seriously.'], 'put me to work'), ''];
+$w[] = ['[G4 / measurer, r2 reach P2] "put me to work" at Urag clicks his book errand "Are there any special books you\'re looking for?" (was: "You take your work very seriously."; a work line since r2)',
+    $rWant('Urag gro-Shub', ["Are there any special books you're looking for?", 'This is quite an impressive library.', 'You take your work very seriously.'], 'put me to work'), "Are there any special books you're looking for?"];
 $w[] = ['[Nazir] "Narfi has been dealt with" clicks "Narfi is dead." (was: her T-key only)',
     $rWant('Nazir', ['Narfi is dead.', 'Tell me about Narfi.', 'Tell me about Ennodius.', 'Tell me about Beitild.'], 'Narfi has been dealt with'), 'Narfi is dead.'];
 $w[] = ['[Nazir] "is Narfi dead?" clicks nothing',
@@ -602,6 +615,43 @@ chk('[pt19h-reach review] a hedge, hearsay, an idiom, the name as the DOER or a 
 $got = lrgDlgSttFold("i won't pay, give me the won on the left", [$rE('Give me the one on the left.')]);
 chk('[pt19h-reach review] the homophone fold never edits inside a contraction ("won\'t" stays, the lone "won" becomes "one")',
     str_contains($got, "won't") && str_contains($got, 'the one on'), $got);
+// ---- [pt19h r2 / reach P1, P8, P9] the review's must-nots: a deferral, a refusal, a take-back or a condition anywhere; a help offer to
+// somebody else; a second-person verb; a service request; a job of his own; a job offered to HER - none is a work ask. The natural offers are
+$bad = [];
+foreach (["I'll help you out later", 'I could lend you a hand later', 'help you out? not a chance', 'why would I want work from you?', "who's looking for work?",
+    'do you think I should find work elsewhere?', 'you got a job here?', 'could you lend a hand?', 'can you lend a hand with my bags?', 'I need work done on my armor',
+    'I want some work done on this sword', 'I need a job done', 'is there any work being done on the walls?', 'can I help him?', 'can I help Cicero?',
+    'how can I help the stranger', 'did you find any work?', 'do you need a job?', 'you need a job', 'I got a job to do', "that's a lot of extra work",
+    'is there anything I can do to change your mind?', 'anything I can do to get a discount', 'any work for my brother?', 'got any work for my follower',
+    'any work? actually no, I want to buy something', 'I got a job for you', 'can i help after i finish my training', 'I wonder if there is anything I can do'] as $s) {
+    if (lrgDlgReachWorkAsk($s) !== '') { $bad[] = $s; }
+}
+foreach (['got any work for me?', 'do you have any work for me', 'any work?', 'what can I do for you', 'anything I can do for you', 'let me help', 'can I help you out',
+    'put me to work', 'any errands?', 'can I help?', 'need a hand?', "I'm looking for work"] as $s) {
+    if (lrgDlgReachWorkAsk($s) === '') { $bad[] = "$s (missed)"; }
+}
+chk('[pt19h r2 / reach P1, P8, P9] 29 look-alikes (a deferral, a refusal, a take-back, a condition, a help offer to somebody else, a second-person verb, a service request, '
+    . 'his own job, a job offered to HER) are no work ask; 12 natural offers ("what can I do for you", "let me help", "any errands?") are', $bad === [], implode('; ', $bad));
+// [pt19h r2 / reach P6] a hedge, a deferral, a question or a condition never picks a PROTECTED line by kind
+$gun = [$rE('What can I do to help?', 'plain', 0, ['scripted' => 1, 'crit' => 1]), $rE('I need training in Heavy Armor.', 'plain', 1), $rE('What have you got for sale?', 'plain', 2)];
+$bad = [];
+foreach (["I'll help you out later", 'can i help after i finish my training', "I wonder if there's anything I can do", 'maybe I can help', 'is it true that I can help?'] as $s) {
+    if ($kp($gun, $s)['entry'] !== null) { $bad[] = $s; }
+}
+foreach (['maybe narfi is dead', 'perhaps narfi is dead', 'i guess narfi is dead', 'Hern is dead? good'] as $s) {
+    if ($kp($naz, $s)['entry'] !== null && $pickText($kp($naz, $s)) === 'Narfi is dead.') { $bad[] = $s; }
+}
+chk('[pt19h r2 / reach P6] a hedge, a deferral or a condition never picks Gunmar\'s scripted crit start by kind, nor Nazir\'s scripted turn-in ("maybe narfi is dead", "Hern is dead? good")',
+    $bad === [], implode('; ', $bad));
+// [pt19h r2 / reach P3] a QUESTION line reports nothing
+$tolf = [$rE('Arch-Mage Aren is dead?', 'commit', 0, ['scripted' => 1]), $rE('Tell me about Aren.', 'plain', 1)];
+chk('[pt19h r2 / reach P3] "arch mage aren is done for" never picks the QUESTION line "Arch-Mage Aren is dead?" as a report (a statement against a question line)',
+    $kp($tolf, 'arch mage aren is done for')['entry'] === null);
+// [pt19h r2 / reach P5] a one-word echo read as the line carries no PROTECTED line (at most the model asks); a plain line still can
+chk('[pt19h r2 / reach P5] "I\'m here to talk about Markarth." never carries the scripted commit "I\'m here to talk about Margret." (a real word is no STT echo on a protected line); '
+    . '"your mother" / "your master" the same',
+    !lrgDlgWordsCarry("I'm here to talk about Markarth.", $rE("I'm here to talk about Margret.", 'commit', 0, ['scripted' => 1]))
+    && !lrgDlgWordsCarry('How can I get to your mother?', $rE('How can I get to your master?', 'plain', 0, ['scripted' => 1])));
 // ---- the shipped JSON carries every reach list (the code constants are the default)
 $jr = (array) (((array) (json_decode((string) @file_get_contents(LRG_DIR . '/config/lrg_config.default.json'), true)['dialogue'] ?? []))['reach'] ?? []);
 $miss = [];

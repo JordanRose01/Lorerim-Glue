@@ -3395,6 +3395,16 @@ function lrgEscortPlan(array $turn, array $lines): array
     if ($owner !== '' && !$routed) { return $skip('a follower framework owns her (' . $owner . '): her own dialogue does this'); }
     if (lrgEscortDlgVerbs($npc, $do)) { return $skip('her own follower entry answers it this turn'); }
     $dlg = lrgEscortDlg($npc);
+    // [pt19h r2 / reach P4] her menu is driven by his words this moment - the fast path clicked a quest line for this sentence ("let's go"
+    // at a scene speaker's list) or her dialogue session is open: the escort stands aside, ONE carrier (the click) moves the quest
+    if ($do === 'follow' && function_exists('lrgDlgState')) {
+        $ds = (array) lrgDlgState($npc);
+        $lx = (array) ($ds['last_exec'] ?? []);
+        $recent = (string) ($lx['do'] ?? '') === 'pick' && lrgNow() - (int) ($lx['at'] ?? 0) <= 15;
+        if ($recent || (function_exists('lrgDlgSessionOpen') && lrgDlgSessionOpen((array) ($ds['session'] ?? [])))) {
+            return $skip('her menu is driven by his words this moment (a quest line was just clicked, or her list is open) - the click carries it');
+        }
+    }
     $inScene = !empty($f['scene']) || !empty($dlg['scene'])
         || in_array('quest_scene', (array) (($turn['gate'] ?? [])['reasons'] ?? []), true);
     // [pt17] the framework may take her: she is SFF's or a ghost (routed), or a stranger SFF can take right now

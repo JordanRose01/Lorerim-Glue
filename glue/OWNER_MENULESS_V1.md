@@ -93,6 +93,18 @@ whole install, not once per evening. It starts over only if you press "Forget ev
     across" or "can you train me" now brings her list up before she answers (the glue knows them by their job in the
     game); then say the place or the skill, or click it. This was checked offline, not yet in game: if a driver, a
     ferryman or a trainer answers without her list coming up, please tell us who it was.
+- **Handing something over** (added in the second hardening round). When a line gives an item away ("Here, take them.",
+  "Very well." with Auriel's Bow), your own words do it: "here are the fragments", "here, take the bow", "I give them back
+  with honor". "I'm keeping it" never hands it over.
+- **A question about a line is a question.** Ask about a line that moves a quest along ("where's the book?", "something
+  dangerous?") and she asks you back whether you mean that line; "yes" picks it, "no" or "later" leaves it. "No one should
+  have it" and "no joke, you can have it" are read as what they say, not as a refusal.
+- **Asking for work.** "Got any work?", "anything need doing?", "what can I do for you?" pick the one line on her list that
+  offers work; when two lines offer it (Urag has two) she asks which. "Did you find any work?", "I got a job to do" and "I
+  wonder if there's anything I can do" pick nothing - they are not you asking.
+- **Rumours and songs in your own words.** "Any rumors about the dragons" to Hulda, "sing me something about dragons" or "got
+  any songs about dragons" to Sven pick their lines. A slip of the ear on a line that costs septims ("rent a groom") makes her
+  ask first.
 
 ---
 
@@ -295,6 +307,10 @@ the same checker on two extra sets of beats, on the same code and the same load 
 in `research/pt19c-F.md`); they are being moved into the standing first-evening check. That move adds the extra-run
 beats (they include corrected copies of the walkthrough ones) and changes nothing else. It was run: every one of them
 passes there too. The standing checks are green (2026-09-25, final fix round).
+The second hardening round (2026-09-25, the cloud session; `research/pt19h-r2-resolution.md`) ran every standing check again
+on the finished tree, twice, and compared the words-mode and the extended coverage line by line with the morning's
+baselines: no first-evening sentence got worse; the one change on this page's sentences is "i'd like to rent a groom" (a slip
+of the ear on a priced line), which now makes her ask first instead of picking.
 A row marked "re-classed 2026-09-25" was ruled that day: the line's own conversation also carries a version of it that
 ends the talk, so the glue treats it as a line to confirm - said as written it is picked at once, and some looser
 wordings make her ask once ("yes" picks it). The check now asserts exactly that. Sven's "sing me something about

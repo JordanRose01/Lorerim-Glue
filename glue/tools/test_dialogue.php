@@ -3747,7 +3747,8 @@ foreach ([
     ["I'll keep that in mind.", "wait, i'll keep that in mind?", 'refused'],
     ['I have the Elder Scroll.', 'what do I do with the Elder Scroll?', 'refused'],
     ['Yes, sir!', 'wait, yes, sir?', 'refused'],
-    ["I've brought the fragment.", "maybe I've brought the fragment", 'refused'],
+    // [pt19h r2 / safety P6] a HEDGE around a commit single is no longer nothing: not released, not refused - the gate parks it (she asks)
+    ["I've brought the fragment.", "maybe I've brought the fragment", 'none'],
 ] as [$tx, $u, $want]) {
     $rel = $sg($tx, $cs, $u);
     chk('pt19h-safety G1/G11/G5 commit single "' . substr($tx, 0, 34) . '": "' . substr($u, 0, 60) . '" -> ' . $want . ', never a release (' . $rel['step'] . ')',
@@ -4042,17 +4043,18 @@ $grKar = [v1Row("Then I'm in your debt.", ['tk' => 'gr:k1', 'topic' => 'TG05Karl
     v1Row('You should have shot Mercer instead.', ['tk' => 'gr:k3', 'topic' => 'TG05KarliahIntroBranchTopic01az', 'quest' => 'TG05', 'invis' => 1, 'links' => ['skyrim.esm:0B8378']])];
 // [r2 / review P1] the converge rule is DORMANT by default (grading.converge_plain false): the gate trusts the model's key on
 // a plain line with no test of his words, so converging siblings stay commits until the gate's key-mode rail lands
+// [pt19h r2] the shipped default is now ON (the gate has its key-mode rail, lrgDlgKeyRailWhy): false switches the rule OFF for a check
 $grConv = static function (bool $on): void {
-    if ($on) { $GLOBALS['LRG_DLG_TEST_CFG']['grading.converge_plain'] = true; } else { unset($GLOBALS['LRG_DLG_TEST_CFG']['grading.converge_plain']); }
+    if ($on) { unset($GLOBALS['LRG_DLG_TEST_CFG']['grading.converge_plain']); } else { $GLOBALS['LRG_DLG_TEST_CFG']['grading.converge_plain'] = false; }
 };
 $grConv(false);
 $d = $grDecor($grKar);
-chk('pt19h-grading r2 G3 (shipped default, the rule dormant): Karliah\'s three converging answers stay commits (conv flagged) until the gate\'s key-mode rail lands (review P1)',
+chk('pt19h-grading r2 G3 (the switch OFF): Karliah\'s three converging answers stay commits (conv flagged) - grading.converge_plain false is the pre-rail grading',
     !lrgDlgConvergeOn() && array_column($d, 'class') === ['commit', 'commit', 'commit'] && array_column($d, 'conv') === [1, 1, 1], $grCls($d));
 $grConv(true);
 $d = $grDecor($grKar);
-chk('pt19h-grading G3 (grading.converge_plain on): Karliah\'s three answers (skyrim.esm:0B8382 / 0B838F / 0B838E) all continue into 0B8378 - one choice: the two statements are plain (was: three commits, "I owe you" cost her question); the QUESTION among them stays a commit (a statement is no answer to it)',
-    array_column($d, 'class') === ['plain', 'commit', 'plain'] && array_column($d, 'conv') === [1, 1, 1], $grCls($d));
+chk('pt19h-grading G3 (the shipped default, ON with the key-mode rail): Karliah\'s three answers (skyrim.esm:0B8382 / 0B838F / 0B838E) all continue into 0B8378 - one choice: the two statements are plain (was: three commits, "I owe you" cost her question); the QUESTION among them stays a commit (a statement is no answer to it)',
+    lrgDlgConvergeOn() && array_column($d, 'class') === ['plain', 'commit', 'plain'] && array_column($d, 'conv') === [1, 1, 1], $grCls($d));
 $w = $grFast('Karliah G', $grKar, array_column($grKar, 'txt'), 'I believe you', ['q' => 'TG05']);
 chk('pt19h-grading G3 must-not-click: the near-miss "I believe you" never clicks "Why should I believe you?" (the measurer\'s never_red row)', !$grPicked($w), $w['echo']);
 $grMir = [v1Row("I don't understand. What coincidence?", ['tk' => 'gr:mi1', 'topic' => 'MG05Stage50MirabelleFollowUp2', 'quest' => 'MG05', 'invis' => 1, 'links' => ['skyrim.esm:09BB89']]),
@@ -4093,8 +4095,30 @@ foreach ([["no, I'm not telling you anything about the orb", 'T1'], ['what orb? 
         v1Do($r['out']) !== 'pick' && !$r['will'], json_encode($r['out']));
 }
 $w = $grFast('Savos Aren G', $grSav, $grSavT, 'we found some kind of orb, Tolfdir wants you to see it', ['q' => 'MG02']);
-chk('pt19h-grading r2 G3 (shipped default): the paraphrase is not clicked on the fast path - the converging line is a commit, she asks (G3 waits for the rail)',
+chk('pt19h-grading r2 G3 (the switch OFF): the paraphrase is not clicked on the fast path - the converging line is a commit, she asks',
     !$grPicked($w), $w['echo']);
+// [pt19h r2 / grading P1, P12] the rule ON (the shipped default) WITH the key-mode rail: the paraphrase clicks on the fast path (the G3
+// gain), the same must-not sentences + her key click nothing (the rail: WillEmit FALSE), and a plain paraphrase + her key still clicks
+$grConv(true);
+$w = $grFast('Savos Aren G', $grSav, $grSavT, 'we found some kind of orb, Tolfdir wants you to see it', ['q' => 'MG02']);
+chk('pt19h-grading r2 G3 (shipped default ON): "we found some kind of orb, Tolfdir wants you to see it" clicks the converging line on the fast path (plain now: no question costs him the answer)',
+    $grPickPos($w, 0), $w['echo']);
+foreach ([["no, I'm not telling you anything about the orb", 'T1'], ['what orb? I never found an orb', 'T1'], ["I'd rather not say what we found", 'T2'],
+    ['not yet, I need more time', 'T2'], ["I don't think Tolfdir found anything important", 'T2'], ['not now, we found some sort of orb, Tolfdir wanted you to see it later', 'T1'],
+    ['is it true that we found some sort of orb', 'T1'], ['what is the orb', 'T1']] as [$grSay, $grKey]) {
+    v1Reset($grSav, 1);
+    v1Topics('Savos Aren K', $grSavT, ['q' => 'MG02']);
+    v1Say('Savos Aren K', $grSay);
+    $r = v1Llm('Savos Aren K', $grKey, 'Hm. Go on.');
+    chk('pt19h r2 KEY-MODE RAIL (grading P1, P12): "' . $grSay . '" + ' . $grKey . ' clicks no plain scripted Savos line (WillEmit FALSE, her words answer)',
+        v1Do($r['out']) !== 'pick' && !$r['will'], json_encode($r['out']));
+}
+v1Reset($grSav, 1);
+v1Topics('Savos Aren K', $grSavT, ['q' => 'MG02']);
+v1Say('Savos Aren K', 'Tolfdir found some kind of orb down there and wanted you to see it');
+$r = v1Llm('Savos Aren K', 'T1', 'Hm. Go on.');
+chk('pt19h r2 KEY-MODE RAIL: a plain paraphrase + her key still clicks the plain converging line (the model\'s key is trusted where his words do not refuse, defer, hedge, negate or ask)',
+    v1Do($r['out']) === 'pick' && $r['will'], json_encode($r['out']));
 
 // ---- G12: the layer tier's row is HER quest's row when the parent's links name none; the merge is scoped to it
 $grLayer = static function (array $rows, array $norms, string $parent = ''): void {
@@ -4298,10 +4322,25 @@ foreach (["I have Auriel's Bow, but you can't have it", "I have Auriel's Bow", "
     chk('pt19h-grading r2 G16 must-not-click (her key): "' . $grSay . '" + T2 is no explicit hand-over (at most she asks)',
         v1Do($r['out']) !== 'pick' && !$r['will'], json_encode($r['out']));
 }
-foreach (['Very well.', 'very well, take it'] as $grSay) {
+$w = $grFast('Harkon G', $grHar, $grHarT, 'very well, take it', ['q' => 'DLC1VQ08']);
+chk('pt19h-grading r2 G16 must-resolve: "very well, take it" is Harkon\'s hand-over said plainly - an explicit click (the object prefix had turned it into her question)',
+    $grPickPos($w, 1), $w['echo']);
+// [pt19h r2] the bare "Very well." (two tokens) is NOT explicit on a commit hand-over: S4.3 (a) - an exact 1.0 needs >= 3 tokens - and
+// Auriel's Bow is irreversible; the fast path does nothing and the model asks, quoting the line (his "yes" then releases it). Relabelled
+// from a fast click: the floor is the spec's, and it is not lowered to make a two-word assent give the bow away
+$w = $grFast('Harkon G', $grHar, $grHarT, 'Very well.', ['q' => 'DLC1VQ08']);
+chk('pt19h-grading r2 G16 (relabelled, S4.3 a): the bare "Very well." on Harkon\'s commit hand-over is no fast-path click - two tokens below the exact-line floor; the model asks, quoting it',
+    !$grPicked($w), $w['echo']);
+// [pt19h r2 / G16 - the object-aware hand-over rule] his words hand the object over inside a giving frame: the line; the object alone, a
+// question, a keep, a deferral, his taking: never
+foreach (["here's Auriel's Bow", "here, take Auriel's Bow", "I have Auriel's Bow for you", 'take the bow', 'you can have the bow'] as $grSay) {
     $w = $grFast('Harkon G', $grHar, $grHarT, $grSay, ['q' => 'DLC1VQ08']);
-    chk('pt19h-grading r2 G16 must-resolve: "' . $grSay . '" is Harkon\'s hand-over said plainly - an explicit click (the object prefix had turned it into her question)',
-        $grPickPos($w, 1), $w['echo']);
+    chk('pt19h r2 G16 hand-over (lrgDlgHandsOver): "' . $grSay . '" hands Auriel\'s Bow over on the fast path', $grPickPos($w, 1), $w['echo']);
+}
+foreach (["I have Auriel's Bow", "I have Auriel's Bow, but you can't have it", "I'll keep Auriel's Bow", "is that Auriel's Bow?", 'do you want the bow?',
+    "not now, here's the bow later", "I'll take the bow", "I'm not giving you the bow", "I lost the bow"] as $grSay) {
+    $w = $grFast('Harkon G', $grHar, $grHarT, $grSay, ['q' => 'DLC1VQ08']);
+    chk('pt19h r2 G16 hand-over must-not-click: "' . $grSay . '" hands nothing over', !$grPicked($w), $w['echo']);
 }
 $grInv = [v1Row('Here you go. (Show invitation)', ['tk' => 'gr:v1', 'topic' => 'MQ201EmbassyGuardIntroA1', 'quest' => 'MQ201', 'scripted' => 1, 'goodbye' => 1]),
     v1Row('Is there a problem?', ['tk' => 'gr:v2', 'topic' => 'MQ201EmbassyGuardIntroA2', 'quest' => 'MQ201']),
@@ -4364,6 +4403,107 @@ $grLet = [v1Row('Perhaps you care to explain this letter then?', ['tk' => 'gr:l1
 $w = $grFast('Agmaer G', $grLet, array_column($grLet, 'txt'), 'explain this letter');
 chk('pt19h-grading spec 3.5: "explain this letter" on a crit 2 line - the fast path hands the menu back (do=show kind=meta), no pick',
     str_contains((string) $w['echo'], ';do=show;') && str_contains((string) $w['echo'], ';kind=meta;') && !$grPicked($w), $w['echo']);
+
+// ---- [pt19h r2 / round 2] the second hardening round's fixes, pinned (research/pt19h-r2-resolution.md)
+// the same question: half of the line's content words in his, and no word of his own on a question about two things
+$r2Q = static fn(string $u, string $t): bool => lrgDlgQuestionsSame($u, ['text' => $t, 'norm' => lrgPromptNorm($t)]);
+chk('r2 same question: "what do they want with me" / "what do they want?" are "What do these Greybeards want with me?" (half of its content words)',
+    $r2Q('what do they want with me', 'What do these Greybeards want with me?') && $r2Q('what do they want?', 'What do these Greybeards want with me?'));
+chk('r2 same question: "what do you think of Markarth" is no "What are you doing in Markarth?" (its own "think"); "who\'s Gianna" is no "Who\'s the Gourmet here?"',
+    !$r2Q('what do you think of Markarth', 'What are you doing in Markarth?') && !$r2Q("who's Gianna", "Who's the Gourmet here?"));
+// the words path: his other word only NARROWS a question line's subject; a statement line keeps G9; a foreign word that narrows nothing keeps it too
+$r2C = static fn(string $u, string $t): bool => lrgDlgWordsCarry($u, ['text' => $t, 'norm' => lrgPromptNorm($t), 'class' => 'plain']);
+chk('r2 words carry: "any rumors about the dragons" carries "Heard any rumors lately?"; "sing me something about dragons" and "got any songs about dragons" carry the ballads line',
+    $r2C('any rumors about the dragons', 'Heard any rumors lately?') && $r2C('sing me something about dragons', 'Do you know any old ballads about dragons?')
+    && $r2C('got any songs about dragons', 'Do you know any old ballads about dragons?'));
+chk('r2 words carry (G9 kept): "who is the Jarl\'s steward" is no "Who is the Jarl?", "Paarthurnax is dead" no "Paarthurnax has changed, ...", "do you have any mead" no "Heard any rumors lately?"',
+    !$r2C("who is the Jarl's steward", 'Who is the Jarl?') && !$r2C('Paarthurnax is dead', 'Paarthurnax has changed, I cannot do what you ask of me.')
+    && !$r2C('do you have any mead', 'Heard any rumors lately?'));
+// negation parity: a bare "never" after the subject negates its predicate as "didn't" does
+$r2N = static fn(string $u, string $t): bool => lrgDlgNegationClash($u, ['text' => $t, 'norm' => lrgPromptNorm($t)]);
+chk('r2 negation parity: "it never arrived, the courier didn\'t come" is no opposite of "The courier never arrived with it."; "the courier arrived with it" is',
+    !$r2N("it never arrived, the courier didn't come", 'The courier never arrived with it.') && $r2N('the courier arrived with it', 'The courier never arrived with it.'));
+// the "no" that opens no refusal
+$r2Bad = [];
+foreach (['no one should have it', 'no joke, you can have it', 'no wonder', 'no kidding', 'no matter what, I am with you', 'no idea', 'no doubt about it'] as $x) { if (lrgDlgRefuses($x)) { $r2Bad[] = 'refuses: ' . $x; } }
+foreach (['no way', 'no thanks', 'no, I want to join the Stormcloaks', 'nope', 'no, one moment'] as $x) { if (!lrgDlgRefuses($x)) { $r2Bad[] = 'not: ' . $x; } }
+chk('r2 refusals: "no one ...", "no joke", "no wonder", "no kidding", "no matter what", "no idea" refuse nothing; "no way", "no thanks", "no, I want ..." still do', $r2Bad === [], implode(' | ', $r2Bad));
+// the work ask is HIS request only
+$r2W = [];
+foreach (["who's looking for work?", 'I got a job to do', 'I wonder if there is anything I can do', 'did you find any work?'] as $x) { if (lrgDlgReachWorkAsk($x) !== '') { $r2W[] = 'asks: ' . $x; } }
+foreach (['got any work?', 'anything need doing?', 'what can I do for you?', 'I need a job to pay my rent'] as $x) { if (lrgDlgReachWorkAsk($x) === '') { $r2W[] = 'not: ' . $x; } }
+chk('r2 reach: "who\'s looking for work?", "I got a job to do", "I wonder if there is anything I can do" ask for no work; "got any work?", "what can I do for you?" do', $r2W === [], implode(' | ', $r2W));
+// the key-mode rail on a scripted plain line: a question parks (she asks, quoting it), a refusal gets nothing, his plain yes after the park releases
+$r2Nel = [v1Row('The Dwemer? What do they have to do with this?', ['tk' => 'r2:n1', 'topic' => 'MQ04NelothDwemer', 'quest' => 'DLC2MQ04']),
+    v1Row("Just tell me where the book is and I'll go get it.", ['tk' => 'r2:n2', 'topic' => 'MQ04NelothJustTell', 'quest' => 'DLC2MQ04', 'scripted' => 1])];
+$r2d = $grDecor($r2Nel);
+chk('r2 key rail: Neloth\'s scripted "Just tell me where the book is ..." beside an unscripted sibling is plain + scripted (no commit)', $r2d[1]['class'] === 'plain' && empty($r2d[1]['commit']) && (int) $r2d[1]['scripted'] === 1, $grCls($r2d));
+v1Reset($r2Nel, 1);
+v1Topics('Neloth R2', array_column($r2Nel, 'txt'), ['layer' => 1]);
+v1Say('Neloth R2', "where's the book");
+$r = v1Llm('Neloth R2', 'T2', 'You want me to just tell you?');
+chk('r2 key rail: "where\'s the book" + her T-key on it -> no pick, the line is PARKED (she asks, quoting it)',
+    $r['out'] === [] && !$r['will'] && (string) ((lrgDlgGet('Neloth R2')['parked'] ?? [])['norm'] ?? '') === lrgPromptNorm("Just tell me where the book is and I'll go get it."),
+    json_encode([$r['out'], lrgDlgGet('Neloth R2')['parked'] ?? null]));
+$GLOBALS['LRG_TEST_NOW'] += 5;
+v1Say('Neloth R2', 'yes');
+$r = v1Llm('Neloth R2', 'T2', 'Very well.');
+chk('r2 key rail: ... and his "yes" releases the park (do=pick)', $r['emitted'] && str_contains((string) ($r['out'][0] ?? ''), ';pos=1;'), json_encode($r['out']));
+v1Reset($r2Nel, 1);
+v1Topics('Neloth R2', array_column($r2Nel, 'txt'), ['layer' => 1]);
+v1Say('Neloth R2', "no, I'm not telling you where the book is");
+$r = v1Llm('Neloth R2', 'T2', 'Fine.');
+chk('r2 key rail: "no, I\'m not telling you where the book is" + her T-key -> nothing, no park (her words answer)',
+    $r['out'] === [] && !$r['will'] && empty(lrgDlgGet('Neloth R2')['parked']), json_encode([$r['out'], lrgDlgGet('Neloth R2')['parked'] ?? null]));
+// the words path: a one-word STT echo read as a PROTECTED line parks it (she asks) - a click on his words alone it is not
+$r2Hul = [v1Row('What have you got for sale?', ['tk' => 'r2:h1']), v1Row("I'd like to rent a room. (10 gold)", ['tk' => 'r2:h2', 'cost' => 10]),
+    v1Row('Nice inn you have here. Do you get many visitors?', ['tk' => 'r2:h3']), v1Row('Heard any rumors lately?', ['tk' => 'r2:h4'])];
+v1Reset($r2Hul, 1);
+v1Topics('Hulda R2', array_column($r2Hul, 'txt'));
+v1Say('Hulda R2', "i'd like to rent a groom");
+$r = v1Llm('Hulda R2', "i'd like to rent a groom");
+chk('r2 words path: "i\'d like to rent a groom" as the model\'s item on the priced room line -> no pick, PARKED (an STT echo on a protected line: she asks)',
+    $r['out'] === [] && !$r['will'] && (string) ((lrgDlgGet('Hulda R2')['parked'] ?? [])['norm'] ?? '') === lrgPromptNorm("I'd like to rent a room. (10 gold)"),
+    json_encode([$r['out'], lrgDlgGet('Hulda R2')['parked'] ?? null]));
+v1Reset($r2Hul, 1);
+v1Topics('Hulda R2', array_column($r2Hul, 'txt'));
+v1Say('Hulda R2', 'any rumors about the dragons');
+$r = v1Llm('Hulda R2', 'any rumors about the dragons');
+chk('r2 words path: "any rumors about the dragons" as the model\'s item -> the rumours line is picked (his other word only narrows it)',
+    $r['emitted'] && str_contains((string) ($r['out'][0] ?? ''), ';pos=3;'), json_encode($r['out']));
+// the enlistment words path (quest arch P1): a hedge, an echo or an advice question + the model's words that ARE the join line -> no pick
+$r2Leg = [v1Row("That's not why I'm here.", ['tk' => 'r2:l1', 'topic' => 'CW00ATulliusNo', 'quest' => 'CW00A']),
+    v1Row('I want to join the Legion.', ['tk' => 'r2:l2', 'topic' => 'CW00ATulliusJoin', 'quest' => 'CW00A', 'scripted' => 1])];
+foreach (['maybe I want to join the Legion', 'I want to join the Legion?', 'do you think I should join the Legion', 'wait, I want to join the Legion?'] as $r2s) {
+    v1Reset($r2Leg, 1);
+    v1Snap('Tullius R2', ['fac' => 'CWImperialFaction']);
+    v1Topics('Tullius R2', array_column($r2Leg, 'txt'), ['layer' => 1]);
+    v1Say('Tullius R2', $r2s);
+    $r = v1Llm('Tullius R2', 'I want to join the Legion.');
+    chk('r2 enlistment words path: "' . $r2s . '" + the model\'s words "I want to join the Legion." -> no pick (quest arch P1)', $r['out'] === [] || !$r['emitted'], json_encode($r['out']));
+}
+// the breath re-arm honours a refusal or a deferral around the single line (safety arch P1); R1's not-knowing still re-arms
+$r2Gb = static function (string $say): array {
+    v1Reset([v1Row('Tell me about the College.', ['tk' => 'r2:col'])], 1);
+    v1Topics('Tolfdir R2', ['Tell me about the College.'], ['layer' => 1, 'gen' => 1]);
+    $GLOBALS['LRG_TEST_NOW'] += 2;
+    v1Say('Tolfdir R2', $say);
+    $r = v1Llm('Tolfdir R2', null, 'It is a fine place.');
+    return array_values(array_filter($r['out'], static fn($l) => str_contains((string) $l, ';rearm=1')));
+};
+foreach (['tell me about the college later', 'not now, tell me about the College', 'tell me about the College tomorrow'] as $r2s) {
+    chk('r2 re-arm: "' . $r2s . '" answered in her words -> NO re-armed breath (S4.5 step 0 refused it; safety arch P1)', $r2Gb($r2s) === []);
+}
+foreach (["I don't understand", 'never heard of it', 'what do you mean?'] as $r2s) {
+    chk('r2 re-arm: "' . $r2s . '" still re-arms the breath (R1)', count($r2Gb($r2s)) === 1);
+}
+// the kind pick never clicks ANOTHER line than the one his words matched best when the rails left that one to the model
+$r2Buy = [v1Row('What have you got for sale?', ['tk' => 'r2:b1']), v1Row('I would like to buy back that unusual gem.', ['tk' => 'r2:b2', 'scripted' => 1])];
+$w = $grFast('Buyback R2', $r2Buy, array_column($r2Buy, 'txt'), 'can I buy that unusual gem back?');
+chk('r2 kind pick: "can I buy that unusual gem back?" names the protected buy-back line (left to the model) - the shop line is NOT clicked in its place', !$grPicked($w), $w['echo']);
+$w = $grFast('Buyback R2', $r2Buy, array_column($r2Buy, 'txt'), 'what have you got for sale?');
+chk('r2 kind pick: ... while "what have you got for sale?" still opens the shop', $grPickPos($w, 0), $w['echo']);
+
 unset($GLOBALS['LRG_DLG_TURN']);
 $GLOBALS['LRG_DLG_STATE'] = [];
 

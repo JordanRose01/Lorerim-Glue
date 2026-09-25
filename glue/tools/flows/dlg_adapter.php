@@ -178,7 +178,7 @@ function fxDlgQueue(): array { return (array) ($GLOBALS['LRG_DLG_TEST_QUEUE'] ??
 function fxDlgClearQueue(): void { $GLOBALS['LRG_DLG_TEST_QUEUE'] = []; }
 
 /** One player-speech turn through Phase 2's own hook order. Returns the turn record + both blocks. */
-function fxDlgSay(string $npc, ?array $snap, string $text, string $type = 'inputtext', array $enabled = null): array
+function fxDlgSay(string $npc, ?array $snap, string $text, string $type = 'inputtext', ?array $enabled = null): array
 {
     if ($snap !== null) { fxSendSnapshot($npc, $snap); }
     // [0.5.0] the snapshot MCM tier is a per-REQUEST cache; a new simulated turn is a new request

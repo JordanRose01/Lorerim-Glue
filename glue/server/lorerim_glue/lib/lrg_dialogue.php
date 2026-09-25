@@ -1784,6 +1784,108 @@ function lrgDlgHandOverWords(string $text, string $norm): string
 }
 
 /**
+ * [pt19h r2 / G16, grading P4] He KEEPS what the line hands over, or denies having it: "I'll keep the X", "I'm keeping it", "you can't
+ * have it", "it's mine", "not yours", "I'm not giving you the X", "I don't have the X", "I lost the X", "I no longer have it". A keep is
+ * never a hand-over, whatever else his sentence says.
+ */
+function lrgDlgKeepsIt(string $utter): bool
+{
+    $low = ' ' . implode(' ', lrgDlgFoldTokens($utter)) . ' ';
+    return (bool) preg_match('/ (?:ill keep|i will keep|im keeping|i am keeping|i keep|we keep|well keep|keeping (?:it|them|this|these|the|my)|'
+        . '(?:its|theyre|thats|this is|these are) mine|not yours|(?:you|ya) (?:cant|cannot|wont|will not|can not|may not|shall not|shant) '
+        . '(?:have|take|get|keep) (?:it|them|this|these|the|my)|(?:im|i am|were|we are) not (?:giving|handing|returning|showing|parting)|'
+        . '(?:i|we) (?:wont|will not|cant|cannot|refuse to|am not going to|will never|would never|dont want to|do not want to) '
+        . '(?:give|hand|return|show|part|surrender)|(?:i|we) (?:dont|do not|didnt|did not|never|no longer) (?:have|got|had|carry) '
+        . '(?:it|them|the|that|this|those|these|any)|i (?:lost|misplaced|sold|destroyed|broke|no longer have|havent got|left) |'
+        . 'i (?:gave|sold|traded) (?:it|them) (?:away|to)|hands off|mine now|(?:it|they|this|these) (?:stays|stay) with me|isnt yours|'
+        . 'arent yours|is not yours|are not yours|not for you|not giving|not handing|never (?:give|hand)) /', $low);
+}
+
+/**
+ * [pt19h r2 / G16 - THE OBJECT-AWARE HAND-OVER RULE] His words HAND OVER the object of this line's tag (the row's `hand`, read from
+ * "(Give X)" / "(Show X)" / "(Hand over X)" by lrgDlgHandOverWords - never part of the norm) when they name it INSIDE A GIVING FRAME:
+ * "here's the X", "here, take the X", "here are the X", "take the X", "I have the X for you", "I brought (you) the X", "I've got the
+ * X right here", "this is the X", "you can have the X", "(I'll) give / hand / return / show you the X", "it's yours". The object ALONE
+ * is no hand-over ("I have Auriel's Bow", "I have an invitation" - it stays with him: at most she asks), and nothing that takes it
+ * back is one: a question ("do you want the X?", "is that the X?"), a keep or a denial (lrgDlgKeepsIt), his TAKING ("I'll take the
+ * X"), a refusal, a deferral, a hedge, a bargain, a negated object ("not the fragments"). Matching data only: the line shown is the
+ * live text. The test the grading review asked for before the object may count at all (review BLOCKING, G16).
+ */
+function lrgDlgHandsOver(string $utter, array $e): bool
+{
+    $hand = trim((string) ($e['hand'] ?? ''));
+    if ($hand === '' || trim($utter) === '') { return false; }
+    if (lrgDlgIsQuestion($utter) || lrgDlgRefuses($utter) || lrgDlgHedges($utter) || lrgDlgKeepsIt($utter)
+        || preg_match(LRG_DLG_DEFER_RE, strtolower($utter)) || lrgDlgBargains($utter, $e)) { return false; }
+    $ut = lrgDlgTokens(lrgPromptNorm(lrgDlgSttFold($utter, [$e])));
+    if (!$ut) { return false; }
+    // the object: a word of the tag of >= 4 letters, as said or in another form ("fragments" / "fragment", "bow" of "auriel's bow")
+    $named = -1;
+    foreach (lrgDlgTokens($hand) as $h) {
+        $h = (string) $h;
+        foreach ($ut as $k => $w) {
+            if ($w === $h || (strlen($h) >= 4 && lrgDlgStemIn($h, [$w]))) { $named = (int) $k; break 2; }
+        }
+    }
+    $low = ' ' . implode(' ', array_map(static fn($w) => str_replace("'", '', (string) $w), $ut)) . ' ';
+    // his TAKING is no giving
+    if (preg_match('/ (?:i|ill|i will|we|well|we will|can i|could i|may i|let me|lemme|gonna|im gonna|im going to|i want to|i wanna|should i) take /', $low)) {
+        return false;
+    }
+    if ($named < 0) {
+        // the object by its PRONOUN only inside a strong giving frame ("here, take them", "I return them with honor", "you can have it",
+        // "it's yours") - never "give it a rest"
+        return (bool) preg_match('/ (?:heres? (?:it|they|them|these|those|em)|take (?:it|them|these|this|those|em)|(?:give|hand|bring|brought|gave|handed) (?:it|them|these|this|those|em) (?:back|over)|'
+            . '(?:you|ya) (?:can|may) (?:have|take|keep) (?:it|them|these|this|those|em)|(?:its|theyre|these are|this is|they are|it is) (?:all )?yours|'
+            . '(?:i|we) (?:return|returned) (?:it|them|these|this|those|em)|here (?:it|they) (?:is|are)) /', $low);
+    }
+    if (lrgDlgNegatedAt($ut, $named, lrgDlgClauseStarts($utter))) { return false; }
+    // "take <the object>" ("here, take Auriel's Bow"): the object within three words of an imperative take
+    $tk = array_search('take', array_map(static fn($w) => str_replace("'", '', (string) $w), $ut), true);
+    if ($tk !== false && $named > (int) $tk && $named - (int) $tk <= 3) { return true; }
+    $frames = [
+        '/ heres /', '/ here (?:is|are|you go|you are|ya go|it is|they are|the|your|my|it|them|these|those|this) /',
+        '/(?:^| |, |please |just |go ahead |go on |you can |you may |now |so |here |well )take (?:it|them|em|this|these|the|your|my|a|an|one|back|what) /',
+        '/ (?:i|ive|i have|we|weve|we have) (?:have |got |brought |carry |hold |found |do have )?(?:got |brought )?(?:you |ya )?(?:[a-z\'#]+ ){1,5}?for you /',
+        '/ (?:i|ive|i have|we|weve) (?:brought|got|found|have|carry) (?:you|ya) /', '/ (?:you|ya) (?:can|may|should|could) (?:have|take|keep|hold) /',
+        '/ (?:its|theyre|thats|this is|these are|the [a-z\'#]+ is|the [a-z\'#]+ are|they are|it is) (?:all )?yours /',
+        '/ (?:i|ill|i will|let me|lemme|we|well|we will|im|i am|were|we are|allow me to|permit me to) (?:gonna |going to |just |now |here to )?'
+            . '(?:give|giving|hand|handing|return|returning|present|presenting|show|showing|offer|offering|bring|bringing|surrender|surrendering|deliver|delivering) /',
+        '/ this is (?:the|your|it|what you|for you|my) /', '/ these are (?:the|your|for you|them|what you) /', '/ for you /',
+        '/ (?:i|we) (?:return|returned|give back|gave back|hand back|bring back|brought back) /',
+        '/ (?:i|ive|i have|we|weve) (?:have |got |brought )?(?:the |your |this |these |them |it |an |a |some )?(?:[a-z\'#]+ ){1,3}?(?:with me|right here|on me|for ya) /',
+        '/ (?:you|ya) (?:wanted|asked for|needed|were after|sent me for) (?:this|these|the|it|them|your) /', '/ (?:take|have) a look at (?:this|these|the|it|them|what) /',
+    ];
+    foreach ($frames as $rx) { if (preg_match($rx, $low)) { return true; } }
+    return false;
+}
+
+/**
+ * [pt19h r2 / G16] The ONE visible entry his words hand something over to (lrgDlgHandsOver), as an index into $entries, or null: two
+ * lines that hand the same object over (Eorlund's "Here, take them." and "I return them with honor.") go to the one his own words say
+ * more of, else - when they converge (the same continuation, `conv`) - to the first; else nothing, the model decides.
+ */
+function lrgDlgHandOverPick(array $entries, string $utter): ?int
+{
+    $cands = [];
+    foreach ($entries as $i => $e) {
+        $e = (array) $e;
+        if ((string) ($e['class'] ?? '') === 'hidden' || trim((string) ($e['hand'] ?? '')) === '') { continue; }
+        if (lrgDlgHandsOver($utter, $e) && !lrgDlgNegationClash($utter, $e)) { $cands[] = (int) $i; }
+    }
+    if (!$cands) { return null; }
+    if (count($cands) === 1) { return $cands[0]; }
+    $pool = [];
+    foreach ($cands as $i) { $pool[] = (array) $entries[$i]; }
+    $m = lrgDlgMatchText($utter, $pool);
+    if ($m !== null && (float) $m['margin'] > 0.0 && (float) $m['f1'] > 0.0) { return $cands[(int) $m['i']]; }
+    $conv = true;
+    $hands = [];
+    foreach ($pool as $p) { if (empty($p['conv'])) { $conv = false; } $hands[(string) ($p['hand'] ?? '')] = 1; }
+    return ($conv && count($hands) === 1) ? $cands[0] : null;
+}
+
+/**
  * [pt19h-grading / G15, COVERAGE G15] A QUEST LINE that one service word would misgrade: indexed, its words carry no service
  * PHRASE (lrgDlgServiceKind: "What have you got for sale?", "I'd like to rent a room", "Can you train me in ..." keep their
  * class), its topic is no service topic, and it acts - scripted, Invisible Continue, or it leads on (links). Saadia's horse
@@ -1924,7 +2026,9 @@ function lrgDlgIsBackOut(string $text, bool $spoken = false, bool $narrow = fals
         . 'don\'?t want to|do not want to)\b/i', $text)) { return true; }
     // [pt19h-safety / G10, G1] the refusals that lead with a verb of his own: "let's not", "better not", "we'd better not",
     // "not today", "some other time" ("let's not" released Brynjolf's "Then let's get to it." on step 5)
-    if (preg_match('/\b(let\'?s not|let us not|(we|i|you)(\'d| had)? better not|not today|not this time|some other time|go away|leave me alone|get lost)\b/i', $text)) {
+    // [pt19h r2 / safety P19] ... LEADING his reply (after a filler or a no), or the whole of it - never inside an assent ("yes, we'd better
+    // not keep them waiting", "yes, and don't get lost on the way"; pt19c-language R1 / R2 anchor not / no / never the same way)
+    if (preg_match('/^\W*((uh|um|er|erm|well|oh|so|hey|hmm|no|nah|nope)\W+){0,2}(let\'?s not|let us not|(we|i|you)(\'d| had)? better not|not today|not this time|some other time|go away|leave me alone|get lost)\b/i', $text)) {
         return true;
     }
     // [pt19h-safety review] ... and a BARE "better not" (with no pronoun, the whole sentence): it released a parked commit on S4.4's
@@ -1936,7 +2040,10 @@ function lrgDlgIsBackOut(string $text, bool $spoken = false, bool $narrow = fals
         return !preg_match('/\?\s*["\')\]]*\s*$/', trim($text));
     }
     // idioms of ASSENT that lead with a negator: "no problem", "no worries", "not a problem", "why not"
-    if (preg_match('/^\W*((uh|um|er|well|oh|so|hey|sure|yes|yeah|okay|ok)\W+){0,2}(no (problem|worries|doubt)|not a problem|why not)\b/i', $text)) {
+    // [pt19h r2 / extended TG08A.karliah.possess, urag.elderscroll] ... and the "no" that opens no refusal: "no one should have it", "no joke,
+    // you can have it", "no wonder", "no kidding", "no matter what", "no idea" (a leading "no, one moment" keeps its comma and refuses)
+    if (preg_match('/^\W*((uh|um|er|well|oh|so|hey|sure|yes|yeah|okay|ok)\W+){0,2}(no (problem|worries|doubt|one|joke|wonder|kidding|matter|idea|offense|offence|rush|hurry)'
+        . '|not a problem|why not)\b/i', $text)) {
         return false;
     }
     // $narrow (the breath, S4.6 - language review 4): R1's widened heads (i don't / i do not / i can't / not) and "never
@@ -2037,7 +2144,8 @@ function lrgDlgLabel(array $e, int $pg): string
             : sprintf('[costs %d septims - the player cannot pay]', (int) $e['cost']);
     }
     if ($e['class'] === 'silent') { return '[says nothing]'; }
-    if ($e['class'] === 'back') { return $e['crit'] >= 1 ? '[leaving now ends this]' : '[leave]'; }
+    // [pt19h r2 / safety P12] "[leave]" only on a line LEAVE really clicks (lrgDlgRealBackOut); a class-back line it will not is unlabelled
+    if ($e['class'] === 'back') { return $e['crit'] >= 1 ? '[leaving now ends this]' : (lrgDlgRealBackOut($e) ? '[leave]' : ''); }
     if ($e['class'] === 'meta') { return '[out-of-character option]'; }
     if ($e['commit']) { return '[commits - cannot be undone]'; }
     if ($e['class'] === 'service') { return '[a service]'; }
@@ -3382,7 +3490,9 @@ function lrgDlgWordsCarry(string $words, array $e): bool
     // Greybeards, "mal oral" Maluril) - never a one-word echo: "do you have any rooms" is no "Heard any rumors lately?", however
     // alike rooms and rumors sound. It only judges a pick the matcher already made (min_score, min_margin).
     $rep = lrgDlgSttRepair($words, $e);
-    if ($rep !== '' && lrgDlgReachContains($rep, $e)) { return true; }
+    // [pt19h r2 / reach P5] a ONE-WORD echo read as the line ("I'm here to talk about Markarth" / "... Margret.", "your mother" / "your
+    // master") carries a PROTECTED line for no click: at most the model asks (the split-word join below still carries it)
+    if ($rep !== '' && lrgDlgReachContains($rep, $e) && !lrgDlgProtected($e)) { return true; }
     $joined = lrgDlgSttRepair($words, $e, true);
     if ($joined !== '') { $words = $joined; }
     // the FRAME words of a request or a question carry no subject of their own (ai review): a shared word outside them is
@@ -3400,8 +3510,55 @@ function lrgDlgWordsCarry(string $words, array $e): bool
     // "Paarthurnax has changed, I cannot do what you ask of me.", "nice coat" no "I need your coat." - his other content word is
     // foreign to the line, so the name alone is a topic, not the line ("is there work going" -> "I need work." still carries)
     $mine = array_diff($wu, $frame);
-    if (count($subject) < 2 && array_diff($mine, $subject)) { return false; }
+    // [pt19h r2 / the first-evening words rows] ... unless the line ASKS (a question of hers to answer) and his other word only NARROWS
+    // the shared subject in a tail "about / of / on <topic>" after it ("any rumors about the dragons" -> "Heard any rumors lately?"), or
+    // both name the same "about <topic>" ("sing me something about dragons", "got any songs about dragons" -> "Do you know any old ballads
+    // about dragons?"); a statement line keeps the rule ("Paarthurnax is dead" is no "Paarthurnax has changed, ..."), and so does a
+    // question whose foreign word is no narrowing ("who is the Jarl's steward" is no "Who is the Jarl?")
+    if (count($subject) < 2 && array_diff($mine, $subject)
+        && !(lrgDlgEntryIsQuestion($e) && lrgDlgNarrowsSubject($words, $e, array_values($subject), array_values(array_diff($mine, $subject))))) {
+        return false;
+    }
     return count($subject) / max(1, count($mine)) >= 0.5;
+}
+
+/**
+ * [pt19h r2 / the first-evening words rows] Do his FOREIGN content words only narrow the line's subject? TRUE when every one of them
+ * sits in a tail "about / of / on / regarding / concerning ..." that follows the shared subject word in his sentence, or when his
+ * sentence and the line both say "about <topic>" with a topic word in common (stems count). Used by lrgDlgWordsCarry on a question
+ * line only.
+ */
+function lrgDlgNarrowsSubject(string $words, array $e, array $subject, array $foreign): bool
+{
+    static $preps = ['about', 'of', 'on', 'regarding', 'concerning'];
+    $tok = lrgDlgTokens(lrgPromptNorm($words));
+    $tok = array_map(static fn($w) => str_replace("'", '', (string) $w), $tok);
+    $stemAt = static function (array $tok, string $w): int {
+        foreach ($tok as $i => $t) { if ($t === $w || lrgDlgStemIn($w, [$t])) { return (int) $i; } }
+        return -1;
+    };
+    $sAt = -1;
+    foreach ($subject as $w) { $i = $stemAt($tok, (string) $w); if ($i >= 0 && ($sAt < 0 || $i < $sAt)) { $sAt = $i; } }
+    if ($sAt >= 0) {
+        $pAt = -1;
+        for ($i = $sAt + 1; $i < count($tok); $i++) { if (in_array($tok[$i], $preps, true)) { $pAt = $i; break; } }
+        if ($pAt >= 0) {
+            $tail = array_slice($tok, $pAt + 1);
+            $all = true;
+            foreach ($foreign as $w) { if ($stemAt($tail, (string) $w) < 0) { $all = false; break; } }
+            if ($all) { return true; }
+        }
+    }
+    // the same "about <topic>" on both sides
+    $aboutOf = static function (array $tok): array {
+        $p = array_search('about', $tok, true);
+        return $p === false ? [] : lrgPromptWords(implode(' ', array_slice($tok, (int) $p + 1)), true);
+    };
+    $his = $aboutOf($tok);
+    $hers = $aboutOf(array_map(static fn($w) => str_replace("'", '', (string) $w), lrgDlgTokens(lrgPromptNorm((string) ($e['text'] ?? '')))));
+    if (!$his || !$hers) { return false; }
+    foreach ($his as $w) { if (lrgDlgStemIn((string) $w, $hers)) { return true; } }
+    return false;
 }
 
 // ================================================================== [pt19h-reach] REACH: STT repair, work asks, reports
@@ -3423,10 +3580,15 @@ const LRG_DLG_REACH_WORK_SAY = ['any work', 'some work for me', 'more work for m
     'anything needs doing', 'anything that needs doing', 'something that needs doing', 'anything to be done', 'anything need done',
     'anything that needs to be done', 'can i help', 'how can i help', 'can i be of help', 'can i be of service', 'can i be of use',
     'anything i can do', 'something i can do', 'anything i can help with', 'can i assist', 'any college business', 'lend a hand',
-    'lend you a hand', 'help you out'];
+    'lend you a hand', 'help you out',
+    // [pt19h r2 / reach P9] the commonest offers ("what can I do for you", "let me help", "any errands?")
+    'what can i do for you', 'anything i can do for you', 'can i do anything for you', 'let me help', 'i want to help', 'how may i help',
+    'any errands', 'any bounties', 'need a hand', 'got anything for me'];
 // (never "do you need help?" / "need a hand?": a question about HER need is the matcher's and the model's - the coverage team's
 // near-miss for J'zargo's and Brelyna's "What did you need help with?")
-const LRG_DLG_REACH_WORK_NOT_AFTER = ['myself', 'yourself', 'it', 'on', 'for you', 'for her', 'for him', 'about', 'done', 'being'];
+// [pt19h r2 / reach P1, P8, P9] + with / here / for my ...; "for you" is out (it cancelled "anything I can do for you", the most natural offer)
+const LRG_DLG_REACH_WORK_NOT_AFTER = ['myself', 'yourself', 'it', 'on', 'for her', 'for him', 'for them', 'for my', 'for a', 'for the', 'about',
+    'done', 'being', 'with', 'here', 'from you', 'or should', 'elsewhere'];
 const LRG_DLG_REACH_WORK_ENTRY = ['what can i do to help', 'anything i can do to help', 'something i can do to help',
     'anything else i can do to help', 'looking for work', 'is there any work', 'any work to be done', 'any work i can help with',
     'any work available', 'any work that needs doing', 'any work you need done', 'any more work for me', 'any work for me',
@@ -3435,7 +3597,9 @@ const LRG_DLG_REACH_WORK_ENTRY = ['what can i do to help', 'anything i can do to
     'might need help', 'what do you need help with', 'what did you need help with', 'do you need help with',
     'anything you need help with', 'need help with anything', 'need help with something', 'anything i can help you with',
     'something i can help you with', 'anything i could help you with', 'can i help with your research', 'you could use some help',
-    'you could use a hand', "what's the next target", 'anything that needs doing', "let's get to work", "let's just get to work"];
+    'you could use a hand', "what's the next target", 'anything that needs doing', "let's get to work", "let's just get to work",
+    // [pt19h r2 / reach P2] Urag's second radiant start: with the College-business line on one list, she asks which
+    'any special books'];
 /** The NOUNS of a work ask: sharing only these with a line is no reason to click it (lrgDlgWordsCarry). */
 const LRG_DLG_REACH_WORK_WORDS = ['work', 'job', 'jobs', 'business', 'task', 'tasks'];
 const LRG_DLG_REACH_REPORT_SAY = ['dead', 'dealt with', 'taken care of', 'took care of', 'done', 'finished', 'killed', 'handled',
@@ -3644,6 +3808,55 @@ function lrgDlgReachWorkAsk(string $utter): string
     $at = lrgDlgTokenAt($hay, lrgDlgTokens(lrgPromptNorm($hit)));
     if ($at < 0 || lrgDlgNegatedAt($hay, $at, lrgDlgClauseStarts($utter))) { return ''; }
     if (lrgDlgIsPriceQuestion($utter) || lrgDlgRefuses($utter)) { return ''; }
+    // [pt19h r2 / reach P1, P8] never a deferral, a hedge or a refusal anywhere ("I'll help you out later", "help you out? not a chance"),
+    // never taken back ("any work? actually no, I want to buy something"), never a condition ("can I help after I finish my training")
+    if (preg_match(LRG_DLG_DEFER_RE, strtolower($utter)) || lrgDlgHedges($utter)
+        || preg_match('/\b(not a chance|no chance|forget it|never ?mind|actually no|no wait|scratch that|on second thought|after i|once i|when i|if i|unless|elsewhere)\b/i', $utter)
+        // (a musing is no request: "I wonder if there is anything I can do" - reach P6 / P8; he asks plainly and she offers)
+        || preg_match('/\bi (wonder|was wondering|am wondering|m wondering)\b/i', str_replace("'", '', $utter))) {
+        return '';
+    }
+    $hitT = lrgDlgTokens(lrgPromptNorm($hit));
+    $hitN = implode(' ', $hitT);
+    $nextT = str_replace("'", '', (string) ($hay[$at + count($hitT)] ?? ''));
+    // a HELP offer is to HER: "can I help him", "how can I help the stranger", "can I help Cicero" offer her nothing
+    if (preg_match('/\bhelp$/', $hitN) && $nextT !== ''
+        && !in_array($nextT, ['you', 'ya', 'out', 'with', 'here', 'around', 'somehow', 'at', 'in', 'then', 'today', 'now', 'again', 'somewhere', 'anywhere'], true)) {
+        return '';
+    }
+    // "anything I can do to <verb>" offers work only for help ("anything I can do to change your mind" asks a favour)
+    if (preg_match('/^(?:anything|something) i can do$/', $hitN) && $nextT === 'to' && str_replace("'", '', (string) ($hay[$at + count($hitT) + 1] ?? '')) !== 'help') { return ''; }
+    // the VERB right before the phrase with a second- or third-person subject asks about THEM ("did you find any work?", "have you got a
+    // job here?"); "do you have any work (for me)" still asks for it
+    static $verbs = ['find', 'found', 'finish', 'finished', 'get', 'got', 'gotten', 'need', 'needed', 'want', 'wanted', 'do', 'doing', 'done',
+        'lend', 'lending', 'looking', 'seek', 'seeking', 'give', 'giving', 'offer', 'offering', 'take', 'taking', 'start', 'started'];
+    static $them = ['you', 'youre', 'youve', 'youd', 'youll', 'ya', 'u', 'ye', 'he', 'hes', 'she', 'shes', 'they', 'theyre', 'it', 'its', 'that',
+        'thats', 'this', 'who', 'whos', 'someone', 'anyone', 'somebody', 'anybody', 'everyone', 'nobody'];
+    static $me = ['i', 'im', 'ive', 'id', 'ill', 'me', 'we', 'weve', 'us', 'lets', 'my'];
+    $stops = lrgDlgClauseStarts($utter);
+    $from = 0;
+    foreach ($stops as $s) { if ((int) $s <= $at) { $from = max($from, (int) $s); } }
+    if (!preg_match('/\b(for me|for us|me to do|i can|i could|put me|give me|myself)\b/', $hitN)) {
+        $k = $at - 1;
+        while ($k >= $from && in_array((string) $hay[$k], ['a', 'an', 'the', 'some', 'any', 'more', 'me', 'us'], true)) { $k--; }
+        if ($k >= $from && in_array(str_replace("'", '', (string) $hay[$k]), $verbs, true)) {
+            for ($j = $k - 1; $j >= $from; $j--) {
+                $w = str_replace("'", '', (string) $hay[$j]);
+                if (in_array($w, $me, true)) { break; }
+                if (in_array($w, $them, true)) { return ''; }
+            }
+        }
+        // the phrases that need HIS frame ("need a job", "got a job", "lend a hand", "help you out", "extra work"): a first person in the
+        // clause, or the whole sentence is the phrase ("need work?")
+        if (in_array($hitN, ['need work', 'need some work', 'want work', 'want some work', 'need a job', 'want a job', 'got a job', 'lend a hand',
+            'lend you a hand', 'help you out', 'extra work', 'have work for me', 'got work for me', 'any work', 'any job', 'any jobs'], true) && count($hay) > count($hitT)) {
+            $next2 = str_replace("'", '', (string) ($hay[$at + count($hitT) + 1] ?? ''));
+            if ($nextT === 'for' && in_array($next2, ['you', 'ya', 'him', 'her', 'them'], true)) { return ''; }   // "I got a job for you" offers HER one
+            if ($hitN === 'got a job' && $nextT === 'to') { return ''; }   // "I got a job to do" tells her of his own ("I need a job to pay my rent" still asks)
+            $cl = array_map(static fn($w) => str_replace("'", '', (string) $w), array_slice($hay, $from));
+            if (!in_array($hitN, ['any work', 'any job', 'any jobs'], true) && !array_intersect($cl, $me) && $nextT !== 'for') { return ''; }
+        }
+    }
     // [pt19h-reach review] HIS request only. A need / seek phrase whose nearest subject is HER or somebody else asks about THEM
     // ("are you looking for work?", "do you need work?", "can you lend a hand?", "did you find work?", "is he looking for work",
     // "you should find work") - it never picks her radiant start; his own ("i'm looking for work", "where can i find work", "let
@@ -3654,7 +3867,7 @@ function lrgDlgReachWorkAsk(string $utter): string
             $w = str_replace("'", '', (string) $hay[$k]);
             if (in_array($w, ['i', 'im', 'ive', 'id', 'ill', 'me', 'we', 'weve', 'us', 'lets', 'my'], true)) { break; }
             if (in_array($w, ['you', 'youre', 'youve', 'youd', 'youll', 'ya', 'u', 'ye', 'he', 'hes', 'she', 'shes', 'they', 'theyre',
-                'it', 'its', 'that', 'thats', 'this', 'who', 'someone', 'anyone', 'somebody', 'anybody', 'everyone', 'nobody'], true)) {
+                'it', 'its', 'that', 'thats', 'this', 'who', 'whos', 'someone', 'anyone', 'somebody', 'anybody', 'everyone', 'nobody'], true)) {
                 return '';
             }
         }
@@ -3671,12 +3884,19 @@ function lrgDlgReachWorkAsk(string $utter): string
  * dialogue.reach.work.entry on its norm, and never a back-out, a check, a priced or a meta line. Index rows (no class) count
  * by their text alone.
  */
-function lrgDlgReachWorkLine(array $e): bool
+function lrgDlgReachWorkLine(array $e, bool $leads = false): bool
 {
     if (in_array((string) ($e['class'] ?? 'plain'), ['hidden', 'meta', 'back', 'check', 'pay', 'service'], true)) { return false; }
     if ((string) ($e['kind'] ?? '') !== '' || (int) ($e['cost'] ?? 0) !== 0) { return false; }
     $n = (string) ($e['norm'] ?? '');
-    return $n !== '' && lrgDlgPhraseHit($n, (array) lrgDlgCfg('reach.work.entry', LRG_DLG_REACH_WORK_ENTRY)) !== '';
+    $hit = $n !== '' ? lrgDlgPhraseHit($n, (array) lrgDlgCfg('reach.work.entry', LRG_DLG_REACH_WORK_ENTRY)) : '';
+    if ($hit === '') { return false; }
+    if (!$leads) { return true; }
+    // [pt19h r2 / reach P8] the offer LEADS the line (a radiant start: "Is there any College business I can assist with?"), after at most
+    // two lead-in words - never a reply that carries it later ("Hmm. You have a point. What can I do to help?")
+    $nt = lrgDlgTokens($n);
+    while ($nt && in_array($nt[0], ['so', 'well', 'uh', 'um', 'oh', 'yes', 'okay', 'alright', 'fine', 'hmm', 'then', 'and', 'now', 'right', 'sure'], true)) { array_shift($nt); }
+    return lrgDlgTokenAt($nt, lrgDlgTokens(lrgPromptNorm($hit))) === 0;
 }
 
 /**
@@ -3685,25 +3905,45 @@ function lrgDlgReachWorkLine(array $e): bool
  * list (two -> she asks which); a REPORT naming its target -> the ONE report line that names it (lrgDlgReachReport).
  * ['entry' => e|null, 'why' => ...] (mode `kind`: a commit still needs his explicit sentence, S4.3), or null (not his ask).
  */
-function lrgDlgReachPick(array $entries, string $utter, string $layerKind): ?array
+function lrgDlgReachPick(array $entries, string $utter, string $layerKind, bool $noReport = false): ?array
 {
     if (trim($utter) === '' || !in_array($layerKind, ['root', 'closed'], true)) { return null; }
     $vis = array_values(array_filter($entries, static fn($e) => (string) ($e['class'] ?? '') !== 'hidden'));
     if (!$vis) { return null; }
+    // [pt19h r2 / reach P6] a PROTECTED line found by kind passes the rails his words face on every other path: a hedge, a deferral, a
+    // bargain, a negation or a qualm around the line ("maybe narfi is dead", "I'll help you out later", "Hern is dead? good") clicks nothing
+    $guard = static function (?array $r) use ($utter): ?array {
+        if ($r === null || !is_array($r['entry'] ?? null)) { return $r; }
+        $e = (array) $r['entry'];
+        if (!lrgDlgProtected($e)) { return $r; }
+        $qq = lrgDlgQuoteQualm($utter, $e);
+        // (a report phrase that carries its own negator - "won't be a problem anymore" - is the report, no clash with "Narfi is dead.")
+        $sayHit = lrgDlgPhraseHit($utter, (array) lrgDlgCfg('reach.report.say', LRG_DLG_REACH_REPORT_SAY));
+        $ownNeg = $sayHit !== '' && (bool) preg_match('/\b(won\'?t|wont|not|no)\b/i', $sayHit);
+        if ($qq['qualm'] !== '' || lrgDlgHedges($utter) || lrgDlgDefers($utter, $e) || lrgDlgBargains($utter, $e) || (!$ownNeg && lrgDlgNegationClash($utter, $e))) {
+            return ['entry' => null, 'why' => 'reach: "' . substr($utter, 0, 40) . '" hedges, defers, bargains, negates or asks about "'
+                . substr((string) ($e['text'] ?? ''), 0, 40) . '" - a protected line is not clicked by kind on it'];
+        }
+        return $r;
+    };
     $work = lrgDlgReachWorkAsk($utter);
     if ($work !== '') {
-        $c = array_values(array_filter($vis, static fn($e) => lrgDlgReachWorkLine((array) $e)));
+        // [pt19h r2 / reach P8] on a CLOSED layer only a radiant START (the offer leads the line), never a reply choice ("Hmm. You have a
+        // point. What can I do to help?" sides with Loreius)
+        $c = array_values(array_filter($vis, static fn($e) => lrgDlgReachWorkLine((array) $e, $layerKind === 'closed')));
         // his QUESTION that says the work line back ("I heard you're offering extra work?", "is it true that I'm looking for
         // work") is the echo the matcher already turned down (G11): the kind pick never brings it back
         if (count($c) === 1 && lrgDlgIsQuestion($utter) && !lrgDlgEntryIsQuestion((array) $c[0])) {
             $me = lrgDlgMatchText($utter, [$c[0]]);
             if ($me !== null && (float) $me['score'] >= 0.85) { return null; }
         }
-        if (count($c) === 1) { return ['entry' => $c[0], 'why' => 'reach: a request for work ("' . $work . '") - the one line that offers it']; }
+        if (count($c) === 1) { return $guard(['entry' => $c[0], 'why' => 'reach: a request for work ("' . $work . '") - the one line that offers it']); }
         if (count($c) > 1) { return ['entry' => null, 'why' => 'reach: ' . count($c) . ' lines offer work and his words name none of them - she asks which']; }
         return null;
     }
-    return lrgDlgReachReport($vis, $utter);
+    // [pt19h r2 / reach P7] the similarity path saw a word of his on ANOTHER line: the report pick never overrides that veto (she asks)
+    if ($noReport) { return null; }
+    return $guard(lrgDlgReachReport($vis, $utter));
 }
 
 /**
@@ -3752,6 +3992,8 @@ function lrgDlgReachReportNames(array $e): array
     if (!in_array((string) ($e['class'] ?? ''), ['plain', 'commit'], true) || (string) ($e['kind'] ?? '') !== '' || (int) ($e['cost'] ?? 0) !== 0) {
         return [];
     }
+    // [pt19h r2 / reach P3] a QUESTION line reports nothing ("Arch-Mage Aren is dead?" asks; "arch mage aren is done for" is no answer to it)
+    if (lrgDlgEntryIsQuestion($e)) { return []; }
     $nt = lrgDlgTokens((string) ($e['norm'] ?? ''));
     $best = 0;
     foreach ((array) lrgDlgCfg('reach.report.entry', LRG_DLG_REACH_REPORT_ENTRY) as $p) {
@@ -4024,6 +4266,8 @@ function lrgDlgQuestionKind(string $text, bool $entry = false): string
     if ($entry) {
         $txt = trim($text);
         for ($i = 0; $i < 2; $i++) { $txt = trim((string) preg_replace('/\s*[\(\[][^)\]]{1,60}[\)\]]\s*$/u', '', $txt)); }
+        // [pt19h r2 / safety P4, P16 (c)] a leading form of address is no part of the line's question ("Kodlak, is that you?")
+        if (preg_match('/^\s*[A-Z][\w\'-]*,\s+(\S.*)$/su', $txt, $vm) && strpos((string) $vm[1], '?') !== false) { $txt = trim((string) $vm[1]); }
         if (!lrgDlgEntryIsQuestion(['text' => $txt, 'norm' => lrgPromptNorm($txt)])) { return ''; }
         $text = $txt;
     } elseif (!lrgDlgIsQuestion($text)) {
@@ -4243,6 +4487,89 @@ function lrgDlgBareWords(string $utter, string $npc = '', string $keep = ''): st
     return trim($s) !== '' ? $s : $utter;
 }
 
+
+/**
+ * [pt19h r2] THE QUESTION PART of a text: for a LINE ($entry), its last sentence that asks (tags dropped; the whole text when none asks);
+ * for HIS words, the last clause when his sentence ends in a `?` and has several ("nice place, get a lot of visitors?" asks "get a lot
+ * of visitors?"), else the whole sentence.
+ */
+function lrgDlgQuestionPart(string $text, bool $entry): string
+{
+    $t = trim($text);
+    if ($entry) {
+        for ($i = 0; $i < 2; $i++) { $t = trim((string) preg_replace('/\s*[\(\[][^)\]]{1,60}[\)\]]\s*$/u', '', $t)); }
+        $qs = array_values(array_filter(preg_split('/(?<=[.!?])\s+/u', $t) ?: [], static fn($s) => strpos((string) $s, '?') !== false));
+        return $qs ? (string) end($qs) : $t;
+    }
+    if (!preg_match('/\?\s*["\')\]]*$/', $t)) { return $t; }
+    $cls = array_values(array_filter(array_map('trim', preg_split('/[,;:]+/u', $t) ?: []), 'strlen'));
+    return count($cls) >= 2 ? (string) end($cls) : $t;
+}
+
+/**
+ * [pt19h r2] Where the line's token run sits in his RAW words - [byte offset, length] of the occurrence that starts at his token $at
+ * (punctuation between the words is tolerated), or null.
+ */
+function lrgDlgRawRun(string $raw, array $tokens, int $at): ?array
+{
+    if (!$tokens) { return null; }
+    $parts = [];
+    foreach ($tokens as $w) { $parts[] = str_replace('\#', '\d[\d,.]*', preg_quote((string) $w, '/')); }
+    $re = "/(?<![a-z0-9'])" . implode("[^a-z0-9']+", $parts) . "(?![a-z0-9'])/iu";
+    if (!@preg_match_all($re, $raw, $mm, PREG_OFFSET_CAPTURE) || !$mm[0]) { return null; }
+    foreach ($mm[0] as $m) {
+        $off = (int) $m[1];
+        if (count(lrgDlgTokens(lrgPromptNorm(substr($raw, 0, $off)))) === $at) { return [$off, strlen((string) $m[0])]; }
+    }
+    $m = $mm[0][count($mm[0]) - 1];
+    return [(int) $m[1], strlen((string) $m[0])];
+}
+
+/**
+ * [pt19h r2 / safety P18] A deferral word AFTER the line: "first" only as "but first" / "first I ..." / ending a later clause - never
+ * "show me the first one", never a bare "... first" right after the line (it puts the line first, it does not put it off).
+ */
+function lrgDlgDeferAfter(array $after, array $defer): bool
+{
+    foreach ($after as $k => $w) {
+        if (!in_array($w, $defer, true)) { continue; }
+        if ($w === 'first') {
+            $nx = (string) ($after[$k + 1] ?? '');
+            $pv = (string) ($after[$k - 1] ?? '');
+            if (!(in_array($nx, ['i', 'we', 'let', 'ill', 'well', 'im', 'ive', 'lets', 'id'], true) || $pv === 'but' || ($nx === '' && $k > 0))) { continue; }
+        }
+        return true;
+    }
+    return false;
+}
+
+/**
+ * [pt19h r2 / grading P1, P12 - THE KEY-MODE RAIL] Why the model's T-key may not click a PLAIN line that still runs a script (scripted,
+ * an Invisible Continue - a converging sibling among them) on his words this turn, or '': his words around the line refuse / ask /
+ * hedge (lrgDlgQuoteQualm), refuse it, put it off, hedge it, negate it, keep what it hands over, or ask what the line does not.
+ * What lrgDlgWordsQualm does for the fast path, on the key path; a plain unscripted line keeps the model's key as before.
+ */
+function lrgDlgKeyRailWhy(string $utter, array $e): string
+{
+    // (a CHECK line has its own rails - lrgDlgCheckRails, the G13 ask rail - and a persuasion is often said in the negative; a SERVICE line
+    // is asked for with a question - "do you have a room free" - and the kind guards judge it: neither is this rail's)
+    if ((string) ($e['kind'] ?? '') !== '' || in_array((string) ($e['class'] ?? ''), ['service', 'pay'], true)) { return ''; }
+    $eTx = (string) ($e['text'] ?? '');
+    $qq = lrgDlgQuoteQualm($utter, $e);
+    if ($qq['qualm'] !== '') { return 'his words around the line ' . $qq['qualm']; }
+    // (the line said whole, or its own fragment - "was told to come see you" for "I was told to come see you." - is the line, however it leads)
+    if (in_array($qq['kind'], ['whole', 'frag'], true)) { return ''; }
+    if (lrgDlgRefuses($utter) && !lrgDlgIsBackOut($eTx, true)) { return 'his words refuse'; }
+    if (lrgDlgDefers($utter, $e)) { return 'a deferral'; }
+    if (lrgDlgHedges($utter) && !lrgDlgHedges($eTx)) { return 'a hedge'; }
+    if (lrgDlgNegationClash($utter, $e)) { return 'his words say the opposite'; }
+    if (lrgDlgIsQuestion($utter) && !lrgDlgEntryIsQuestion($e) && !(lrgDlgIsRequest($utter) && lrgDlgRequestFits($utter, $e))) {
+        return 'a question to her against a line that asks nothing';
+    }
+    if ((string) ($e['hand'] ?? '') !== '' && lrgDlgKeepsIt($utter)) { return 'he keeps what the line hands over'; }
+    return '';
+}
+
 /**
  * [pt19c fixer / adversarial QA: @adv_q_plain, @adv_neg_plain, @adv_sibling, @adv_bargain, the hidden merge pair] WHY HIS WORDS
  * ARE NOT THIS LINE, for a pick the similarity matcher made with no model in between (the fast path's intent pick, the gate's
@@ -4260,6 +4587,18 @@ function lrgDlgWordsQualm(string $words, array $e, array $pool, string $npc = ''
 {
     if (trim($words) === '') { return ''; }
     $bare = lrgDlgBareWords($words, $npc);
+    // [pt19h r2 / safety P4] the line said word for word - his form of address included ("Kodlak, is that you?") - is never refused
+    // (... a statement line asked back - "I did what had to be done. Nothing more?" - is the echo it always was)
+    if ((lrgPromptNorm($words) === (string) ($e['norm'] ?? '') || lrgPromptNorm($bare) === (string) ($e['norm'] ?? ''))
+        && !(preg_match('/\?\s*["\')\]]*$/', trim($words)) && !lrgDlgEntryIsQuestion($e))) {
+        return lrgDlgBargains($words, $e) ? 'a bargain or a condition, not the line' : '';
+    }
+    // [pt19h r2 / G16, grading P4] he KEEPS what a hand-over line gives away ("I'm keeping the amulet" against "I found this amulet. (Give
+    // Delvin the amulet)"): never that line
+    if (lrgDlgKeepsIt($words) && ((string) ($e['hand'] ?? '') !== ''
+        || preg_match('/[\(\[]\s*(?:give|show|hand over|hand|present|offer|return)\b/i', (string) ($e['text'] ?? '')))) {
+        return 'he keeps what the line hands over';
+    }
     if (lrgDlgRefuses($words) && !lrgDlgIsBackOut((string) ($e['text'] ?? ''), true)) { return 'his words refuse'; }
     // [pt19h-safety / G1, G11, G5, G9] what he said AROUND the line ("is it true that <line>", "<line>? says who", "not now, <line>
     // later"), a hedge on a protected line, and a goodbye of his ("sorry, I have to go" is no "Sorry. So, the Staff of Magnus?")
@@ -4267,7 +4606,9 @@ function lrgDlgWordsQualm(string $words, array $e, array $pool, string $npc = ''
     $eTx = (string) ($e['text'] ?? '');
     $qq = lrgDlgQuoteQualm($words, $e);
     if (in_array($qq['qualm'], ['refuses', 'asks'], true) || ($qq['qualm'] === 'hedges' && $prot)) { return 'his words around the line ' . $qq['qualm']; }
-    if ($prot && lrgDlgHedges($words) && !lrgDlgHedges($eTx)) { return 'a hedge is no yes to a line that commits'; }
+    // [pt19h r2 / safety P20] ... unless it is an assent phrase of the config said whole ("I guess so", "I suppose so"): one rule on every path
+    $assentWhole = in_array(lrgPromptNorm($words), array_map(static fn($a) => lrgPromptNorm((string) $a), (array) lrgDlgCfg('confirm.assent_words', [])), true);
+    if ($prot && !$assentWhole && lrgDlgHedges($words) && !lrgDlgHedges($eTx)) { return 'a hedge is no yes to a line that commits'; }
     if ($prot && lrgDlgDefers($words, $e)) { return 'a deferral is no line said now'; }
     // (a goodbye CLAUSE of his - short, and none of its words the line's: "sorry, I have to go"; never "we'll see you soon, Ulfric" /
     // "We'll be seeing you soon.", "Yamarz says I should go to Malacath", "i want to bye back the elder scroll")
@@ -4374,6 +4715,9 @@ function lrgDlgSoundsLike(string $a, string $b): bool
     $b = str_replace("'", '', strtolower($b));
     if ($a === '' || $b === '') { return false; }
     if ($a === $b) { return true; }
+    // [pt19h r2 / safety P7] the question words as the STT writes them ("hoo are you")
+    static $stt = ['hoo' => 'who', 'wat' => 'what', 'ware' => 'where', 'wen' => 'when', 'wich' => 'which'];
+    if (($stt[$a] ?? '') === $b || ($stt[$b] ?? '') === $a) { return true; }
     $l = max(strlen($a), strlen($b));
     if ($l >= 4 && levenshtein($a, $b) <= max(1, intdiv($l, 3))) { return true; }
     // ("den" / "then": the metaphone of th is 0, a t to the ear)
@@ -4397,7 +4741,7 @@ function lrgDlgRefuses(string $utter): bool
 }
 
 /** [pt19h-safety / G1] A DEFERRAL in words: not now / not yet / later / another time / tomorrow ("not this time" declines, it defers nothing). */
-const LRG_DLG_DEFER_RE = '/\b(not (yet|now|right now)|maybe later|later|another time|some other time|tomorrow|someday|eventually)\b/';
+const LRG_DLG_DEFER_RE = '/\b(not (yet|now|right now)|maybe later|later|another time|some other time|some other day|another day|next time|tomorrow|someday|eventually)\b/';
 
 /**
  * [pt19h-safety / G1] A HEDGE of his LEADING his words (after fillers): "maybe", "perhaps", "I guess", "I suppose", "probably",
@@ -4425,7 +4769,10 @@ function lrgDlgHedges(string $text): bool
         // words; a QUESTION that ends "or not" is his impatience - "so can i join the legion or not" still asks to join)
         return true;
     }
-    return (bool) preg_match('/^\W*((uh|um|er|erm|well|oh|so|hmm|hey|and|then)\W+){0,2}(i guess|i suppose|i might|not sure|'
+    // [pt19h r2 / safety P20] "I guess" / "I suppose" / "I might" hedge HIS OWN doing (bare, or before I / I'll / we / not / maybe / later):
+    // "I guess that's where I come in" and "I suppose you're right" infer, they hedge nothing - one rule on every path
+    return (bool) preg_match('/^\W*((uh|um|er|erm|well|oh|so|hmm|hey|and|then)\W+){0,2}((i guess|i suppose|i might)(\W*$|\W+(i|i\'?ll|i\'?m|i\'?d|i\'?ve|'
+        . 'i will|i would|i can|i could|we|we\'?ll|we\'?d|we\'?re|not|maybe|later|yes|yeah|so)\b)|not sure|'
         . 'i\'?m not sure|i am not sure|dunno|i don\'?t know|i do not know|who knows|if i must|if i have to|i\'?m unsure|i am unsure)\b/i', $t);
 }
 
@@ -4495,6 +4842,15 @@ function lrgDlgQuoteQualm(string $utter, array $e): array
         $from0 = (int) (($om[0][$nth] ?? $om[0][count($om[0]) - 1])[1]);
     }
     $moreQ = substr_count(substr($raw, $from0), '?') > substr_count($etext, '?');
+    // [pt19h r2 / safety P5, P17] his `?` asks the line back only when it CLOSES the line's own clause ("<line>?", "wait, <line>?", "<line>?
+    // says who"); a question of his in a LATER clause ("<line>, what's next?") is a question after the line, and a line left unfinished
+    // ("Speaking of which...") is completed by his question ("speaking of which, my payment?"), never asked back
+    $run = lrgDlgRawRun($raw, $et, $at);
+    if ($run !== null) {
+        $tailRaw = (string) substr($raw, $run[0] + $run[1]);
+        $unfinished = (bool) preg_match('/(\.\.\.|\x{2026})\s*["\')\]]*$/u', $etext);
+        $moreQ = !$unfinished && (bool) preg_match('/^\s*["\')\]]*\?/', $tailRaw) && !preg_match('/\?\s*["\')\]]*$/', $etext);
+    }
     $out['before'] = $before;
     $out['after'] = $after;
     // (a polite REQUEST for the line is the line: "could you tell me about Whiterun?" / "Tell me about Whiterun.")
@@ -4584,7 +4940,7 @@ function lrgDlgQuoteQualm(string $utter, array $e): array
         || ($atx !== '' && count($after) <= 2 && lrgDlgIsBackOut($atx, true, true) && !$hisAsk)
         || (in_array((string) ($fold($b)[0] ?? ''), ['not', 'no', 'nope', 'nah', 'never'], true)
             && !preg_match('/^(no (problem|worries|doubt)|not a problem)\b/', $bt))
-        || array_intersect($fold($after), $defer) || (!$hisAsk && array_intersect($around, LRG_DLG_NEG))) {
+        || lrgDlgDeferAfter($fold($after), $defer) || (!$hisAsk && array_intersect($around, LRG_DLG_NEG))) {
         $out['qualm'] = 'refuses';
         return $out;
     }
@@ -4639,6 +4995,15 @@ function lrgDlgSameLead(string $utter, array $e): bool
     while ($u && in_array($u[0], $fill, true)) { array_shift($u); }
     while ($n && in_array($n[0], $fill, true)) { array_shift($n); }
     if (!$u || !$n) { return false; }
+    // [pt19h r2 / safety P6] both LEAD with a refusal, or both with a hedge ("no idea, but they're hunting Esbern" / "I don't know, but the
+    // Thalmor are looking for someone named Esbern.", "not sure yet, but ..." / "We're not sure, but ..."): the same opening
+    // (the same KIND only: not knowing / declining / hedging - "never mind" against "I don't understand what's going on." stays his own)
+    $lu = implode(' ', array_slice($u, 0, 4));
+    $ln = implode(' ', array_slice($n, 0, 4));
+    static $kinds = ['/^(?:no idea|i dont know|i do not know|i dunno|dunno|not sure|im not sure|i am not sure|no clue|who knows|beats me|i have no idea|i couldnt say|i cant say)\b/',
+        '/^(?:never ?mind|no thanks|no thank you|not interested|forget it|ill pass|i will pass|rather not|id rather not|no)\b/'];
+    foreach ($kinds as $rx) { if (preg_match($rx, $lu) && preg_match($rx, $ln)) { return true; } }
+    if (lrgDlgHedges($lu) && lrgDlgHedges($ln)) { return true; }
     $k = min(2, count($u), count($n));
     // (the same leading negator is the same opening: "no, just some wolves" / "No. Some wolves, but no dogs.")
     if (in_array($u[0], ['no', 'nope', 'nah', 'never', 'not'], true) && $u[0] === $n[0]) { return true; }
@@ -4654,12 +5019,23 @@ function lrgDlgSameLead(string $utter, array $e): bool
 function lrgDlgDeclares(string $utter, array $e): bool
 {
     if (trim($utter) === '' || !lrgDlgEntryIsQuestion($e) || lrgDlgIsQuestion($utter) || lrgDlgIsRequest($utter)) { return false; }
+    // [pt19h r2 / safety P13] a leading ASSENT answers her question ("yes, I'll help" on "What else can I help you with?") - S4.5 judges it
+    if (lrgDlgAssent($utter) !== null) { return false; }
     // (a CHECK line's question is rhetorical - "Will this change your mind? (50 gold)", "Isn't Whiterun your hometown?": his
     // statement is the attempt, and the check rails judge it; a REQUEST line - "Can I sell this Queen Bee Statue to you?" - asks
     // leave for what his statement offers: "I've got the Queen Bee Statue for you")
     if ((string) ($e['kind'] ?? '') !== '' || lrgDlgIsRequest((string) ($e['text'] ?? ''))) { return false; }
     $tok = lrgDlgFoldTokens(lrgDlgBareWords($utter));
     if (!$tok) { return false; }
+    // [pt19h r2 / safety P15] a DECLARATIVE yes/no question with its `?` lost ("you got any supplies", "you need help with something", "you
+    // ok") against a line that asks HIM, and his want / need against a line that asks for it ("I need to get to Whiterun" / "How do I get
+    // to Whiterun from here?", "I'm here for work" / "Is there any work to be done?"): a question, a request - no statement
+    $low0 = implode(' ', $tok);
+    if (preg_match('/^(?:you|ya|u)\b/', $low0) && preg_match('/\b(?:any|anything|anyone|ever|still|some|something|got|need|want|ok|okay|alright|all right|ready|sure|there)\b/', $low0)
+        && strncmp(lrgDlgQuestionKind((string) ($e['text'] ?? ''), true), 'yn:you', 6) === 0) { return false; }
+    if (preg_match('/^(?:i need|i want|im here for|im after|i could use|i require|we need|i came for|im looking for|im in need of|i have to|i must)\b/', $low0)) { return false; }
+    // (the STT's stutter is one word: "i'm sorry what what")
+    $tok = array_values(array_filter($tok, static fn($w, $k) => $k === 0 || $w !== $tok[$k - 1], ARRAY_FILTER_USE_BOTH));
     // the line itself with its question word clipped by the STT - its END said, with or without a hedge before it ("you learned
     // anything about the dragons", "that's where I come in", "I suppose that's where I come in") - is no statement of his;
     // "Thorald is alive" (the line's condition, not its question) still is
@@ -4774,6 +5150,8 @@ function lrgDlgDeclares(string $utter, array $e): bool
  */
 function lrgDlgQuestionsSame(string $utter, array $e): bool
 {
+    // [pt19h r2 / safety P4] the line word for word is its own question
+    if (lrgPromptNorm($utter) === (string) ($e['norm'] ?? '')) { return true; }
     // his words the line's own (the line said inside his sentence, or its OPENING run - "so what's your plan"): its own question;
     // a run from inside it drops its question word and asks another ("do you need help" / "What do you need help with?")
     $qq = lrgDlgQuoteQualm($utter, $e);
@@ -4788,7 +5166,7 @@ function lrgDlgQuestionsSame(string $utter, array $e): bool
     $qs = array_values(array_filter(preg_split('/(?<=[.!?])\s+/u', $etx) ?: [], static fn($s) => strpos((string) $s, '?') !== false));
     if (count($qs) >= 2) {
         foreach ($qs as $s) {
-            if (lrgDlgQuestionsSame1($utter, ['text' => (string) $s, 'norm' => lrgPromptNorm((string) $s)] + $e)) { return true; }
+            if (lrgDlgQuestionsSame1($utter, ['text' => (string) $s, 'norm' => lrgPromptNorm((string) $s), 'full' => (string) ($e['text'] ?? '')] + $e)) { return true; }
         }
         return false;
     }
@@ -4815,9 +5193,13 @@ function lrgDlgQuestionsSame1(string $utter, array $e): bool
             'under', 'between', 'among', 'during', 'before', 'after', 'since', 'until', 'via', 'into', 'onto', 'from', 'out', 'up',
             'down', 'over', 'off', 'back', 'just', 'even', 'still', 'all', 'some', 'here', 'there', 'now', 'then', 'look', 'will',
             'would', 'can', 'could', 'shall', 'should', 'may', 'might', 'must', 'did', 'does', 'had', 'been', 'being', 'am', 'were',
-            'was'];
-        $we = lrgPromptWords((string) ($e['norm'] ?? ''), true);
-        $wu = lrgPromptWords(lrgPromptNorm(lrgDlgBareWords($utter)), true);
+            'was',
+            // [pt19h r2 / first evening FE.hulda.plain] a quantifier is a frame word ("a lot of visitors" / "many visitors")
+            'lot', 'lots', 'many', 'much', 'few', 'several', 'plenty', 'bit', 'little', 'enough', 'more', 'less', 'most'];
+        // [pt19h r2] his QUESTION CLAUSE against the line's QUESTION sentence: "nice place, get a lot of visitors?" asks "get a lot of
+        // visitors" of "Nice inn you have here. Do you get many visitors?" - the lead-in clauses are no part of either question
+        $we = lrgPromptWords(lrgPromptNorm(lrgDlgQuestionPart((string) ($e['text'] ?? ''), true)), true);
+        $wu = lrgPromptWords(lrgPromptNorm(lrgDlgBareWords(lrgDlgQuestionPart($utter, false))), true);
         $mine = array_filter(array_diff($wu, $frame), static fn($w) => !lrgDlgStemIn((string) $w, $we));
         // ... and it names at least half of what the line asks about ("where is Dragon Bridge?" is no "Know anything about a moth
         // priest visiting Dragon Bridge?")
@@ -4836,7 +5218,20 @@ function lrgDlgQuestionsSame1(string $utter, array $e): bool
             $cov = $we ? count(array_filter($we, static fn($w) => lrgDlgStemIn((string) $w, $wu))) / count($we) : 1.0;
             return $cov >= 0.75 && !lrgDlgOwnWords($utter, $e);
         }
-        if ($pair[0] !== $pair[1]) { return $pair === ['what', 'why']; }
+        if ($pair[0] !== $pair[1]) {
+            if ($pair === ['what', 'why']) { return true; }
+            // [pt19h r2 / safety P3, P16 (b)] where / how (and what / where) about FINDING or GETTING somewhere are one question ("where
+            // can I find your master" / "How can I find your master?", "how do I get into Riftweald Manor" / "What's the best way to get
+            // into Riftweald Manor?"): half of the line's words, and no word of his own
+            $fg = '/\\b(find|get|go|reach|enter|way|into|locate)\\b/i';
+            if (in_array($pair, [['how', 'where'], ['what', 'where']], true) && preg_match($fg, $utter) && preg_match($fg, (string) ($e['text'] ?? ''))) {
+                $we = lrgPromptWords((string) ($e['norm'] ?? ''), true);
+                $wu = lrgPromptWords(lrgPromptNorm(lrgDlgBareWords($utter)), true);
+                $cov = $we ? count(array_filter($we, static fn($w) => lrgDlgStemIn((string) $w, $wu))) / count($we) : 1.0;
+                return $cov >= 0.5 && !lrgDlgOwnWords($utter, $e);
+            }
+            return false;
+        }
         // the same question word about another PERSON ("how are you doing?" is no "How am I doing?", "who are you?" no "Who am I?"):
         // how / who with its verb and its subject right after it - his side (I / we), hers (you), a third (he / she / they)
         $side = static function (array $tk): string {
@@ -4852,12 +5247,60 @@ function lrgDlgQuestionsSame1(string $utter, array $e): bool
         $qs = array_values(array_filter(preg_split('/(?<=[.!?])\s+/u', trim((string) ($e['text'] ?? ''))) ?: [], static fn($s) => strpos((string) $s, '?') !== false));
         $su = $side($ut);
         $se = $side(lrgDlgFoldTokens((string) ($qs ? end($qs) : ($e['text'] ?? ''))));
-        return $su === '' || $se === '' || $su === $se;
+        if (!($su === '' || $se === '' || $su === $se)) { return false; }
+        // [pt19h r2 / extended MS01.margret.business] the same question WORD about the same THING: his meaning words (no auxiliary, no
+        // filler, no STT echo - lrgDlgOwnWords) are the line's, and they name half of what its question asks about ("what do you think
+        // of Markarth" is no "What are you doing in Markarth?"; "what happened here" is "What happened to this place?")
+        static $wf = ['tell', 'about', 'know', 'any', 'anything', 'something', 'exactly', 'again', 'really', 'supposed', 'one', 'ones',
+            'just', 'even', 'still', 'all', 'some', 'here', 'there', 'now', 'then', 'look', 'please', 'mean', 'kind', 'sort', 'type',
+            'like', 'ever', 'else', 'going', 'gonna', 'wanna', 'gotta', 'thing', 'things', 'stuff'];
+        // (his words may name any part of the WHOLE line - "where do I sign up to kill vampires" / "Killing vampires? Where do I sign up?" -
+        // and an STT echo of a line word is that word only as the reach lane reads one (lrgDlgReachEcho: "health" / "help", never "think" /
+        // "doing"); the coverage is of the line's QUESTION sentence)
+        $full = trim((string) ($e['full'] ?? ($e['text'] ?? '')));
+        for ($i = 0; $i < 2; $i++) { $full = trim((string) preg_replace('/\s*[\(\[][^)\]]{1,60}[\)\]]\s*$/u', '', $full)); }
+        // (the line with its LAST word garbled by the STT - "what do you have in my" / "What do you have in mind?" - is the line)
+        $utk = lrgDlgFoldTokens(lrgDlgBareWords($utter));
+        $etk2 = lrgDlgFoldTokens(lrgDlgQuestionPart((string) ($e['text'] ?? ''), true));
+        if (count($utk) >= 4 && count($utk) === count($etk2) && array_slice($utk, 0, -1) === array_slice($etk2, 0, -1)) { return true; }
+        // (an STT slip of a line word he did not say - lrgDlgSoundsLike with the same first letter: "half" / "have", "health" / "help",
+        // "wood" / "would"; never "think" / "doing")
+        $slipOf = static function (string $w, array $pool): bool {
+            foreach ($pool as $m) { $m = (string) $m; if ($m !== '' && $w !== '' && $m[0] === $w[0] && lrgDlgSoundsLike($w, $m)) { return true; } }
+            return false;
+        };
+        $weAll = lrgPromptWords(lrgPromptNorm($full), true);
+        $eQ = lrgDlgQuestionPart((string) ($e['text'] ?? ''), true);
+        $wuQ = lrgPromptWords(lrgPromptNorm(lrgDlgBareWords(lrgDlgQuestionPart($utter, false))), true);
+        $wuAll = lrgPromptWords(lrgPromptNorm(lrgDlgBareWords($utter)), true);
+        $missing = array_values(array_diff($weAll, $wuAll));
+        // half or more of the content words the line's question asks about are in his words ("what do they want with me" is "What do
+        // these Greybeards want with me?"; "who's Gianna" names nothing of "Who's the Gourmet here?"); a question about ONE thing needs
+        // that thing ("what do you think of Markarth" lacks "doing" - and its own "think" fails it below)
+        $weQ = array_values(array_diff(lrgPromptWords(lrgPromptNorm($eQ), true), $wf));
+        $cov = 0;
+        foreach ($weQ as $w) {
+            if (lrgDlgStemIn((string) $w, $wuAll) || $slipOf((string) $w, $wuAll)) { $cov++; }
+        }
+        if ($weQ && $cov * 2 < count($weQ)) { return false; }
+        // ... and a question about TWO or more things takes no word of his own ("who's Gianna" is no "Who's the Gourmet here?"; a question
+        // about one thing does - "what comes next" / "What's next?", "what do you need done" / "What do you need me to do?")
+        if (count($weQ) >= 2) {
+            foreach (array_diff($wuQ, $wf) as $w) {
+                if (!lrgDlgStemIn((string) $w, $weAll) && !$slipOf((string) $w, $missing)) { return false; }
+            }
+        }
+        return true;
     }
     if ($ynU && $ynE) {
         // "is THERE ..." (does it exist) against "do YOU ..." (her knowledge): "is there a way out" / "Do you know the way out of here?";
         // "can we do anything" still is "Is there anything we can do?"
-        return !(($ku === 'yn:there' && $ke === 'yn:you') || ($ku === 'yn:you' && $ke === 'yn:there'));
+        // [pt19h r2 / safety P3, P16 (a)] ... only when the "do YOU" side asks her KNOWLEDGE (know, think, remember, seen, heard, any
+        // idea): "do you have any more contracts" asks the same as "Are there any more contracts available?"
+        $knows = static fn(string $s): bool => (bool) preg_match('/\\b(know|knows|known|think|remember|recall|seen|heard|idea|familiar|aware)\\b/i', $s);
+        if ($ku === 'yn:there' && $ke === 'yn:you') { return !$knows((string) ($e['text'] ?? '')); }
+        if ($ku === 'yn:you' && $ke === 'yn:there') { return !$knows($utter); }
+        return true;
     }
     // a question word against a yes/no line (or the other way round): an STT clip is the whole rest of the line
     if ($ynU && count($ut) >= 3 && array_slice($etk, 1) === $ut) { return true; }
@@ -5035,6 +5478,11 @@ function lrgDlgRealBackOut(array $e): bool
  */
 function lrgDlgNegationClash(string $utter, array $e): bool
 {
+    // [pt19h r2 / safety P7] the STT's split adverbs ("i all most got killed")
+    $utter = (string) preg_replace(['/\ball most\b/i', '/\bnear ly\b/i'], ['almost', 'nearly'], $utter);
+    // [pt19h r2 / grading P6] two QUESTIONS: a negated auxiliary asks the same as the plain one ("won't you buy it" / "You sure you won't buy
+    // it?", "isn't the dragon dead?" / "Is the dragon dead?") - only not / no / never count between them
+    $bothQ = lrgDlgIsQuestion($utter) && lrgDlgEntryIsQuestion($e);
     $u = lrgDlgFoldTokens($utter);
     $n = lrgDlgFoldTokens((string) ($e['text'] ?? $e['norm'] ?? ''));
     if (!$u || !$n) { return false; }
@@ -5043,13 +5491,14 @@ function lrgDlgNegationClash(string $utter, array $e): bool
     // scrolls." is the line), and neither did "I nearly" / "hardly" / "barely" / "scarcely"
     $neg = array_merge(LRG_DLG_NEG, ['nobody', 'noone', 'nothing', 'nowhere', 'refuse', 'refused', 'refusing', 'decline', 'declined',
         'almost', 'nearly', 'hardly', 'barely', 'scarcely']);
+    // an auxiliary negator: the predicate of its clause is negated, and with it the subject before it
+    $auxNeg = ['dont', 'doesnt', 'didnt', 'wont', 'cant', 'cannot', 'isnt', 'arent', 'wasnt', 'werent', 'havent', 'hasnt',
+        'shouldnt', 'wouldnt', 'couldnt', 'aint'];
+    if ($bothQ) { $neg = array_values(array_diff($neg, $auxNeg)); $auxNeg = []; }
     $shared = array_values(array_diff(array_intersect(lrgPromptWords(lrgPromptNorm($utter), true),
         lrgPromptWords(lrgPromptNorm((string) ($e['text'] ?? $e['norm'] ?? '')), true)), $stems, $neg));
     if (!$shared) { return false; }
     $pron = ['you', 'we', 'i', 'he', 'she', 'they', 'there', 'that', 'this', 'it'];
-    // an auxiliary negator: the predicate of its clause is negated, and with it the subject before it
-    $auxNeg = ['dont', 'doesnt', 'didnt', 'wont', 'cant', 'cannot', 'isnt', 'arent', 'wasnt', 'werent', 'havent', 'hasnt',
-        'shouldnt', 'wouldnt', 'couldnt', 'aint'];
     $aux = ['is', 'are', 'was', 'were', 'am', 'has', 'have', 'had', 'do', 'does', 'did', 'will', 'would', 'can', 'could', 'should',
         'must', 'shall', 'may', 'might', 'im', 'its', 'thats'];
     // (the idioms a negator opens negate nothing of the line: "there's no point earning all that gold", "no doubt", "not only")
@@ -5061,7 +5510,8 @@ function lrgDlgNegationClash(string $utter, array $e): bool
     };
     $negated = static function (array $tok, string $raw, string $w) use ($isNeg, $auxNeg, $aux, $pron): bool {
         // (the language brief's clauses: a sentence end splits too - "I have news. It isn't good." negates no news)
-        $stops = lrgDlgClauseStarts((string) preg_replace('/[.!?\x{2026}]+(?=\s|$)/u', ',', $raw));
+        // [pt19h r2 / safety P22] ... and "but" opens a clause ("I almost gave up but I found your crystal")
+        $stops = lrgDlgClauseStarts((string) preg_replace(['/[.!?\x{2026}]+(?=\s|$)/u', '/\bbut\b/i'], [',', ', but'], $raw));
         $seen = false;
         foreach ($tok as $i => $t) {
             if ($t !== $w) { continue; }
@@ -5090,6 +5540,14 @@ function lrgDlgNegationClash(string $utter, array $e): bool
                 if ($tok[$k] === 'no' && $k > 0 && $k !== $i - 1 && array_intersect(array_slice($tok, $k + 1, $i - $k - 1), $auxNeg)) { continue; }
                 if (in_array($tok[$k], $adv, true) && in_array((string) ($tok[$k + 1] ?? ''), ['enough', 'all', 'every', 'everyone',
                     'everything', 'as', 'so', 'always'], true)) { continue; }
+                // [pt19h r2 / safety P22] almost / nearly deny the NEXT verb only; barely / hardly / scarcely + an achievement ("I barely
+                // killed them both", "I barely made it out") assert it - they negate before know / any / ever / a stative word alone
+                if (in_array($tok[$k], $adv, true)) {
+                    if ($i - $k > 2) { continue; }
+                    if (in_array($tok[$k], ['hardly', 'barely', 'scarcely'], true) && !in_array((string) ($tok[$k + 1] ?? ''), ['know', 'knew', 'knows',
+                        'any', 'anything', 'anyone', 'ever', 'enough', 'a', 'the', 'recognize', 'recognise', 'remember', 'believe', 'think', 'seem',
+                        'seems', 'see', 'hear', 'heard', 'call', 'need', 'worth', 'matters', 'counts'], true)) { continue; }
+                }
                 $cnt++;
             }
             $isn = $cnt % 2 === 1 || ($cnt === 0 && $lead);
@@ -5098,8 +5556,10 @@ function lrgDlgNegationClash(string $utter, array $e): bool
             for ($k = $i + 1; !$isn && $k < min($to, $i + 6); $k++) {
                 $nx = (string) ($tok[$k + 1] ?? '');
                 if (in_array($nx, $pron, true)) { continue; }
-                if (in_array($tok[$k], $auxNeg, true)
-                    || (in_array($tok[$k], ['not', 'never'], true) && $k > 0 && in_array((string) $tok[$k - 1], $aux, true))) { $isn = true; }
+                // [pt19h r2 / extended MGRArniel04.courier] ... and a bare "never" right after it ("the courier never arrived" is "the courier
+                // didn't come" - parity across the two negators, no clash)
+                if (in_array($tok[$k], $auxNeg, true) || $tok[$k] === 'never'
+                    || ($tok[$k] === 'not' && $k > 0 && in_array((string) $tok[$k - 1], $aux, true))) { $isn = true; }
             }
             if (!$isn) { return false; }
         }
@@ -5191,10 +5651,13 @@ function lrgDlgExplicit(array $t, array $e, string $utter, string $mode, array $
     $qq = lrgDlgQuoteQualm($utter, $e);
     // (a line that itself refuses agrees with his refusal - "no, just some wolves" / "No. Some wolves, but no dogs.", "I refuse your
     // gift", "not this time, I'd rather not take it" - unless his refusal is a DEFERRAL the line does not carry)
+    $handLine = (string) ($e['hand'] ?? '') !== '' || (bool) preg_match('/[\(\[]\s*(?:give|show|hand over|hand|present|offer|return)\b/i', $eText);
     $refuses = $qq['qualm'] !== ''
         || (lrgDlgRefuses($utter) && (!lrgDlgIsBackOut($eText, true)
             || (preg_match(LRG_DLG_DEFER_RE, strtolower($utter)) && !preg_match(LRG_DLG_DEFER_RE, strtolower($eText)))))
-        || (lrgDlgHedges($utter) && !lrgDlgHedges($eText)) || lrgDlgDefers($utter, $e);
+        || (lrgDlgHedges($utter) && !lrgDlgHedges($eText)) || lrgDlgDefers($utter, $e)
+        // [pt19h r2 / G16, grading P4] he KEEPS what a hand-over line gives away ("I'm keeping the amulet", "you can't have it")
+        || ($handLine && lrgDlgKeepsIt($utter));
     // [pt19c fixer / @adv_facask_q] ... and a question WORD asks about the enlistment, it does not ask for it ("what does it take
     // to join the Companions?"); a request shaped as a question ("can I join the Companions?") still is the ask
     // [pt19h-safety / G1, G5, G11] ... and so does any other question that is no request of his own ("can anyone join the
@@ -5208,7 +5671,12 @@ function lrgDlgExplicit(array $t, array $e, string $utter, string $mode, array $
             : (!lrgDlgIsRequest($utter) || !lrgDlgRequestFits($utter, $e)))) { return false; }
         return !$hisQ || strncmp(lrgDlgQuestionKind($utter), 'wh:', 3) !== 0;
     }
-    if ($mode === 'slot' && $tok >= $slotTok) { return true; }
+    // [pt19c fixer] a refusal never says the line (unless the line itself is refusal-shaped - saying it is choosing it)
+    // [pt19h r2 / safety P9] ... judged BEFORE the slot shortcut: "not now, three nights later", "no, three nights", "I guess three nights"
+    if ($refuses) { return false; }
+    // the price-list / named-choice slot said cleanly (S4.3 c) - as a statement or a polite request ("can I rent a room for one night" names
+    // the "1 day" slot of the list it opened); a question about it ("three nights? says who") falls to the question tests below
+    if ($mode === 'slot' && $tok >= $slotTok && (!lrgDlgIsQuestion($utter) || lrgDlgIsRequest($utter))) { return true; }
     // [pt19c-A fix 1 / language review 2] a QUESTION to her never stands for a statement line ("what is a battleaxe" is no "I'd
     // like a battleaxe.") - S4.5 step 0's shape rule, here too; a question line said as a question still can be
     if (lrgDlgIsQuestion($utter) && !lrgDlgEntryIsQuestion($e)) { return false; }
@@ -5218,8 +5686,10 @@ function lrgDlgExplicit(array $t, array $e, string $utter, string $mode, array $
     // [pt19h-safety / G9] ... strictly: a commit line's question word or subject ("who are the Blood Horkers" / "So where are the
     // Blood Horkers?", "is there a way out" / "Do you know the way out of here?")
     if (lrgDlgIsQuestion($utter) && lrgDlgEntryIsQuestion($e) && !lrgDlgQuestionsSame($utter, $e)) { return false; }
-    // [pt19c fixer] a refusal never says the line (unless the line itself is refusal-shaped - saying it is choosing it)
-    if ($refuses) { return false; }
+    // [pt19h r2 / G16] a hand-over said in his own words (lrgDlgHandsOver: the object inside a giving frame, never the object alone,
+    // never a keep) is the line, on every path - his "here's the journal" on the fast path and her key on it alike
+    if ((string) ($e['hand'] ?? '') !== '' && lrgDlgHandsOver($utter, $e)) { return !lrgDlgNegationClash($utter, $e); }
+    if ($mode === 'hand') { return false; }
     // [pt19h-safety / G9] a statement of his is no question line ("I understand" / "Understand? How?"), and a line that commits in an
     // opening assent is not said by its question alone ("what's the passphrase?" / "Agreed. What's the passphrase?")
     if (lrgDlgDeclares($utter, $e) || lrgDlgSkipsAssent($utter, $e)) { return false; }
@@ -5271,6 +5741,9 @@ function lrgDlgExplicit(array $t, array $e, string $utter, string $mode, array $
     }
     if (!$exact && !$inside) {
         $weS = lrgPromptWords((string) ($e['norm'] ?? ''), true);
+        // [pt19h r2 / safety P21] the line's own ASSENT lead is no content: "I'll do it" says the whole of "Fine, I'll do it."
+        $eLead = lrgDlgLeadPhraseRaw((string) ($e['text'] ?? ''), array_merge((array) lrgDlgCfg('confirm.assent_words', []), ['agreed', 'deal', 'fine', 'understood']));
+        if ($eLead !== null) { $weS = array_values(array_diff($weS, lrgDlgTokens(lrgPromptNorm((string) $eLead['phrase'])))); }
         $bt = lrgDlgTokens(lrgPromptNorm($bare));
         // [pt19h-safety / G9] his words a FRAGMENT of a line of several clauses carry it only with at least half of its strict words
         // (S4.5's $hit cover): "I made a mistake" is no "I made a mistake. I want to be a Stormcloak. The crown belongs to you.",
@@ -5292,7 +5765,11 @@ function lrgDlgExplicit(array $t, array $e, string $utter, string $mode, array $
         // "son", "taste" / "test")
         static $qFrame = ['tell', 'about', 'know', 'think', 'like', 'want', 'need', 'got', 'get', 'see', 'say', 'ask', 'talk', 'hear',
             'heard', 'any', 'anything', 'something', 'going', 'go', 'have', 'give', 'take', 'come', 'make', 'really', 'actually', 'even',
-            'still', 'just', 'all', 'some', 'idea', 'please', 'sure', 'exactly', 'ever', 'again', 'mean', 'maybe', 'whose', 'whom'];
+            'still', 'just', 'all', 'some', 'idea', 'please', 'sure', 'exactly', 'ever', 'again', 'mean', 'maybe', 'whose', 'whom',
+            // [pt19h r2 / safety P2, P14] the auxiliaries and the informal forms are no words of his own
+            'am', 'is', 'are', 'was', 'were', 'be', 'been', 'will', 'would', 'did', 'do', 'does', 'can', 'could', 'shall', 'should',
+            'may', 'might', 'has', 'had', 'wanna', 'gonna', 'gotta', 'whos', 'whats', 'wheres', 'hows', 'im', 'ill', 'ive', 'id',
+            'youre', 'thats', 'its', 'or', 'not'];
         $namesL = [];
         if (preg_match_all('/\b([A-Z][a-z\']{2,})/u', (string) ($e['text'] ?? ''), $nmL)) {
             foreach ($nmL[1] as $n) { $namesL[] = strtolower(str_replace('\'', '', (string) $n)); }
@@ -5308,6 +5785,8 @@ function lrgDlgExplicit(array $t, array $e, string $utter, string $mode, array $
             }
             return false;
         };
+        // [pt19h r2 / safety P2, P14] his OWN words as lrgDlgOwnWords reads them: no filler, no STT echo of a line word he did not say
+        // ("whos the target", "do you think this wood help", "I am looking for Miraak. Do you know him?" say their lines)
         if (lrgDlgIsQuestion($utter) && array_filter(array_diff($wuB, $qFrame), static fn($w) => !$slip((string) $w))) { return false; }
         // [pt19h-safety / G9] a near-miss: a word of his where the line has another ("I want to fight as champion of the
         // Stormcloaks" / "I want to fight as champion of the Imperial Legion and defeat Ulfric ...")
@@ -5352,12 +5831,21 @@ function lrgDlgSingleEntryRelease(array $e, string $utter): array
     // (a deferral anywhere in his words - "can you read the Elder Scroll later?" - releases no protected single now)
     if ($qual === '' && lrgDlgProtected($e) && lrgDlgDefers($utter, $e)) { $qual = 'refuses'; }
     $eText = (string) ($e['text'] ?? '');
+    // [pt19h r2 / G16, grading P4] he KEEPS what the single hands over ("I'm keeping the amulet" / "I found this amulet. (Give Delvin the
+    // amulet)"): nothing, and no auto-advance
+    if (((string) ($e['hand'] ?? '') !== '' || preg_match('/[\(\[]\s*(?:give|show|hand over|hand|present|offer|return)\b/i', $eText)) && lrgDlgKeepsIt($utter)) {
+        return ['release' => false, 'refused' => true, 'shape' => false, 'step' => '0 refusal (he keeps what the line hands over)'];
+    }
     // (a line with a question inside - "So what's the problem? I'm sure he'll pay you..." - asked back in its own words is its own
     // question: "what's the problem, he'll pay you")
     $ownQ = strpos($eText, '?') !== false && !lrgDlgOwnWords($utter, $e);
     if ($hit && ($qual !== '' || ($qq['kind'] === 'none' && ((lrgDlgRefuses($utter) && !lrgDlgIsBackOut($eText, true))
         || (lrgDlgIsQuestion($utter) && !lrgDlgEntryIsQuestion($e) && !$ownQ))))) {
         $hit = false;
+    }
+    // [pt19h r2 / safety P6] a HEDGE around a commit single parks it (the gate: she asks, quoting it), never nothing
+    if ($qual === 'hedges' && $commit && !$hit) {
+        return ['release' => false, 'refused' => false, 'shape' => false, 'step' => '0 hedge around the commit line - the model asks, quoting it'];
     }
     if ((lrgDlgRefuses($utter) || in_array($qual, ['refuses', 'hedges'], true)) && !$hit) {
         // [pt19h-safety / G1] ... and the line opens with HIS refusal words only when it opens like his sentence: "never mind"
@@ -5389,6 +5877,13 @@ function lrgDlgSingleEntryRelease(array $e, string $utter): array
             return ['release' => false, 'refused' => true, 'shape' => false, 'step' => '0 shape (his question disputes the line itself)'];
         }
         return ['release' => false, 'refused' => true, 'shape' => true, 'step' => '0 shape (a question to her)'];
+    }
+    // [pt19h r2 / grading P2] a line that must ALWAYS ask (never_auto, a follower commit) or one that pays >= confirm.min_gold is released
+    // by no step 1-5: the fast path does nothing, the gate parks it and S4.4 releases it on his yes to her naming question (S4.10)
+    $ovS = lrgDlgOverrideFor('entries', $e);
+    if (($ovS && !empty($ovS['never_auto'])) || !empty($e['fcommit']) || (int) ($e['cost'] ?? 0) >= (int) lrgDlgCfg('confirm.min_gold', 100)) {
+        $out['step'] = '6 none (never released by his words alone - the model asks, naming it)';
+        return $out;
     }
     $ws = static fn(string $s): array => lrgPromptWords(lrgPromptNorm($s), true);
     $we = lrgPromptWords((string) ($e['norm'] ?? ''), true);
@@ -5546,15 +6041,20 @@ function lrgDlgServiceKindSaid(string $utter): string
  * crime or follower kind. Runs only when the similarity path chose nothing ("heard any rumors?" is the rumours line or
  * nothing, never the room). One compare per entry.
  */
-function lrgDlgKindPick(array $entries, string $utter, string $layerKind): array
+function lrgDlgKindPick(array $entries, string $utter, string $layerKind, bool $noReport = false): array
 {
+    // [pt19h r2 / safety gap G1 12, reach P6] a refusal, a deferral or a hedge picks NO line by kind ("not now, what do you have for sale
+    // later", "no, what have you got for sale", "I'm not sure, ..." each opened the trade window): her words answer
+    if (lrgDlgRefuses($utter) || preg_match(LRG_DLG_DEFER_RE, strtolower($utter)) || lrgDlgHedges($utter)) { return ['entry' => null, 'why' => '']; }
     // [pt19h-reach G4 / Nazir] a request for WORK, or a REPORT naming its target: the ONE line of the list that answers it (the
     // radiant start, the turn-in) - before the service kinds, on a root or a closed layer (lrgDlgReachPick)
-    $rp = lrgDlgReachPick($entries, $utter, $layerKind);
+    $rp = lrgDlgReachPick($entries, $utter, $layerKind, $noReport);
     if ($rp !== null) { return $rp; }
     if (empty(lrgDlgCfg('match.service_kind_pick', true)) || $layerKind !== 'root') { return ['entry' => null, 'why' => '']; }
     // [pt19c fixer] a PRICE question asks what it costs, it buys nothing ("how much for a room?", "is the room expensive?")
     if (lrgDlgIsPriceQuestion($utter)) { return ['entry' => null, 'why' => '']; }
+    // [pt19h r2 / safety gap G5] a question about an ITEM asks, it requests no service ("is this for sale?" opened the trade window)
+    if (lrgDlgIsQuestion($utter) && in_array(lrgDlgQuestionKind($utter), ['yn:it'], true)) { return ['entry' => null, 'why' => '']; }
     $kind = lrgDlgServiceKindSaid($utter);
     if (!in_array($kind, ['inn', 'barter', 'carriage', 'ferry', 'train'], true)) { return ['entry' => null, 'why' => '']; }
     $cands = [];
@@ -5730,6 +6230,19 @@ function lrgDlgAnswerWant(string $npc, array $kv, array $sess): void
             if ($pick !== null) { $mode = 'named'; $said = $utter; }
         }
     }
+    // ---- [pt19h r2 / G16] A HAND-OVER in his own words: "here's the X", "here, take the X", "I have the X for you" names the line
+    // whose tag hands X over (lrgDlgHandsOver: the object inside a giving frame - never the object alone, a question, a keep or a
+    // negation). Before the single-entry step: Storn's, Crescius's and Delvin's hand-overs are alone on their layer
+    if ($pick === null && $utter !== '') {
+        $hp = lrgDlgHandOverPick($entries, $utter);
+        if ($hp !== null) {
+            $pick = $hp;
+            $mode = 'hand';
+            $said = $utter;
+            lrgDlgLog('want=1 npc=' . $npc . ': "' . substr($utter, 0, 40) . '" hands over "' . (string) ($entries[$pick]['hand'] ?? '') . '" - the line "'
+                . substr((string) $entries[$pick]['text'], 0, 40) . '" (G16)', $cid);
+        }
+    }
     // ---- [S4.5 / S4.6] A SINGLE-ENTRY LAYER never asks: his new words release it, or it advances by itself -----------
     $single = $pick === null ? lrgDlgSingleEntryOf(['list' => 'pending', 'layer_kind' => (string) ($sess['kind'] ?? 'closed'),
         'entries' => $entries, 'tail' => []]) : null;
@@ -5745,6 +6258,12 @@ function lrgDlgAnswerWant(string $npc, array $kv, array $sess): void
             $none('single entry "' . substr((string) $single['text'], 0, 40) . '": ' . $rel['step'] . ' - nothing, and no auto-advance');
             return;
         } else {
+            // [pt19h r2 / grading P3, P13, safety P8] he is LEAVING ("goodbye", "I'm done here"): the breath never says the line for
+            // him (the re-arm already stands down on it)
+            if ($utter !== '' && lrgDlgLeaveWords($utter)) {
+                $none('single entry "' . substr((string) $single['text'], 0, 40) . '": he is leaving - nothing, and no auto-advance');
+                return;
+            }
             $adv = lrgDlgAdvMs($single);
             if ($adv < 0) {
                 $none('single entry "' . substr((string) $single['text'], 0, 40) . '": ' . $rel['step'] . ' - it waits for his words'
@@ -5770,6 +6289,8 @@ function lrgDlgAnswerWant(string $npc, array $kv, array $sess): void
         }
     }
     // ---- the similarity matcher: two candidates, and they must AGREE (S4.7) --------------------------------------------
+    $noReport = false;
+    $leftToModel = null;
     if ($pick === null) {
         $minS = (float) lrgDlgCfg('match.min_score', 0.55);
         $minM = (float) lrgDlgCfg('match.min_margin', 0.15);
@@ -5828,6 +6349,7 @@ function lrgDlgAnswerWant(string $npc, array $kv, array $sess): void
                 $pick = null;
                 $m = null;
                 $said = '';
+                $leftToModel = $pe;
             }
         }
         // [pt19c fixer / adversarial QA] a question, a refusal, a bargain, his answer to the line's own question or a word of
@@ -5836,6 +6358,8 @@ function lrgDlgAnswerWant(string $npc, array $kv, array $sess): void
             // (the service-by-kind pick below may still answer a request his words make: "do you have any rooms?")
             lrgDlgLog('want=1 npc=' . $npc . ': "' . substr($said, 0, 40) . '" -> "' . substr((string) $entries[$pick]['text'], 0, 40) . '": '
                 . $q . ' - not this line', $cid);
+            // [pt19h r2 / reach P7] a word of his named ANOTHER line: the report pick never overrides that veto (she asks)
+            $noReport = str_starts_with($q, 'a word of his belongs to another line');
             $pick = null;
             $m = null;
             $said = '';
@@ -5865,7 +6389,15 @@ function lrgDlgAnswerWant(string $npc, array $kv, array $sess): void
     // ---- [S5 / U4] a service BY KIND, only when the matcher chose nothing ----------------------------------------------
     if ($pick === null && $utter !== '' && $order) { $none('service by kind: a voice order of food or drink owns this sentence (F18)'); return; }
     if ($pick === null && $utter !== '') {
-        $kp = lrgDlgKindPick($entries, $utter, (string) ($sess['kind'] ?? ''));
+        $kp = lrgDlgKindPick($entries, $utter, (string) ($sess['kind'] ?? ''), $noReport);
+        // [pt19h r2 / extended TGCSG.buyback.ask] ... never ANOTHER line than the one his words matched best when the rails left that one to
+        // the model: "can I buy that unusual gem back?" names the buy-back line (protected, a question against it), not the shop
+        if (is_array($kp['entry']) && is_array($leftToModel) && ((int) $kp['entry']['pos'] !== (int) $leftToModel['pos']
+            || (string) $kp['entry']['norm'] !== (string) $leftToModel['norm'])) {
+            $none('service by kind: his words match "' . substr((string) $leftToModel['text'], 0, 40) . '" best, which is left to the model - "'
+                . substr((string) $kp['entry']['text'], 0, 40) . '" is not clicked in its place');
+            return;
+        }
         if (is_array($kp['entry'])) {
             foreach ($entries as $ei => $ee) {
                 if ((int) $ee['pos'] === (int) $kp['entry']['pos'] && (string) $ee['norm'] === (string) $kp['entry']['norm']) { $pick = $ei; break; }
@@ -5924,13 +6456,13 @@ function lrgDlgAnswerWant(string $npc, array $kv, array $sess): void
                 substr((string) $e['text'], 0, 40)));
             return;
         }
-        $mode = 'explicit';
+        if ($mode !== 'hand') { $mode = 'explicit'; }
     }
     // intent mode may execute plain / service (+ pay in a same-session continuation, a kind pick's priced service)
     $cont = !$isCommit && in_array($mode, ['intent'], true) && is_array($m) && lrgDlgContinuationOk($npc, $st, $e, $m, $said, $sess);
     $allowed = ['plain', 'service'];
-    if ($cont || in_array($mode, ['kind', 'slot', 'named', 'faction', 'single', 'advance', 'explicit'], true)) { $allowed[] = 'pay'; }
-    if (in_array($mode, ['slot', 'faction', 'single', 'explicit', 'advance'], true)) { $allowed[] = 'commit'; }
+    if ($cont || in_array($mode, ['kind', 'slot', 'named', 'faction', 'single', 'advance', 'explicit', 'hand'], true)) { $allowed[] = 'pay'; }
+    if (in_array($mode, ['slot', 'faction', 'single', 'explicit', 'advance', 'hand'], true)) { $allowed[] = 'commit'; }
     if (!in_array((string) $e['class'], $allowed, true)) {
         $none(sprintf('matched a %s entry ("%s") - NOT executed from the fast path', (string) $e['class'], substr((string) $e['text'], 0, 50)));
         return;
@@ -6227,6 +6759,20 @@ function lrgDlgDecideWords(array $t, string $item, array $st): array
         $isSg0 = $pi !== null && $sg0 && (int) ($sg0['pos'] ?? -1) === (int) ($pool[$pi]['pos'] ?? -2)
             && (string) ($sg0['norm'] ?? '') === (string) ($pool[$pi]['norm'] ?? '');
         if ($pi !== null && $itemIsHis && !$isSg0 && !lrgDlgWordsCarry(lrgDlgStripVocative($item, (string) ($t['npc'] ?? '')), (array) $pool[$pi])) {
+            // [pt19h r2 / reach P5, the first-evening words rows] a one-word STT echo read as a PROTECTED line ("i'd like to rent a groom" / "I'd like
+            // to rent a room. (10 gold)") is no click on his words alone - but she asks, quoting it, and his yes releases it (S4.4); a commit, a
+            // qualm, a negation, a bargain, a refusal, a hedge or a deferral around it: nothing, her words answer
+            $pe = (array) $pool[$pi];
+            $sv = lrgDlgStripVocative($item, (string) ($t['npc'] ?? ''));
+            $rp = lrgDlgSttRepair($sv, $pe);
+            if ($rp !== '' && lrgDlgReachContains($rp, $pe) && lrgDlgProtected($pe) && empty($pe['commit']) && (string) ($pe['class'] ?? '') !== 'commit'
+                && lrgDlgWordsQualm($item, $pe, $pool, (string) ($t['npc'] ?? ''), $m2) === '' && !lrgDlgNegationClash($utter, $pe) && !lrgDlgBargains($utter, $pe)
+                && !lrgDlgRefuses($utter) && !lrgDlgHedges($utter) && !lrgDlgDefers($utter, $pe)) {
+                $p = lrgDlgParkOrRelease($t, $pe, $st);
+                if ($p['do'] === 'release') { return ['do' => 'pick', 'mode' => (string) $p['mode'], 'entry' => $pe, 'why' => (string) $p['why']]; }
+                return ['do' => (string) $p['do'], 'mode' => 'park', 'entry' => $pe, 'why' => 'an STT echo in "' . substr($item, 0, 40) . '" reads as the protected line "'
+                    . substr((string) ($pe['text'] ?? ''), 0, 40) . '" - she asks, quoting it (S4.4)' . ((string) $p['why'] !== '' ? ' - ' . (string) $p['why'] : '')];
+            }
             $pi = null;
         }
         if ($pi !== null && (lrgDlgWordsQualm($item, (array) $pool[$pi], $pool, (string) ($t['npc'] ?? ''), $m2) !== ''
@@ -6296,7 +6842,9 @@ function lrgDlgDecide(array $t, string $item, array $st): array
         // [pt19h-safety / G8] only a REAL back-out line (lrgDlgRealBackOut): class back from a word inside a quest line ("Nothing I
         // couldn't handle.", "Ulfric holds nothing worth trading Markarth for.") or a scripted one ("Forget it. I'll just open it
         // myself." - the fight) is no way out; LEAVE then takes the engine cancel, or the guard below
-        foreach ((array) ($t['entries'] ?? []) as $e) {
+        // [pt19h r2 / safety P11] ... on the ranked head AND the tail (a 15-line layer ranked "Never mind." into the tail: LEAVE took the
+        // engine cancel, and the walk-away topic played - the very thing the guard exists for)
+        foreach (array_merge((array) ($t['entries'] ?? []), (array) ($t['tail'] ?? [])) as $e) {
             if (lrgDlgRealBackOut((array) $e)) { return ['do' => 'leave', 'mode' => 'key', 'why' => 'the back line', 'entry' => $e]; }
         }
         // [S4.2] THE LEAVE GUARD: no line backs out cleanly and a line here walks out on her - the engine cancel
@@ -6392,6 +6940,24 @@ function lrgDlgDecideEntry(array $t, array $e, string $mode, array $st): array
         if (!$commit) {
             return ['do' => 'pick', 'mode' => $mode, 'entry' => $e, 'why' => 'a single entry that is not a commit: the model\'s pick is trusted'];
         }
+    }
+    // ---- [pt19h r2 / grading P1, P12 - THE KEY-MODE RAIL] a plain line that still runs a script (scripted, an Invisible Continue - a
+    // converging sibling among them) on her T-key: his words this turn refuse, defer or hedge it, quote it with a qualm, negate it, or ask
+    // what the line does not - her words answer, nothing is clicked (lrgDlgKeyRailWhy; what the fast path's WordsQualm does, here)
+    if ($mode === 'key' && !$commit && !$isSingle && $utter !== '' && ((int) ($e['scripted'] ?? 0) === 1 || (int) ($e['invis'] ?? 0) === 1)) {
+        $kw = lrgDlgKeyRailWhy($utter, $e);
+        // [pt19h r2 / extended G3 MQ04.neloth.justtell, SV01.tharstan.paying] a QUESTION of his against the line, the line asked back ("something
+        // dangerous?") or a hedge around it parks it - she asks, quoting it, and his yes releases it (S4.4) - as the commit it converged from did
+        // ("where's the book" / "Just tell me where the book is and I'll go get it."); a refusal, a deferral, a negation or a keep gets her words,
+        // nothing is clicked
+        $parkIt = str_starts_with($kw, 'a question') || $kw === 'his words around the line asks' || $kw === 'a hedge';
+        if ($kw !== '' && $parkIt) {
+            $p = lrgDlgParkOrRelease($t, $e, $st);
+            if ($p['do'] === 'release') { return ['do' => 'pick', 'mode' => (string) $p['mode'], 'entry' => $e, 'why' => (string) $p['why']]; }
+            return ['do' => (string) $p['do'], 'mode' => 'park', 'entry' => $e, 'why' => 'key rail: "' . substr($utter, 0, 40) . '" asks what the scripted line "'
+                . $txt . '" does not - she asks, quoting it (S4.4)' . ((string) $p['why'] !== '' ? ' - ' . (string) $p['why'] : '')];
+        }
+        if ($kw !== '') { return lrgDlgNo('key rail: "' . substr($utter, 0, 40) . '" against the scripted line "' . $txt . '" - ' . $kw . ', her words answer'); }
     }
     // ---- intent mode (the model's WORDS, or a kind): plain / service, a priced service by kind; a commit only through
     // his own plain sentence (S4.3) - checked below
@@ -6593,6 +7159,12 @@ function lrgDlgRearmLine(array $t): ?string
     if (trim($utter) !== '') {
         $rel = lrgDlgSingleEntryRelease($e, $utter);
         if (!empty($rel['refused']) && empty($rel['shape']) && preg_match('/negate|disputes/', (string) $rel['step'])) { return null; }
+        // [pt19h r2 / safety arch P1] ... nor after a refusal or a deferral AROUND the line ("tell me about the College later", "<line>
+        // tomorrow", "not now, <line>") or a keep: S4.5 step 0 refused it, so the breath may not say it for him (table 2.4 step 0 -
+        // nothing, and no auto-advance); R1's "I don't understand" / "never heard of them" still re-arm
+        if (!empty($rel['refused']) && empty($rel['shape'])
+            && (str_starts_with((string) $rel['step'], '0 refusal (his words around the line') || str_starts_with((string) $rel['step'], '0 refusal (he keeps'))) { return null; }
+        if (preg_match(LRG_DLG_DEFER_RE, strtolower($utter))) { return null; }
     }
     lrgDlgLog('gate: re-armed the breath on "' . substr((string) $e['text'], 0, 40) . '" - nothing was picked this turn and he did'
         . ' not refuse (adv=' . $adv . ' rearm=1: after her answer ends)', (string) $t['cid']);
@@ -6698,11 +7270,24 @@ function lrgDlgParkOrRelease(array $t, array $e, array $st): array
         return ['do' => 'still', 'mode' => '', 'why' => 'no player turn since "' . $txt . '" was parked - still parked, never confirmed by silence'];
     }
     $utter = trim((string) (((array) ($st['utter'] ?? []))['text'] ?? ''));
-    if ($utter === '' || ((string) ($p['utter'] ?? '') !== '' && lrgPromptNorm($utter) === (string) $p['utter'])) {
+    // [pt19h r2 / money arch P4] a park written from his BARE ASSENT (a priced hand-over alone on its layer: "yes" parked it, she named the
+    // sum) is released by his next assent, whatever the same-words rule says - or his plain yes would never move it (model row 16)
+    $parkedOnAssent = trim((string) ($p['raw'] ?? '')) !== '' && lrgDlgAssent((string) $p['raw']) !== null && lrgDlgAssent($utter) !== null;
+    if ($utter === '' || (!$parkedOnAssent && (string) ($p['utter'] ?? '') !== '' && lrgPromptNorm($utter) === (string) $p['utter'])) {
         return ['do' => 'still', 'mode' => '', 'why' => 'the same words that parked "' . $txt . '" are not a confirmation of it - still parked'];
     }
     if (lrgDlgRefuses($utter)) {
         return ['do' => 'unpark', 'mode' => '', 'why' => '"' . substr($utter, 0, 40) . '" refuses "' . $txt . '"'];
+    }
+    // [pt19h r2 / safety P10] the words the rules refuse everywhere else release no park either: a refusal or a deferral AROUND the parked
+    // line ("not now, <line> later", "no, <line>") and a bare deferral ("perhaps later", "yes, some other day") un-park it - "as you like";
+    // an echo ("wait, <line>?", "is it true that <line>") or a hedge around it keeps the park, she asks again
+    $qqP = lrgDlgQuoteQualm($utter, $e);
+    if ($qqP['qualm'] === 'refuses' || preg_match(LRG_DLG_DEFER_RE, strtolower($utter))) {
+        return ['do' => 'unpark', 'mode' => '', 'why' => '"' . substr($utter, 0, 40) . '" puts "' . $txt . '" off or refuses it'];
+    }
+    if (in_array($qqP['qualm'], ['asks', 'hedges'], true)) {
+        return ['do' => 'still', 'mode' => '', 'why' => '"' . substr($utter, 0, 40) . '" asks about or hedges "' . $txt . '" - still parked, she asks again'];
     }
     // [pt19h-safety review / G1 on S4.4] a HEDGE or a DEFERRAL is no yes to the parked line ("hmm maybe", "maybe I will", "I might",
     // "yes, maybe", "sure, in a bit", "yeah, later" each released it as a fuller answer): still parked, she asks again. An assent
@@ -6718,8 +7303,9 @@ function lrgDlgParkOrRelease(array $t, array $e, array $st): array
     // [pt19c-A fix 1 / language review 8] a QUESTION back ("wait, what?", "why would I do that?", "what happens if I do?")
     // is no answer to her question - unless it restates the parked line itself (a question line said again)
     if (lrgDlgIsQuestion($utter)) {
+        // [pt19h r2 / safety P10] ... a line that is itself a question, only: a statement line asked back is no confirmation
         $mq = lrgDlgMatchText($utter, [$e]);
-        if ($mq === null || (float) $mq['eff'] < (float) lrgDlgCfg('confirm.single_entry_exact', 0.85)) {
+        if ($mq === null || (float) $mq['eff'] < (float) lrgDlgCfg('confirm.single_entry_exact', 0.85) || !lrgDlgEntryIsQuestion($e)) {
             return ['do' => 'still', 'mode' => '', 'why' => '"' . substr($utter, 0, 40) . '" asks her something back - still parked, she answers and asks again'];
         }
     }

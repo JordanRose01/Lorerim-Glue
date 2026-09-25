@@ -1377,6 +1377,9 @@ function lrgFacAskQualm(string $utter, array $ask, array $lines = []): string
     $hedgeRe = "/\\b(?:maybe|perhaps|possibly|probably|might|someday|some day|one day|eventually|i'?m (?:thinking|considering|wondering)"
         . "|thinking (?:about|of)|considering|not sure|unsure|i wonder|if i (?:could|can|should|decide|ever))\\b/i";
     $tailHedge = "/\\b(?:i (?:guess|suppose|reckon)|if i (?:must|have to)|or not)\\W*$/i";
+    // [pt19h r2 / test_dialogue (l9)] "... or not" ENDING A QUESTION is his impatience, no hedge: "so can I join the Legion or not" asks to
+    // join (lrgDlgHedges reads it the same way); only a statement's "or not" takes it back ("I want to join, or not")
+    $tailHedgeQ = "/\\b(?:i (?:guess|suppose|reckon)|if i (?:must|have to))\\W*$/i";
     $deferRe = '/\b(?:later|tomorrow|next time|some other time|another time|one of these days|not (?:now|yet|today)|after (?:i|we)|first i)\b/i';
     // a back-out of the DECISION, at any length and in any clause
     $backRef = "/\\b(?:never ?mind|forget (?:it|that|i asked|about it)|on second thought|changed my mind|cancel that|rather not|not interested"
@@ -1418,10 +1421,11 @@ function lrgFacAskQualm(string $utter, array $ask, array $lines = []): string
     $asked = (str_contains($jd, '?') && !($pt === ['lrgline'] && $lineAsks)) || lrgFacClauseAsks($jc);
     if ($asked && !$req($jc)) { return 'asks'; }
     $coreT = trim((string) preg_replace($reqRe, ' ', $core, 1));
+    $thCore = ($asked || $req($jc)) ? $tailHedgeQ : $tailHedge;
     if (function_exists('lrgDlgRefuses') && lrgDlgRefuses($coreT)) { return 'refuses'; }
     if (preg_match($backRef, $coreT)) { return 'refuses'; }
     if (preg_match($deferRe, $coreT) || preg_match($backDef, $coreT)) { return 'defers'; }
-    if (preg_match($hedgeRe, $coreT) || preg_match($tailHedge, $coreT) || (function_exists('lrgDlgHedges') && lrgDlgHedges($coreT))) { return 'hedges'; }
+    if (preg_match($hedgeRe, $coreT) || preg_match($thCore, $coreT) || (function_exists('lrgDlgHedges') && lrgDlgHedges($coreT))) { return 'hedges'; }
     // ---- TRAILING clauses: a short tag, a back-out of the decision; politeness is neither
     $lastCl = '';
     $lastD = '';
@@ -1450,7 +1454,7 @@ function lrgFacAskQualm(string $utter, array $ask, array $lines = []): string
         if (count(lrgDlgTokens(lrgPromptNorm($c))) <= 4 && ($s = $short($c)) !== '') { return $s; }
     }
     if ($trail !== '') { return $trail; }
-    if (preg_match($tailHedge, rtrim((string) preg_replace('/[\s,]*\b' . $polite . '\W*$/i', '', $text)))) { return 'hedges'; }
+    if (preg_match($thCore, rtrim((string) preg_replace('/[\s,]*\b' . $polite . '\W*$/i', '', $text)))) { return 'hedges'; }
     return '';
 }
 

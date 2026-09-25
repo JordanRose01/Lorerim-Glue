@@ -3604,6 +3604,33 @@ $qeE = static function (array $lines): array {
     return $out;
 };
 $qeWant = static fn(string $npc, array $pool, string $u) => lrgFacArbitrateWant($npc, $pool, ['utter' => ['text' => $u]], '', 'g18');
+// [pt19h r2] END TO END: his sentence, then her list with want=1 through lrgDlgAnswerWant (the hand-off, then every rail) - what the game
+// sees. The hand-off has two answers to words that may not act (use P3): a refusal or a deferral -> false (nothing, her words answer); a
+// hedge, an echo or an advice question -> the ONE join line handed to the commit rail, which clicks a commit only on his plain sentence
+// (the fast path's word: "the model asks, quoting it"; the gate then parks it). Either way NOTHING is clicked. True = a do=pick went out.
+$qeFast = static function (string $npc, array $pool, string $u): bool {
+    $GLOBALS['LRG_DLG_STATE'] = [];
+    $GLOBALS['LRG_DLG_TEST_STORE'] = [];
+    $GLOBALS['LRG_DLG_TEST_QUEUE'] = [];
+    lrgDlgPut('*install*', ['clicks_ok' => 1]);
+    lrgDlgPut($npc, ['utter' => ['text' => $u, 'at' => lrgNow(), 'cid' => 'g18w', 'type' => 'inputtext'], 'facts' => ['pg' => 500, 'at' => lrgNow()]]);
+    $ents = [];
+    foreach ($pool as $e) {
+        $ents[] = $e + ['cost' => 0, 'crit' => 0, 'kind' => '', 'afford' => 1, 'scripted' => 0, 'goodbye' => 0, 'indexed' => 1, 'hand' => '', 'new' => 0,
+            'col' => 0, 'tail' => 0, 'invis' => 0, 'compound' => 0, 'twat' => '', 'walkaway' => 0, 'label' => ''];
+    }
+    $saved = $GLOBALS['gameRequest'] ?? null;
+    $GLOBALS['gameRequest'] = ['lrg_topics', lrgNow(), 1, ''];
+    ob_start();
+    lrgDlgAnswerWant($npc, ['cid' => 'g18w', 'ask' => ''], ['sid' => 'g', 'gen' => 1, 'layer' => 1, 'state' => 'open', 'at' => lrgNow(), 'kind' => 'closed',
+        'entries' => $ents, 'crit' => 0]);
+    $echo = (string) ob_get_clean();
+    $GLOBALS['gameRequest'] = $saved;
+    $GLOBALS['LRG_DLG_STATE'] = [];
+    $GLOBALS['LRG_DLG_TEST_STORE'] = [];
+    unset($GLOBALS['LRG_DLG_TEST_QUEUE']);
+    return str_contains($echo, ';do=pick;');
+};
 $durak = $qeE([['DLC1VQ00IntroC', "I haven't noticed any vampire menace."], ['DLC1VQ00IntroC', 'Killing vampires? Where do I sign up?', 'commit'],
     ['DLC1VQ00IntroC', "Sorry, I'm not interested."], ['DLC1VQ00IntroC', "What's the Dawnguard?"]]);
 $w1 = $qeWant('Durak', $durak, 'count me in, I want to hunt vampires');
@@ -3616,15 +3643,22 @@ $gift = $qeE([['CW02BTulliusDeliverMessage', 'I just want to join the Legion. Co
 check('(g) Tullius 05A6A6 "I just want to join the Legion, consider the crown a gift": the hand-off stands aside (a line on his list IS this enlistment) - the rails decide',
     $qeWant('General Tullius', $gift, 'I just want to join the Legion, consider the crown a gift') === null
     && $qeWant('General Tullius', $gift, 'i just want to join the lesion') === null);
-check('(g) ...and "not now, I just want to join the Legion later" / "do you think I should join the Legion?" click nothing',
-    $qeWant('General Tullius', $gift, 'not now, I just want to join the Legion later') === false && $qeWant('General Tullius', $gift, 'do you think I should join the Legion?') === false);
+$qeAdv = $qeWant('General Tullius', $gift, 'do you think I should join the Legion?');
+check('(g) [r2 use P3] "not now, I just want to join the Legion later" -> nothing (her words answer); "do you think I should join the Legion?" -> the one join line goes to the commit rail (she asks, quoting it): END TO END neither clicks, and his plain sentence still does',
+    $qeWant('General Tullius', $gift, 'not now, I just want to join the Legion later') === false && is_array($qeAdv) && (int) $qeAdv['i'] === 0
+    && !$qeFast('General Tullius', $gift, 'not now, I just want to join the Legion later') && !$qeFast('General Tullius', $gift, 'do you think I should join the Legion?')
+    && $qeFast('General Tullius', $gift, 'I just want to join the Legion, consider the crown a gift'), json_encode($qeAdv));
 $council = $qeE([['MQ302UlfricBranch', "You and Tullius are both mistaken. I'm loyal to the Empire.", 'commit'], ['MQ302UlfricBranch', "I accept your offer. I'd like to join the Stormcloaks.", 'commit']]);
 $defect = $qeE([['MQ103AUlfricBookB1', 'I made a mistake. I want to be a Stormcloak. The crown belongs to you.', 'commit'], ['MQ103AUlfricNever', 'Never mind.']]);
 $yes = $qeE([['CW00BUlfricNo', "That's not why I'm here."], ['CW00BUlfricYes', 'Yes, sir.', 'commit']]);
-check('(g) Ulfric 04BE5F / 05A6B1 / 0C347D: "I accept your offer. I\'d like to join the Stormcloaks", "I want to be a Stormcloak, uh, take the crown", "Yes sir, I want to join the Stormcloaks and fight for Skyrim" - the hand-off stands aside for each',
+// [pt19h r2 / arch P2] the yes-line rule holds only for a faction SHE belongs to: Ulfric is a CWSonsFaction member (his snapshot says so)
+lrgStoreNpcState('Ulfric Stormcloak', snap(['fac' => 'CWSonsFaction,JarlFaction']));
+check('(g) Ulfric 04BE5F / 05A6B1 / 0C347D: "I accept your offer. I\'d like to join the Stormcloaks", "I want to be a Stormcloak, uh, take the crown", "Yes sir, I want to join the Stormcloaks and fight for Skyrim" - the hand-off stands aside for each (his yes-line is the Stormcloaks\' own: a CWSonsFaction member)',
     $qeWant('Ulfric Stormcloak', $council, "I accept your offer. I'd like to join the Stormcloaks") === null
     && $qeWant('Ulfric Stormcloak', $defect, 'I want to be a Stormcloak, uh, take the crown') === null
     && $qeWant('Ulfric Stormcloak', $yes, 'Yes sir, I want to join the Stormcloaks and fight for Skyrim') === null);
+check('(g) [r2 arch P2] ... but to General Tullius "yes sir, but I want to join the Stormcloaks instead" clicks NOTHING: the yes-line is the Legion\'s and his words turn against it (a contradiction never advances the enlistment)',
+    $qeWant('General Tullius', $yes, 'yes sir, but I want to join the Stormcloaks instead') === false && !$qeFast('General Tullius', $yes, 'yes sir, but I want to join the Stormcloaks instead'));
 $serana = $qeE([['DLC1SeranaTurn', 'I want you to turn me into a vampire.'], ['DLC1SeranaAsk', 'Were you always a vampire?']]);
 check('(g) Serana 004A79 "make me a vampire, Serana": her own "turn me into a vampire" line is this ask - the hand-off stands aside', $qeWant('Serana', $serana, 'make me a vampire, Serana') === null);
 $isran = $qeE([['DLC1VQ01IntroA1', 'I heard you were looking for vampire hunters.'], ['DLC1VQ01IntroA1', 'I was just looking around. What is this place?'],
@@ -3632,8 +3666,10 @@ $isran = $qeE([['DLC1VQ01IntroA1', 'I heard you were looking for vampire hunters
 $wi = $qeWant('Isran', $isran, "i'm here to join the dawn guards");
 check('(g) Isran 00D901 "i\'m here to join the dawn guards" (the STT\'s "dawn guards" was the one-token guard row): his join line',
     is_array($wi) && (int) $wi['i'] === 2 && (string) lrgFacAsk("i'm here to join the dawn guards")['faction'] === 'dawnguard', json_encode($wi));
-check('(g) [G11 / G5] "wait, i\'m here to join the Dawnguard?" clicks nothing; "can anyone join the Dawnguard?" is no enlistment at all (the matchers\' rails decide)',
-    $qeWant('Isran', $isran, "wait, i'm here to join the Dawnguard?") === false && $qeWant('Isran', $isran, 'can anyone join the Dawnguard?') === null);
+$qeEcho = $qeWant('Isran', $isran, "wait, i'm here to join the Dawnguard?");
+check('(g) [G11 / G5, r2 use P3] "wait, i\'m here to join the Dawnguard?" (an echo) goes to the commit rail and clicks NOTHING end to end; "can anyone join the Dawnguard?" is no enlistment at all (the matchers\' rails decide); "i\'m here to join the dawn guards" still clicks',
+    is_array($qeEcho) && (int) $qeEcho['i'] === 2 && !$qeFast('Isran', $isran, "wait, i'm here to join the Dawnguard?")
+    && $qeWant('Isran', $isran, 'can anyone join the Dawnguard?') === null && $qeFast('Isran', $isran, "i'm here to join the dawn guards"), json_encode($qeEcho));
 $oath = $qeE([['CW01BGalmarOath', 'Are you saying you sent me out there to die?'], ['CW01BGalmarOath', 'I need to think it over.'], ['CW01BGalmarOath', "I'm ready to take the Oath.", 'commit']]);
 $wo = $qeWant('Galmar Stone-Fist', $oath, "I'm ready to take the Oath.");
 check('(g) [G1] Galmar 0E2D06: "no, i\'m ready to take the Oath" and "not now, I\'m ready to take the oath later" click NOTHING; his plain "I\'m ready to take the Oath." still does',

@@ -583,6 +583,8 @@ function lrgDlgCheckAskRail(array $t, array $e, string $utter): string
         return $m === null || !empty($m['short']) ? 0.0 : (float) ($m['eff'] ?? $m['score'] ?? 0);
     };
     $all = $eff($u);
+    // [pt19h r2 / extended DA10.logrolf.bribe] the line with one STT slip is the line: "does it madder here" says "Does it matter? Here."
+    if (function_exists('lrgDlgSttFold')) { $all = max($all, $eff(lrgDlgSttFold($u, [$e]))); }
     $lineQ = function_exists('lrgDlgEntryIsQuestion') && lrgDlgEntryIsQuestion($e);
     if ($all >= (float) lrgDlgCfg('confirm.single_entry_exact', 0.85) && ($lineQ || !preg_match('/\?\s*["\')\]]*\s*$/', $u))) { return ''; }
     if (lrgDlgPriceQuestion($u)) {

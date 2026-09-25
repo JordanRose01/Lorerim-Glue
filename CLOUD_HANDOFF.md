@@ -32,22 +32,35 @@ catalog, scene index). Run: `php tools/test_gates.php --quiet`, `test_intent`, `
   other content words are foreign (lrgDlgWordsCarry); a bare "yes"/"okay" never releases a money hand-over
   (lrgDlgPaysOut); three fixture rows relabelled with reasons. --extended went from 8 fails to 3, then the relabels.
 
-## What remains, in order
-1. test_gates section (g), 3 fails - the enlistment fast path `lrgFacArbitrateWant` (lib/lrg_factions.php). Probe:
-   Tullius "do you think I should join the Legion?" returns {i:0} (the commit, handed to the commit rail by the r2
-   'asks' branch - the rail should then click nothing); test expects false. Ulfric "Yes sir, I want to join the
-   Stormcloaks and fight for Skyrim" returns false; test expects null. Isran "wait, i'm here to join the Dawnguard?"
-   returns {i:2}; test expects false. Decide per the interaction model whether code or test is wrong; the invariant
-   is: a question / echo / deferral NEVER clicks the enlistment commit end to end (assert the end-to-end outcome
-   through lrgDlgAnswerWant, not only the raw return).
-2. test_dialogue: (l) a second enlistment ask 30 s later with no answer must be 'pending' (nothing sent again);
-   two G16 hand-over rows ("Very well." = Harkon's hand-over; "here, take the fragments" = Eorlund 0E3064).
-3. Re-run --extended; every `never` row must click nothing; report the remaining `never_red` by gap.
-4. Round 2 of the hardening: resolve or rebut every problem in `research/pt19h-r2-problems.json`, fixer by fixer,
-   with regression tests. Then all suites + questline modes + flows green TWICE on one tree.
-5. Update `glue/PROTOCOL.md` / `glue/OWNER_MENULESS_V1.md` for anything that changed; push; tell the owner the local
-   session must pull, compile (tools/compile.ps1), deploy (tools/deploy_server.ps1 with the CHIM launcher running)
-   and install (hash-verified copy into F:\Modlists\LoreRim\mods\LoreRim Glue, MO2 open is fine, Skyrim closed).
+## Round 2 status (the cloud session, 2026-09-25) - see `research/pt19h-r2-resolution.md`
+Items 1-5 above are done as far as the cloud can take them; the code is server-only (no `.psc` changed, no wire item):
+1. test_gates (g) rewritten end to end through `lrgDlgAnswerWant` (a question / echo / deferral never clicks the
+   enlistment commit; a wrong faction's yes is no yes): 852 / 0.
+2. test_dialogue (l) `pending` (an "or not" question is no hedge - `lrgFacAskQualm`), the two G16 rows (the object-aware
+   hand-over rule: `hand` words out of the norm, `lrgDlgHandsOver` / `lrgDlgHandOverPick`), plus the round-2 regression
+   section at its end.
+3. `--extended`: every `never` (2,463) and `not_target` (343) row clicks nothing; `never_red` still red 36 (13 on a
+   protected line), listed by gap in the resolution note; no `never_red` row that was green on the 06:00 code is red again.
+4. Every problem of `research/pt19h-r2-problems.json` resolved, landed earlier, rebutted or classed as measurement, with
+   the reason - the table in the resolution note. The main new rules: the key-mode rail (a scripted plain line on her
+   T-key: nothing on a refusal / deferral / hedge / negation, a PARK on a question - as the commit it converged from did),
+   the same-question half-coverage rule, the words path's narrowing rule on question lines and its park on a one-word
+   STT echo of a protected line, the reach lane's "his request only" guards, the breath re-arm honouring S4.5's
+   refusals, and the "no" that opens no refusal ("no one", "no joke").
+5. `glue/PROTOCOL.md` 10.29 section 14 and `glue/OWNER_MENULESS_V1.md` (sections 2 and 7) carry the amendments.
+   Two rulings are written into `tools/fixtures/lrg_questline_extended_baseline.json` `accepted` (Urag's two radiant
+   starts make her ask which; MGRitual05's help line is the work line on that list) - the reasons sit next to them.
+   The runs (all sequential - two harness processes at once pollute each other's log reads and give false failures):
+   every suite, every questline mode and the flows green twice on the final tree, the extended coverage green on it
+   (`test_scene_index.php` and flow `[18]` need the MO2 profile and can only run on the owner's machine).
+
+## What remains, in order (the local session)
+1. `git pull` the branch `claude/eager-wozniak-gvumed` (or merge it into main).
+2. Run `tools/test_scene_index.php` and `tools/flows/run_flows.php --quiet` once locally (the two environment-bound
+   checks), then `tools/compile.ps1` (no `.psc` changed: it must be a no-op, but prove it), `tools/deploy_server.ps1`
+   with the CHIM launcher running, and the hash-verified copy into `F:\Modlists\LoreRim\mods\LoreRim Glue` (MO2 open is
+   fine, Skyrim closed).
+3. The first evening, per `glue/OWNER_MENULESS_V1.md` section 3; keep `lorerim_glue.log` and `AIAgent.log`.
 
 ## Rules that never bend
 Never lower a matcher floor to make a paraphrase pass (make her ASK instead); never delete or weaken a `never` test

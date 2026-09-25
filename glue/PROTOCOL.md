@@ -2489,3 +2489,71 @@ actions CHIM dropped before any glue hook saw them. (a) and (b) need AIAgent.log
 gate-B condition; each decides a follow-up (how long the fast path waits for the open, the bridging mute, a pre-lock
 `handled` verdict for SelectTopic funcrets).
 
+**14. [pt19h r2] Hardening round 2 (2026-09-25, the cloud session; `research/pt19h-r2-problems.json` -> `research/pt19h-r2-resolution.md`).**
+Server only (`lib/lrg_dialogue.php`, `lib/lrg_factions.php`, `lib/lrg_actions.php`, the config JSON); no wire change, no
+Papyrus change, no floor moved. By rule:
+- **Hand-over lines (G16).** A line whose stage direction gives an object (`(Give fragments)`, `(Give Auriel's Bow)`) carries
+  `hand` = the object's words, kept OUT of its match norm. `lrgDlgHandsOver` reads his giving frame around that object ("here are
+  the fragments", "here, take Auriel's Bow", "I give them back with honor", "here take em") - never a question, a refusal, a hedge,
+  a deferral, a bargain, a negated object, his taking, or a keep ("I'm keeping the amulet", `lrgDlgKeepsIt`) - and
+  `lrgDlgHandOverPick` picks the ONE candidate (two: the matcher's margin decides, else the first converging one). The fast path's
+  step `hand` runs before the single step; the explicit test lets a hand-over through on its frame (mode `hand`); a keep refuses
+  the single release (S4.5) and the words path.
+- **The key-mode rail (grading P1, P12; G3).** With `dialogue.grading.converge_plain` (NEW, true) siblings that continue into the
+  same topic are plain, so the model's T-key clicks them - but a plain line that still runs a script (scripted, an Invisible
+  Continue) passes `lrgDlgKeyRailWhy` first: a refusal, a deferral, a hedge the line does not carry, a negation, a keep, or a
+  refusal around the quoted line -> nothing, her words answer; a QUESTION of his the line does not ask, the line asked back, or a
+  hedge around it -> the line PARKS and she asks, quoting it (S4.4), as the commit it converged from did. Check lines and service
+  / pay lines are not this rail's (their own rails judge them).
+- **LEAVE and the label (safety arch P4, P5).** LEAVE finds the real back-out on the ranked head AND the tail; `[leave]` is
+  printed only on a line `lrgDlgRealBackOut` accepts.
+- **Deferrals, hedges, back-outs, refusals.** `LRG_DLG_DEFER_RE` + "some other day / another day / next time"; "I guess / I
+  suppose / I might" + "so / yes / not / later / can / could" hedge; the spoken back-out heads ("let's not", "better not", "not
+  today", "some other time", "go away") are anchored to the lead (after a filler or a no); the "no" that opens no refusal is
+  exempt ("no one should have it", "no joke, you can have it", "no wonder", "no kidding", "no matter what", "no idea"); "... or
+  not" at the end of a QUESTION is his impatience, not a hedge (`lrgFacAskQualm`: "so can I join the Legion or not" still asks,
+  and the second ask 30 s later is `pending`).
+- **The same question (safety lang P4, G9).** `lrgDlgQuestionsSame`: the line said whole is the line; an echo compares the
+  question sentences only (quantifiers are frame words); how / where and what / where find-get questions agree; the "is there /
+  do you" split holds only when the "you" side asks her knowledge; the same question word about the same thing needs HALF of the
+  line's content words in his ("what do they want with me" is "What do these Greybeards want with me?") and, on a question about
+  two or more things, no content word of his own ("who's Gianna" is no "Who's the Gourmet here?"; an STT slip with the line
+  word's first letter counts as that word). A vocative is stripped before the kind is read ("Kodlak, is that you?").
+- **Statements, quotes, negation (safety lang P3, P5, P6, P10).** `lrgDlgDeclares` never on an assent, a flattened "you ... any"
+  question, or a first-person need ("I need a room" is a request); `lrgDlgQuoteQualm` reads the raw run of the line, counts a
+  "?" after the line only when the line does not end in one, and a deferral only right after the line; negation parity: "all
+  most" / "near ly" folded, two questions compare only not / no / never, "but" opens a clause, almost / nearly reach two tokens,
+  barely / hardly / scarcely negate only a stative, and a bare "never" after the subject negates its predicate as "didn't" does
+  ("the courier never arrived" is "the courier didn't come").
+- **The words path.** The verbatim line (his form of address included) is never refused - unless his "?" asks a statement line
+  back; `lrgDlgWordsCarry`'s one-shared-word rule (G9) stands down on a QUESTION line when his other word only narrows its
+  subject in an "about / of / on" tail, or both say "about <the same thing>" ("any rumors about the dragons" -> "Heard any rumors
+  lately?", "sing me something about dragons" -> "Do you know any old ballads about dragons?"; "who is the Jarl's steward" is
+  still no "Who is the Jarl?"); a one-word STT echo read as a PROTECTED line ("rent a groom") clicks nothing on his words alone -
+  she asks, quoting it (S4.4), and his yes releases it; a report phrase carries an unprotected report line.
+- **Reach (reach P1-P9).** The work ask is HIS request only: never a deferral, a hedge, a refusal or a take-back anywhere in the
+  sentence ("I'll help you out later", "any work? actually no"), never a second- or third-person subject ("did you find any
+  work?", "who's looking for work?"), never a help offer to somebody else ("can I help him"), never hiring or repairs ("I need
+  work done on my armor"), never a musing ("I wonder if there is anything I can do"), never "got a job to do"; `reach.work.say`
+  gained the commonest offers ("what can I do for you", "let me help", "any errands"), `not_after` grew, `entry` gained Urag's
+  books line (two radiant starts on one list -> she asks which); on a closed layer only a radiant start whose phrase LEADS the
+  line; the report pick never reads a question line, and a protected entry it returns passes the qualms (quote, hedge, deferral,
+  bargain, negation - a report phrase with its own "won't" excepted); the kind pick refuses on a refusal, a deferral or a hedge,
+  and on a "yn:it" question ("is this for sale?").
+- **Single-entry (money G14, grading arch P2).** A `never_auto` / `fcommit` single, or one priced at `confirm.min_gold` or more,
+  is never released by his words alone (step 6: the model asks, naming it); a hedge around a commit single parks it (the model
+  asks, quoting it); a keep refuses it.
+- **Parks (safety arch P3, P10).** A park written from his bare assent is released by his next assent; a refusal or a deferral
+  around the parked line un-parks it; an echo or a hedge keeps it (she asks again); a question restates the park only when the
+  line is itself a question.
+- **Escort (reach G6).** `lrgEscortPlan` stands down for `follow` while her menu is driven by his words (a pick within 15 s, or
+  an open session).
+- **Enlistment (quest use P1-P3).** `lrgFacArbitrateWant` never clicks the commit on a question, an echo or a deferral, end to
+  end (`tools/test_gates.php` (g)); a hedge or an echo makes her ask.
+- **Config.** `dialogue.grading.converge_plain` (true); `dialogue.reach.work.{say, not_after, entry}` are supersets of the code
+  defaults (`tools/test_services.php` checks it).
+- **Tests.** `tools/test_gates.php` (g) end to end; `tools/test_dialogue.php` "[pt19h r2]" rows and its round-2 regression
+  section; `tools/test_services.php` reach P1 / P3 / P5 / P6 / P8 / P9 rows; `tools/test_questline.php` plain / `--words` /
+  `--first-evening` / `--first-evening --words` / `--extended` against the 06:00 baselines (`tools/fixtures/*_baseline.json`;
+  every `accepted` ruling is listed in `research/pt19h-r2-resolution.md`). `tools/test_scene_index.php` and flow `[18]` need
+  the MO2 profile and run on the owner's machine only.
