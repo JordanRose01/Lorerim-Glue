@@ -1,0 +1,35 @@
+# LoreRim Glue override of  CBBE 3BA (3BBB)\SKSE\Plugins\CBPConfig_ButtAmplitude.txt
+#
+# HISTORY
+#   3BA as LoreRim installed it : 0.5  (half motion; 3BA's "79 CBPC BBL - Less" file). CBPC's own
+#                                 default is 1.0.
+#   pt8  (2026-09-21)           : 0.8
+#   pt15 (2026-09-23)           : 0.6 - owner found the (breast) physics "a little too extra".
+#   pt19 (2026-09-24)           : 1.0 = 3BA's own "78 CBPC BBL - Normal" file, byte for byte the
+#                                 same three values. Owner: "there really isnt any ass physics and
+#                                 ass wiggling, even during the sex". The cause is the light 0.204
+#                                 skin weight of the butt bones on a 3BA body times the stiffest 3BA
+#                                 spring preset; the springs moved to 3BA's softest preset in the
+#                                 same change (CBPConfig_butt.txt next to this file, which explains
+#                                 the arithmetic) and this master volume goes to 3BA's Normal.
+#
+# The spring tuning comes from the glue's own CBPConfig_butt.txt (3BA's "Very Soft (Big jiggle)"
+# preset under all three aliases) - only the master volume is set here, and nowhere else.
+# Aliases: LButt/RButt are 3BA's names for the "NPC L/R Butt" nodes this body is skinned to;
+# "Butt" is CBPC's own name for the same two nodes (CBPCMasterConfig.txt) and is included so the
+# value is right whichever of the two duplicate ConfigMap entries CBPC keeps.
+# Two values per line = CBPC's weight-100 / weight-0 pair, in that order (CBPC's Nexus description:
+# "both 100 (first one) and 0 (second one) weight bounce settings"; CBPC's own installer ladder
+# writes e.g. "amplitude 1.0 0.3"). The two are identical here, so the order changes nothing.
+#
+# DIAL: change all three numbers together. 0.8 = calmer, 1.0 = 3BA's "Normal" (shipped). Not above
+# 1.0: a conservative rule taken from 3BA's own ladders (its amplitude files stop at 1.0, and so
+# does CBPC's own installer ladder, 1.0 down to 0.3); what CBPC does with a value above 1.0 is
+# undocumented, so it is not tried. A fresh game launch always loads an edit; "cbpc reload" in the
+# console is CBPC's documented way to re-read the bounce configs without a restart - if an edit
+# seems ignored, restart the game.
+
+RButt.amplitude 1.0 1.0
+LButt.amplitude 1.0 1.0
+
+Butt.amplitude 1.0 1.0

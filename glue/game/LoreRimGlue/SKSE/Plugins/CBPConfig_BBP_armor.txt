@@ -1,0 +1,47 @@
+# LoreRim Glue override of  CBBE 3BA (3BBB)\SKSE\Plugins\CBPConfig_BBP_armor.txt   (pt16, 2026-09-23)
+#
+# The same six per-material keys as CBPConfig_3b_armor.txt (its header has WHAT / HISTORY / the two
+# readings / DIAL), here for the OLDER single breast bone "NPC L/R Breast". In LoreRim's BodySlide
+# output only 3 clothes and 19 armour pieces are weighted to that bone at all, and only a handful to
+# it alone (farmclothes03 farmer robe, mudcrab, 1st-person dragonscale); every townsfolk outfit the
+# owner watched in Solitude is on the 3BA chain that CBPConfig_3b_armor.txt drives.
+#
+# Two alias names for the same two bones, because both ConfigMaps claim them and it is unknown
+# which duplicate entry CBPC keeps:
+#   LBreast / RBreast - 3BA's names  (CBPCMasterConfig_3BA.txt) - the keys 3BA's own file defined
+#   Breast            - CBPC's name  (CBPCMasterConfig.txt)     - defined nowhere else; added HERE
+#                       rather than in CBPConfig_zzGlueDefaults.txt, which by its own rule carries
+#                       no volume key, so every material dial lives in the two _armor files.
+# 3BA shipped every *Amplitude at 1.0 and every *Pushup at 0.0 ("Don't add Auto Push-Up"); the Breast
+# alias had neither key defined anywhere. Push-up stays 0.0 on all three aliases (ORefit already
+# pushes up under clothes).
+#
+# DIAL: keep these numbers equal to CBPConfig_3b_armor.txt and change them together.
+# "cbpc reload" in the console re-reads this file without restarting.
+# LF line endings, no BOM, ASCII, like the glue's other CBPConfig_* files (3BA's copy is CRLF).
+
+# START BBP
+
+LBreast.breastClothedPushup 0.0 0.0
+LBreast.breastLightArmoredPushup 0.0 0.0
+LBreast.breastHeavyArmoredPushup 0.0 0.0
+LBreast.breastClothedAmplitude 0.70 0.70
+LBreast.breastLightArmoredAmplitude 0.50 0.50
+LBreast.breastHeavyArmoredAmplitude 0.30 0.30
+
+RBreast.breastClothedPushup 0.0 0.0
+RBreast.breastLightArmoredPushup 0.0 0.0
+RBreast.breastHeavyArmoredPushup 0.0 0.0
+RBreast.breastClothedAmplitude 0.70 0.70
+RBreast.breastLightArmoredAmplitude 0.50 0.50
+RBreast.breastHeavyArmoredAmplitude 0.30 0.30
+
+# CBPC's own alias for the same two bones (not in 3BA's file)
+Breast.breastClothedPushup 0.0 0.0
+Breast.breastLightArmoredPushup 0.0 0.0
+Breast.breastHeavyArmoredPushup 0.0 0.0
+Breast.breastClothedAmplitude 0.70 0.70
+Breast.breastLightArmoredAmplitude 0.50 0.50
+Breast.breastHeavyArmoredAmplitude 0.30 0.30
+
+# END

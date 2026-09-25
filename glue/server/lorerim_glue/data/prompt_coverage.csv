@@ -1,0 +1,433 @@
+plugin,mod_folder,localized,readable,dial,info,player_prompts,winning_prompts,with_text,indexed_rows,layers,patterns,checks_persuade,checks_intimidate,checks_bribe,other_kinds,services,no_prompt_text,unresolved_string,norm_empty,lost_to_override,unreadable_reason,covered_pct
+"Skyrim.esm","<Stock Game>",1,1,15037,31465,11098,7543,5951,5779,826,89,23,21,22,0,157,1592,0,172,3555,"",0.9711
+"Inigo.esp","INIGO",0,1,2049,7520,2756,2723,1869,1869,380,0,0,0,0,0,0,854,0,0,33,"",1.0
+"Unofficial Skyrim Special Edition Patch.esp","Unofficial Skyrim Special Edition Patch",0,1,3510,5972,2758,2462,2212,2165,247,20,27,10,10,0,154,250,0,47,296,"",0.9788
+"Katana.esp","Katana - Journey in the Shadows",0,1,1964,7621,1858,1790,1732,1732,326,3,0,0,0,0,0,58,0,0,68,"",1.0
+"Andrealphus Jobs Overhaul - MASTER.esp","Andrealletius' Jobs Overhaul (AJO)",0,1,848,1366,1350,1349,1349,1349,4,0,0,0,0,0,64,0,0,0,1,"",1.0
+"Dawnguard.esm","Official Master Files - Cleaned Plugins",1,1,1954,3457,1562,1313,1067,1028,179,29,8,0,5,0,24,246,0,39,249,"",0.9634
+"Dragonborn.esm","Official Master Files - Cleaned Plugins",1,1,2194,4421,1369,1122,974,967,123,0,5,2,4,0,3,148,0,7,247,"",0.9928
+"HearthFires.esm","Official Master Files - Cleaned Plugins",1,1,481,1706,1306,1095,785,785,31,86,2,2,0,0,25,310,0,0,211,"",1.0
+"GORE.esp","Gore - A Companion Mod",0,1,1202,2890,1229,1088,990,982,167,2,0,0,0,0,0,98,0,8,141,"",0.9919
+"Missing Follower Dialogue Fix.esp","Missing Follower Dialogue Edit",0,1,103,1711,988,973,834,831,12,0,0,0,0,0,0,139,0,3,15,"",0.9964
+"Lucien.esp","Lucien - Immersive Fully Voiced Male Follower",0,1,1309,4096,939,939,799,799,63,150,0,0,0,0,1,140,0,0,0,"",1.0
+"HLIORemi.esp","Remiel-Custom Voiced Follower",0,1,3252,5669,921,920,851,846,133,0,1,2,1,0,0,69,0,5,1,"",0.9941
+"Vigilant.esm","VIGILANT - English Translation (Plus Voiced Addon)",0,1,1011,1224,887,887,701,689,126,5,0,0,0,0,0,186,0,12,0,"",0.9829
+"Meridia.esp","Meridia's Order ESMIFIED",0,1,970,2033,683,680,624,624,129,0,28,0,0,0,0,56,0,0,3,"",1.0
+"FDE Jenassa.esp","Follower Dialogue Expansion - Jenassa",0,1,556,1053,603,595,534,534,221,0,3,0,0,0,0,61,0,0,8,"",1.0
+"moretosaywhiterun.esp","More to Say - Main",0,1,432,596,595,589,523,522,49,0,2,1,1,0,7,66,0,1,6,"",0.9981
+"FDE Aela.esp","Follower Dialogue Expansion - Aela the Huntress",0,1,482,1341,596,572,426,426,127,2,0,0,0,0,0,146,0,0,24,"",1.0
+"Journey to Baan Malur.esp","Journey to Baan Malur and Morrowind",0,1,567,1003,568,568,547,519,55,0,5,0,0,0,21,21,0,28,0,"",0.9488
+"ForgottenCity.esp","The Forgotten City",0,1,736,994,518,517,517,517,135,6,24,0,0,0,1,0,0,0,1,"",1.0
+"Favor Quests Seperated.esp","Favor Quests Separated",0,1,297,542,491,480,473,473,38,77,12,24,12,0,0,7,0,0,11,"",1.0
+"Wyrmstooth.esp","Wyrmstooth",0,1,507,2167,480,478,421,421,38,0,3,1,0,0,0,57,0,0,2,"",1.0
+"MissivesExpansion.esp","Missives - Voice and Quest Expansion",0,1,98,529,475,475,428,428,1,239,0,0,0,0,0,47,0,0,0,"",1.0
+"018Auri.esp","Song of the Green (Auri Follower)",0,1,365,912,404,404,383,383,60,0,0,0,0,0,0,21,0,0,0,"",1.0
+"00Taliesin.esp","The Thalmor's Shadow - Taliesin (Custom Voiced Follower)",0,1,403,1322,405,404,363,360,61,0,0,0,0,0,0,41,0,3,1,"",0.9917
+"Missives.esp","Missives",0,1,426,426,426,400,319,319,0,236,0,0,0,0,0,81,0,0,26,"",1.0
+"evgSIRENROOT.esm","SIRENROOT - Deluge of Deceit",0,1,418,549,388,388,262,262,57,0,0,0,0,0,0,126,0,0,0,"",1.0
+"SeranaDialogueExpansion.esp","Serana Dialogue Expansion",0,1,965,1184,384,384,327,327,56,1,0,0,0,0,0,57,0,0,0,"",1.0
+"moretosayriften.esp","More to Say - Main",0,1,269,366,366,366,315,315,17,0,0,0,0,0,0,51,0,0,0,"",1.0
+"FDE Illia.esp","Follower Dialogue Expansion - Illia",0,1,379,637,336,336,305,304,125,0,0,0,0,0,0,31,0,1,0,"",0.9967
+"WindhelmSSE.esp","Capital Windhelm Expansion",0,1,317,852,326,320,270,267,42,0,1,0,0,0,1,50,0,3,6,"",0.9889
+"FDE Rayya.esp","Follower Dialogue Expansion - Rayya",0,1,285,592,315,315,249,249,105,0,0,0,0,0,0,66,0,0,0,"",1.0
+"CFTO.esp","Carriage and Ferry Travel Overhaul - Fixes and Winterhold",0,1,177,420,302,299,299,299,24,0,2,0,4,0,296,0,0,0,3,"",1.0
+"moretosayfalkreath.esp","More to Say - Main",0,1,188,437,300,298,274,274,15,0,2,0,0,0,0,24,0,0,2,"",1.0
+"moretosaywinterhold.esp","More to Say - Main",0,1,229,286,283,283,263,263,23,0,3,1,1,0,1,20,0,0,0,"",1.0
+"moretosaycityguards.esp","More to Say - Main",0,1,95,339,287,280,275,275,7,0,0,0,0,0,0,5,0,0,7,"",1.0
+"LoreRim - Skyrim Revoiced Patch.esp","LoreRim - xEdit64 Output",0,1,135,965,244,244,170,170,0,9,0,0,0,0,0,74,0,0,0,"",1.0
+"LoreRim - Dialogue Patch.esp","LoreRim - xEdit64 Output",0,1,114,280,245,241,230,230,15,3,9,4,1,0,16,11,0,0,4,"",1.0
+"TheGiftofSaturalia.esp","The Gift Of Saturalia",0,1,152,340,242,239,221,221,17,1,5,0,0,0,0,18,0,0,3,"",1.0
+"FDE Elisif.esp","(SHAPE YOUR QUEEN) Follower Dialogue Expansion - Elisif the Fair",0,1,198,377,240,237,219,219,77,0,0,0,0,0,0,18,0,0,3,"",1.0
+"moretosayriverwood.esp","More to Say - Main",0,1,192,236,235,235,232,229,22,0,4,2,2,0,1,3,0,3,0,"",0.9871
+"SeranaDialogueExpansion - Romance.esp","Serana Dialogue Expansion - Romance ESL",0,1,338,368,222,222,203,203,28,0,2,0,0,0,0,19,0,0,0,"",1.0
+"Skyrim Extended Cut - Saints and Seducers.esp","Skyrim Extended Cut - Saints and Seducers",0,1,285,480,207,205,187,187,41,2,0,0,0,0,0,18,0,0,2,"",1.0
+"FDE Camilla.esp","Follower Dialogue Expansion - Camilla Valerius",0,1,208,470,203,203,162,162,82,0,0,0,0,0,0,41,0,0,0,"",1.0
+"FDE Aela Part 2.esp","Follower Dialogue Expansion - Aela the Huntress",0,1,268,489,201,201,148,148,36,0,1,0,0,0,0,53,0,0,0,"",1.0
+"FDE Fura.esp","(BEST EVIL FOLLOWER) Follower Dialogue Expansion - Fura Bloodmouth",0,1,261,532,201,201,165,165,69,0,0,0,0,0,0,36,0,0,0,"",1.0
+"Gray Fox Cowl.esm","The Gray Cowl of Nocturnal - 10th anniversary",0,1,201,279,190,190,178,177,15,0,0,0,0,0,0,12,0,1,0,"",0.9944
+"IDE Thalmor.esp","Immersive Dialogue Expansion - Thalmor",0,1,200,350,186,186,144,144,55,0,10,0,0,0,0,42,0,0,0,"",1.0
+"BetalillesHammerfellQuestBundle.esp","Betalille's Hammerfell Quests Bundle - The Gray Cowl of Nocturnal",0,1,250,401,184,184,182,182,11,0,0,0,0,0,0,2,0,0,0,"",1.0
+"FDE Faralda.esp","Follower Dialogue Expansion - Faralda",0,1,222,363,173,173,144,143,64,0,0,0,0,0,0,29,0,1,0,"",0.9931
+"Remarks of Dragonborn.esp","Remarks of Dragonborn",0,1,12,165,165,165,165,165,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"FDE Mjoll.esp","Follower Dialogue Expansion - Mjoll the Lioness",0,1,169,367,157,157,126,125,51,0,0,0,0,0,0,31,0,1,0,"",0.9921
+"SurWR.esp","Rob's Bug Fixes - Capital Whiterun Expansion",0,1,112,373,151,151,140,139,11,0,2,0,0,0,7,11,0,1,0,"",0.9929
+"Belethor's Sister.esp","Belethor's Sister - Quest",0,1,93,166,146,146,146,137,21,19,4,4,1,0,0,0,1,8,0,"",0.9384
+"IDE Jorrvaskr.esp","HOUSE OF WARRIORS - Immersive Dialogue Expansion - Jorrvaskr (Companions)",0,1,197,577,141,141,86,86,13,0,0,0,0,0,0,55,0,0,0,"",1.0
+"ksws07_quest.esm","The Frozen Heart - Quest Mod",1,1,129,203,140,140,134,134,18,1,0,0,0,0,0,6,0,0,0,"",1.0
+"Immersive Rejections.esp","Immersive Rejections",0,1,1,160,160,140,140,140,0,0,0,0,0,0,0,0,0,0,20,"",1.0
+"CC Farming - Tweaks and Enhancements.esp","CC Farming - Tweaks Enhancements and Quest Expansion",0,1,52,173,134,132,129,129,4,5,2,0,0,0,5,3,0,0,2,"",1.0
+"moretosayrorikstead.esp","More to Say - Main",0,1,108,143,128,127,118,118,16,0,2,1,0,0,0,9,0,0,1,"",1.0
+"College Of Winterhold - Quest Expansion.esp","College of Winterhold - Quest Expansion",0,1,156,187,126,125,115,115,25,2,0,0,0,0,1,10,0,0,1,"",1.0
+"moretosayshorsstone.esp","More to Say - Main",0,1,108,124,124,124,121,121,14,1,2,1,2,0,0,3,0,0,0,"",1.0
+"Simple Hunting Overhaul.esp","Simple Hunting Overhaul",0,1,32,169,124,124,116,116,7,1,0,0,0,0,0,8,0,0,0,"",1.0
+"ksws04_quest.esp","The Welkynar Knight - Quest",0,1,92,123,123,123,118,103,17,1,0,0,0,0,0,5,1,14,0,"",0.8729
+"FDE Olfina.esp","Follower Dialogue Expansion - Olfina Gray-Mane",0,1,265,538,111,111,90,89,44,0,2,0,0,0,0,21,0,1,0,"",0.9889
+"NPCs React To Invisibility.esp","NPCs React To Invisibility",0,1,6,186,165,107,107,107,0,0,0,0,0,0,0,0,0,0,58,"",1.0
+"Immersive Speech Dialogues.esp","Immersive Speech Dialogues",0,1,104,123,123,107,107,107,5,0,39,15,3,0,0,0,0,0,16,"",1.0
+"Hendraheim - Tweaks and Enhancements.esp","Hendraheim - Tweaks and Enhancements",0,1,52,106,103,99,98,98,4,0,0,0,0,0,25,1,0,0,4,"",1.0
+"Fists of Fury - Skyrim.esp","Fists of Fury - Skyrim",0,1,61,101,101,96,67,67,7,0,0,0,0,0,0,29,0,0,5,"",1.0
+"Simple Fishing Overhaul.esp","Simple Fishing Overhaul - Animations and Improved Quest Dialogue",0,1,77,176,92,92,73,73,8,0,0,0,0,0,0,19,0,0,0,"",1.0
+"FDE Aranea.esp","Follower Dialogue Expansion - Aranea Ienith",0,1,137,259,92,92,89,89,42,0,0,0,0,0,0,3,0,0,0,"",1.0
+"NightmarePlane.esp","Sleepwalking Into A Nightmare - New Daedric Prince Quest",0,1,127,159,91,91,65,64,0,3,0,0,0,0,0,26,0,1,0,"",0.9846
+"moretosaykarthwasten.esp","More to Say - Main",0,1,73,93,90,90,81,81,3,0,0,0,0,0,0,9,0,0,0,"",1.0
+"TheChoiceIsYours.esp","The Choice is Yours",0,1,98,115,109,88,79,79,24,0,0,0,0,0,0,9,0,0,21,"",1.0
+"Destroy the Dark Brotherhood - Quest Expansion.esp","Destroy The Dark Brotherhood - Quest Expansion",0,1,75,132,87,86,71,68,16,0,2,0,0,0,0,15,0,3,1,"",0.9577
+"Tools of Kagrenac.esp","The Tools of Kagrenac ESMIFIED",0,1,97,152,82,81,75,75,12,3,2,2,1,0,0,6,0,0,1,"",1.0
+"ccBGSSSE001-Fish.esm","Official Master Files - Cleaned Plugins",1,1,149,190,186,78,49,49,2,6,0,0,0,0,0,29,0,0,108,"",1.0
+"cckrtsse001_altar.esl","Official Master Files - Cleaned Plugins",1,1,64,101,88,78,61,61,10,0,5,0,0,0,0,17,0,0,10,"",1.0
+"Narrative Gameplay Consistent Dialogue Tweaks.esp","Narrative Gameplay Consistent Dialogue Tweaks",0,1,71,161,102,78,69,69,7,0,0,0,0,0,0,9,0,0,24,"",1.0
+"moretodo.esp","More to Say - Main",0,1,74,87,80,77,77,77,16,0,0,0,0,0,2,0,0,0,3,"",1.0
+"018AuriVIGILANTpatch.esp","Song of the Green (Auri Follower) - VIGILANT",0,1,82,200,76,76,72,72,16,0,0,0,0,0,0,4,0,0,0,"",1.0
+"FDE Jenassa Part 2.esp","Follower Dialogue Expansion - Jenassa",0,1,153,447,76,76,65,65,32,0,0,0,0,0,0,11,0,0,0,"",1.0
+"FDE Saadia.esp","Follower Dialogue Expansion - Saadia",0,1,78,197,76,76,72,72,39,0,0,0,0,0,0,4,0,0,0,"",1.0
+"Update.esm","Official Master Files - Cleaned Plugins",1,1,89,139,115,75,57,57,8,1,1,0,1,0,1,18,0,0,40,"",1.0
+"Additional Contracts For the Dark Brotherhood.esp","ACDB - Additional Contracts for the Dark Brotherhood",0,1,48,80,74,73,66,58,9,0,0,0,0,0,0,7,0,8,1,"",0.8788
+"RisingAtDawnQuestOverhaul.esp","Seeking The Cure - A Rising At Dawn Quest Overhaul - Incurable Vampirism",0,1,75,79,73,73,60,60,15,0,0,0,0,0,0,13,0,0,0,"",1.0
+"FDE Brelyna.esp","Follower Dialogue Expansion - Brelyna Maryon",0,1,141,269,69,69,65,65,19,0,0,0,0,0,0,4,0,0,0,"",1.0
+"Penitus_Oculatus.esp","Penitus Oculatus",0,1,57,102,69,68,64,64,7,5,0,0,0,0,0,4,0,0,1,"",1.0
+"IDE Stormcloaks.esp","REBEL NORTH - Immersive Dialogue Expansion - Stormcloaks",0,1,119,324,68,68,61,61,15,0,0,0,0,0,0,7,0,0,0,"",1.0
+"Katana Raven LoreCut - Reqtificated.esp","Katana - Raven Replacer - LoreCut - Reqtificated",0,1,30,170,68,68,68,68,3,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Trad_AE_CC_Collection_Requiem_Patch.esp","Trad - AE - CC - Collection - Requiem Patch",0,1,49,69,69,67,67,67,3,0,11,0,0,0,0,0,0,0,2,"",1.0
+"FDE Sapphire.esp","Follower Dialogue Expansion - Sapphire (FDE)",0,1,63,190,60,60,53,53,22,0,0,0,0,0,0,7,0,0,0,"",1.0
+"FDE Lydia.esp","Follower Dialogue Expansion - Lydia",0,1,141,247,60,60,58,58,18,0,0,0,0,0,0,2,0,0,0,"",1.0
+"AlternatePerspective.esp","Alternate Perspective",0,1,115,179,94,60,52,50,8,0,0,0,0,0,3,8,0,2,34,"",0.9615
+"CYA_ChooseYourOwnArchMage.esp","Choose Your Own Arch-Mage",0,1,57,79,58,58,56,56,22,0,0,0,0,0,0,2,0,0,0,"",1.0
+"The Heart Of Dibella - Quest Expansion.esp","The Heart of Dibella - Quest Expansion",0,1,49,79,57,56,53,53,13,0,0,0,0,0,0,3,0,0,1,"",1.0
+"guardencounters.esp","More to Say - Main",0,1,46,114,62,55,46,46,10,0,3,0,2,0,0,9,0,0,7,"",1.0
+"FDE Lisette.esp","Follower Dialogue Expansion - Lisette",0,1,54,215,55,55,41,41,24,0,0,0,0,0,0,14,0,0,0,"",1.0
+"City Bag Checks.esp","City Bag Checks",0,1,11,56,56,55,22,22,3,0,4,0,0,0,0,33,0,0,1,"",1.0
+"ccbgssse040-advobgobs.esl","Official Master Files - Cleaned Plugins",1,1,60,69,55,54,52,52,16,0,0,0,0,0,0,2,0,0,1,"",1.0
+"TomeTrials.esp","Tome Trials - Bardic College Book Exams",0,1,48,52,52,52,45,45,3,0,4,0,0,0,0,7,0,0,0,"",1.0
+"FDE Eola.esp","Follower Dialogue Expansion - Eola",0,1,57,189,52,52,52,52,30,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Redeeming Fultheim - Blades Quest Addon.esp","Redeeming Fultheim - A Blades Quest Addon",0,1,42,51,51,51,51,50,6,0,0,0,0,0,0,0,0,1,0,"",0.9804
+"Infiltration - Quest Expansion.esp","Infiltration - Quest Expansion",0,1,58,89,50,50,43,43,14,0,6,4,0,0,0,7,0,0,0,"",1.0
+"moretosaygeneric.esp","More to Say - Main",0,1,27,66,49,49,25,25,4,0,0,0,0,0,0,24,0,0,0,"",1.0
+"FDE Erik.esp","Follower Dialogue Expansion - Erik the Slayer",0,1,48,196,48,48,42,42,10,0,0,0,0,0,0,6,0,0,0,"",1.0
+"FDE Jordis.esp","Follower Dialogue Expansion - Jordis the Sword-Maiden",0,1,50,160,48,48,46,46,26,0,0,0,0,0,0,2,0,0,0,"",1.0
+"ccBGSSSE025-AdvDSGS.esm","Official Master Files - Cleaned Plugins",1,1,51,59,53,47,43,43,6,0,0,0,0,0,0,4,0,0,6,"",1.0
+"Requiem.esp","Requiem - The Roleplaying Overhaul (No Messages ESLIFIED)",0,1,30,55,49,46,37,37,0,2,0,0,0,0,3,9,0,0,3,"",1.0
+"ccasvsse001-almsivi.esm","Official Master Files - Cleaned Plugins",1,1,33,67,67,45,43,43,0,1,14,6,6,0,0,2,0,0,22,"",1.0
+"Miasma.esp","Miasma",0,1,62,89,45,45,31,31,11,0,0,0,0,0,0,14,0,0,0,"",1.0
+"CollegeEntry.esp","Improved College Entry - Questline Tweaks",0,1,33,77,45,45,40,40,7,0,0,0,0,0,0,5,0,0,0,"",1.0
+"Missives - Gray Cowl Patch.esp","Missives - Gray Cowl Patch",0,1,45,45,45,45,36,36,0,27,0,0,0,0,0,9,0,0,0,"",1.0
+"Missives - Solstheim.esp","Missives - Solstheim Patch SE",0,1,45,45,45,45,36,36,0,27,0,0,0,0,0,9,0,0,0,"",1.0
+"Remote Interactions.esp","Remote Interactions",0,1,23,45,44,44,37,37,5,17,0,10,0,0,0,7,0,0,0,"",1.0
+"Missives - Wyrmstooth.esp","Missives - Wyrmstooth Patch",0,1,44,44,44,44,35,35,0,26,0,0,0,0,0,9,0,0,0,"",1.0
+"WaitCarriageInns.esp","Wait Carriage in Inns - Fast Travel Improvement",0,1,24,45,44,43,43,43,0,0,0,0,0,0,0,0,0,0,1,"",1.0
+"ccffbsse001-imperialdragon.esl","Official Master Files - Cleaned Plugins",1,1,67,114,44,42,38,38,3,0,0,0,0,0,0,4,0,0,2,"",1.0
+"SaveTheIcerunner.esp","Save the Icerunner - Lights Out Alternate Routes",0,1,41,65,41,41,36,36,4,0,1,0,0,0,0,5,0,0,0,"",1.0
+"FDE Marcurio.esp","Follower Dialogue Expansion - Marcurio (FDE)",0,1,40,188,41,41,40,40,23,0,0,0,0,0,0,1,0,0,0,"",1.0
+"TasteOfDeath_Addon_Dialogue.esp","The Taste of Death - Quest Addon",0,1,34,41,41,41,37,37,6,0,0,0,0,0,0,4,0,0,0,"",1.0
+"Lucien-AnniversaryEdition-Patch.esp","Lucien - Anniversary Edition - All-In-One Creation Club Patch",0,1,161,648,41,41,26,26,8,0,0,0,0,0,0,15,0,0,0,"",1.0
+"Companions Radiant Expansion.esp","Companions Radiant Expansion",0,1,39,41,41,41,34,34,0,15,0,0,0,0,0,7,0,0,0,"",1.0
+"Vittorias Alternate Wedding.esp","Vittorias Alternate Wedding",0,1,53,105,40,40,36,36,1,0,0,0,0,0,0,4,0,0,0,"",1.0
+"TT_FastredsAwakening.esp","The Book of Love - Fastred's Awakening",1,1,89,96,39,39,33,33,3,0,0,0,0,0,0,6,0,0,0,"",1.0
+"Guard Dialogue Overhaul.esp","Guard Dialogue Overhaul SE",0,1,36,909,45,39,37,37,3,0,0,0,0,0,0,2,0,0,6,"",1.0
+"MoiraFollowerMod.esp","Moira Dialogue Addon",0,1,31,124,39,39,37,37,6,0,0,0,0,0,0,2,0,0,0,"",1.0
+"FDE Borgakh.esp","Follower Dialogue Expansion - Borgakh the Steel Heart",0,1,46,187,38,38,36,36,21,0,0,0,0,0,0,2,0,0,0,"",1.0
+"FDE Uthgerd.esp","Follower Dialogue Expansion - Uthgerd the Unbroken",0,1,105,201,37,37,36,36,14,0,0,0,0,0,0,1,0,0,0,"",1.0
+"FDE Ysolda.esp","Follower Dialogue Expansion - Ysolda",0,1,34,152,36,36,35,35,9,0,0,0,0,0,0,1,0,0,0,"",1.0
+"Poetic Duels.esp","Poetic Duel",0,1,13,37,36,36,34,34,1,0,24,0,0,0,0,2,0,0,0,"",1.0
+"NPCs Take Cover.esp","NPCs Take Cover - Smarter Anti-Cheese AI",0,1,1,35,35,35,0,0,0,0,0,0,0,0,0,35,0,0,0,"",0.0
+"Innocence Lost - Quest Expansion.esp","The Innocence Lost - Quest Expansion",0,1,61,107,35,35,29,29,8,0,2,0,2,0,0,6,0,0,0,"",1.0
+"Unmasking Sybille.esp","Unmasking Sybille - Dialogue Tweak",0,1,44,49,35,35,33,33,9,0,4,0,0,0,0,2,0,0,0,"",1.0
+"Alternate Perspective - Gate to Sovngarde Edition.esp","Alternate Perspective - Voiced Addon",0,1,50,52,35,35,33,30,12,0,0,0,0,0,1,2,0,3,0,"",0.9091
+"Inigo Official Patch SE (ESPFE).esp","Inigo Official Patch SE",0,1,38,86,33,33,18,18,6,0,0,0,0,0,0,15,0,0,0,"",1.0
+"PaarthurnaxQuestExpansion.esp","Paarthurnax - Quest Expansion",0,1,35,49,35,32,32,32,8,0,0,0,0,0,0,0,0,0,3,"",1.0
+"secretofrorikstead.esp","More to Say - Main",0,1,30,38,31,31,31,31,12,0,1,0,0,0,0,0,0,0,0,"",1.0
+"FDE Roggi.esp","Follower Dialogue Expansion - Roggi Knot-Beard",0,1,35,184,31,31,27,27,7,0,0,0,0,0,0,4,0,0,0,"",1.0
+"FDE Faendal.esp","Follower Dialogue Expansion - Faendal",0,1,36,208,31,31,29,29,12,0,0,0,0,0,0,2,0,0,0,"",1.0
+"ccvsvsse002-pets.esl","Official Master Files - Cleaned Plugins",1,1,21,30,30,30,30,30,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"MoreToDoSoulCairn.esp","More to do in the Soul Cairn",0,1,35,52,30,30,30,30,2,0,0,0,0,0,0,0,0,0,0,"",1.0
+"The Cursed Tribe - Quest Expansion.esp","The Cursed Tribe - Quest Expansion",0,1,28,54,32,30,27,27,8,1,4,2,0,0,0,3,0,0,2,"",1.0
+"NewHealingReactions.esp","Additional Healing Reactions",0,1,1,44,44,29,0,0,0,0,0,0,0,0,0,29,0,0,15,"",0.0
+"TypographyTraining.esp","Typography Training",0,1,20,29,29,29,8,8,0,0,0,0,0,0,0,21,0,0,0,"",1.0
+"ccedhsse003-redguard.esl","Official Master Files - Cleaned Plugins",1,1,37,42,42,28,18,17,5,0,2,0,0,0,0,10,0,1,14,"",0.9444
+"Caught Red Handed - Quest Expansion.esp","Caught Red Handed - Quest Expansion",0,1,23,39,30,28,28,28,3,0,6,2,0,0,0,0,0,0,2,"",1.0
+"The Great Village of Kynesgrove.esp","Rob's Bug Fixes - TGC Kynesgrove",0,1,53,93,28,28,27,27,11,0,0,0,0,0,0,1,0,0,0,"",1.0
+"Companions Dialogue Bundle.esp","Companions Dialogue Bundle",0,1,55,151,35,28,28,28,3,0,0,0,0,0,0,0,0,0,7,"",1.0
+"BoethiahCalling_AlternativeQuest.esp","Boethiah's Calling - Alternate Questline",0,1,34,36,27,27,22,22,4,0,0,0,0,0,0,5,0,0,0,"",1.0
+"GTS - Bluesky Hall Adoption.esp","Bluesky Hall and Fort Valus Allow Adoptions",0,1,7,26,26,26,26,26,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Xtended Stay.esp","Xtended Stay",0,1,11,30,28,25,25,25,1,0,0,0,0,0,0,0,0,0,3,"",1.0
+"ccbgssse020-graycowl.esl","Official Master Files - Cleaned Plugins",1,1,17,26,26,23,20,20,3,0,2,1,0,0,0,3,0,0,3,"",1.0
+"SpareAnise.esp","Spare Anise",0,1,19,25,22,22,20,20,8,0,4,0,0,0,0,2,0,0,0,"",1.0
+"Ghosts of the Tribunal - Voiced.esp","Voiced Narrative - Ghosts of the Tribunal (Creation Club)",0,1,19,49,22,21,17,17,4,0,2,0,0,0,0,4,0,0,1,"",1.0
+"TheOnlyCureQuestExpansion.esp","The Only Cure - Quest Expansion",0,1,29,40,22,21,18,18,4,0,0,0,0,0,0,3,0,0,1,"",1.0
+"NPCs_Wear_Amulets_Of_Mara.esp","NPCs Wear Amulets of Mara PLUS",0,1,3,21,21,21,21,21,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"BardExcavation.esp","Bards College Excavation",0,1,20,23,21,21,19,19,2,0,0,0,0,0,0,2,0,0,0,"",1.0
+"DynamicMercenaryFees.esp","Dynamic Mercenary Fees",0,1,4,20,20,20,20,20,2,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Undeath.esp","Undeath Remastered - CLEANED ESMIFIED",0,1,32,75,20,19,16,16,1,0,0,0,0,0,0,3,0,0,1,"",1.0
+"GTS - Wyrmstooth Adoption.esp","Bluesky Hall and Fort Valus Allow Adoptions",0,1,5,18,18,18,18,18,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"The Whispering Door - Quest Expansion.esp","The Whispering Door - Quest Expansion",0,1,28,52,25,18,17,17,4,0,2,2,0,0,0,1,0,0,7,"",1.0
+"NPCs React To Necromancy.esp","NPCs React To Necromancy (And More)",0,1,20,212,18,18,15,15,2,0,6,6,0,0,0,3,0,0,0,"",1.0
+"The Great City of Winterhold v4.esp","The Great City Of Winterhold SSE Edition",0,1,45,97,18,18,18,18,3,0,0,0,0,0,0,0,0,0,0,"",1.0
+"HeartOfTheReach.esp","Heart of the Reach - New Quest - Dungeon - Weapons - 3 Creature Variants - Ring - Spell",0,1,22,43,17,17,17,17,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Fishing - Voiced.esp","Voiced Narrative - Fishing",0,1,69,85,76,17,9,9,4,0,0,0,0,0,0,8,0,0,59,"",1.0
+"SkyrimsGotTalent-Bards.esp","Skyrim's Got Talent - Improve As a Bard",0,1,28,205,25,17,17,17,0,0,0,0,0,0,0,0,0,0,8,"",1.0
+"AdoptionAndMovingFix.esp","Adoption Spouse and Moving Fixes",0,1,3,33,17,17,16,16,0,8,0,0,0,0,0,1,0,0,0,"",1.0
+"Companions at Mirmulnir.esp","CAM - Companions at Mirmulnir",0,1,12,56,17,17,17,17,1,0,2,0,2,0,0,0,0,0,0,"",1.0
+"Fury - Animal Taming of Skyrim.esl","Fury - Animal Taming of Skyrim",0,1,16,16,16,16,16,16,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"SilusJournal_ReforgeRazor.esp","Mehrunes Dagon's Shrine Unlocked - Pieces of the Past Quest Alternative - Voiced",0,1,14,22,17,16,15,15,4,0,2,2,0,0,0,1,0,0,1,"",1.0
+"Bring Meeko to Lod.esp","Bring Meeko To Lod",0,1,17,21,21,16,14,14,2,0,0,0,0,0,0,2,0,0,5,"",1.0
+"SGT - Auri Bard Addon.esp","Auri Reacts To Your Music",0,1,9,26,16,16,16,16,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"ccbgssse063-ba_ebony.esl","Official Master Files - Cleaned Plugins",1,1,6,16,15,15,15,15,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"AmuletEvangelism.esp","Amulet Evangelism - Priests Sell Amulets",0,1,15,15,15,15,15,15,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"bloodbond.esp","Bloodbond - Contract with the Vampire for SSE",0,1,11,22,22,15,15,15,0,0,0,0,0,0,0,0,0,0,7,"",1.0
+"NGCDT - Distance Checks.esp","NGCDT - Distance Checks",0,1,41,51,30,15,14,14,3,0,0,0,0,0,0,1,0,0,15,"",1.0
+"Redguard Elite Armaments - Voiced Narrative.esp","Voiced Narrative - Redguard Elite Armaments (Creation Club)",0,1,14,14,14,14,13,13,3,0,1,0,0,0,0,1,0,0,0,"",1.0
+"FaceSculptorExpanded.esp","Face Sculptor Expanded",0,1,54,60,16,14,12,12,3,0,0,0,0,0,0,2,0,0,2,"",1.0
+"Arena - Markarth Side.esp","Arena - Markarth Side Town",0,1,22,27,14,14,14,14,3,0,0,0,0,0,0,0,0,0,0,"",1.0
+"HarvestYourBlood.esp","Harvest Your Blood for Septimus",0,1,6,13,13,13,13,13,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Gore - SaSEC.esp","Gore - A Companion Mod",0,1,24,34,13,13,10,10,1,0,0,0,0,0,0,3,0,0,0,"",1.0
+"SL99Exchanger.esp","Exchange currency",0,1,3,13,13,13,13,13,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Bloodchill Manor - Voiced.esp","Voiced Narrative - Bloodchill Manor (Creation Club)",0,1,4,13,13,13,8,8,1,0,0,0,0,0,0,5,0,0,0,"",1.0
+"Sell Stones of Barenziah.esp","Sell Unusual Gems - Stones of Barenziah",0,1,7,13,13,13,13,13,3,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Revealing Rune.esp","Revealing Rune",0,1,14,15,13,13,12,12,2,0,0,0,0,0,0,1,0,0,0,"",1.0
+"ccbgssse031-advcyrus.esm","Official Master Files - Cleaned Plugins",1,1,6,12,12,12,12,12,0,0,4,2,1,0,0,0,0,0,0,"",1.0
+"ccvsvsse004-beafarmer.esl","Official Master Files - Cleaned Plugins",1,1,30,76,76,12,10,10,1,0,0,0,0,0,0,2,0,0,64,"",1.0
+"FalkreathShades.esp","Gravewind - ESMIFIED",0,1,12,12,12,12,11,11,1,0,0,0,0,0,0,1,0,0,0,"",1.0
+"Finding_Derkeethus.esp","Finding Derkeethus",0,1,15,15,13,12,10,10,1,0,0,0,0,0,0,2,0,0,1,"",1.0
+"ThugsNotAssassins.esp","Thugs Not Assassins",0,1,10,12,12,12,11,10,3,0,2,0,1,0,0,1,0,1,0,"",0.9091
+"Favor Quests Separated - The Choice Is Yours Patch.esp","Favor Quests Separated - The Choice Is Yours Patch",0,1,9,12,12,12,12,12,3,0,0,0,0,0,0,0,0,0,0,"",1.0
+"ccbgssse041-netchleather.esl","Official Master Files - Cleaned Plugins",1,1,17,41,11,11,11,11,1,0,1,0,0,0,0,0,0,0,0,"",1.0
+"ccbgssse055-ba_orcishscaled.esl","Official Master Files - Cleaned Plugins",1,1,6,11,11,11,11,11,1,0,2,1,0,0,0,0,0,0,0,"",1.0
+"cceejsse005-cave.esm","Official Master Files - Cleaned Plugins",1,1,14,34,24,11,11,11,0,0,0,0,0,0,0,0,0,0,13,"",1.0
+"Snazzy Black Briar Lodge.esp","Snazzy Misc Locations",0,1,9,11,11,11,11,11,2,0,0,0,0,0,0,0,0,0,0,"",1.0
+"ReturnAegisbane.esp","Return Aegisbane",0,1,13,15,11,11,11,11,4,0,0,0,0,0,0,0,0,0,0,"",1.0
+"dvEdda.esp","Collecting the Edda",0,1,6,11,11,11,11,11,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"NGCDT - LovelyLetter Patch.esp","NGCDT - LovelyLetter Patch",0,1,17,20,14,11,11,11,2,0,0,0,0,0,0,0,0,0,3,"",1.0
+"Environs - Shrines of Talos.esp","Environs - The Shrines of Talos",0,1,12,62,11,11,11,11,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Unofficial Skyrim Modders Patch.esp","Unofficial Skyrim Modder's Patch - USMP SE",0,1,35,271,10,10,10,9,1,0,0,0,0,0,0,0,0,1,0,"",0.9
+"COINMerchantExchange.esp","C.O.I.N. - Merchant Exchange",0,1,10,10,10,10,10,10,2,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Nilheim_MiscQuestExpansion.esp","Nilheim - Misc Quest Expansion",0,1,9,10,10,10,10,10,2,0,0,2,0,0,0,0,0,0,0,"",1.0
+"CC Tundra Homestead - Tweaks and Enhancements.esp","CC Tundra Homestead - Tweaks and Enhancements (THTE)",0,1,7,12,12,10,10,10,2,0,0,0,0,0,0,0,0,0,2,"",1.0
+"FDE Brelyna Lucien.esp","Follower Dialogue Expansion - Brelyna Maryon - ILucien",0,1,7,12,10,10,5,5,1,0,0,0,0,0,0,5,0,0,0,"",1.0
+"DragonHunting.esp","Dragon Hunting",0,1,14,15,14,10,10,10,0,8,0,0,0,0,0,0,0,0,4,"",1.0
+"Respectful Ravyn.esp","Respectful Ravyn",0,1,11,22,9,9,9,9,2,0,0,0,0,0,0,0,0,0,0,"",1.0
+"aaaGraniteHill.esp","Granite Hill - ESLIFIED LUX PATCH",0,1,10,11,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"SilusJournal_Dialogue.esp","Mehrunes Dagon's Shrine Unlocked - Pieces of the Past Quest Alternative - Voiced",0,1,7,9,9,9,9,9,2,0,1,2,0,0,0,0,0,0,0,"",1.0
+"sisselbookquest.esp","More To Say - Sissel's Book Quest",0,1,8,8,8,8,8,8,2,0,0,0,0,0,0,0,0,0,0,"",1.0
+"AP - Missile Additional Starts.esp","Adventurer's Start - An Alternate Perspective Addon",0,1,9,9,8,8,8,8,0,7,0,0,0,0,0,0,0,0,0,"",1.0
+"Environs - Hroggars House.esp","Environs - Hroggar's House",0,1,10,18,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"The Mind of Madness - Delayed Start.esp","Delayed Quest Starts - Mind of Madness",0,1,10,25,9,8,8,8,3,0,0,0,0,0,0,0,0,0,1,"",1.0
+"OStimCommunityResource.esp","OStim Community Resource",0,1,5,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"TGoB_Don't_Hate_me!.esp","Don't Hate Me - Taking Care of Business - CHECK AGAIN IF UPDATING",0,1,8,23,7,7,7,7,2,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Delay Bleak Falls Barrow.esp","Delay Bleak Falls Barrow - Voiced",0,1,3,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Myrwatch - Tweaks and Enhancements.esp","Myrwatch - Tweaks and Enhancements",0,1,4,9,9,7,7,7,1,0,2,0,0,0,0,0,0,0,2,"",1.0
+"HouseOfHorrorsQuestExpansion.esp","House of Horrors - Quest Expansion",0,1,4,19,7,7,0,0,0,0,0,0,0,0,0,7,0,0,0,"",0.0
+"bloodbond - alternative player dialogue.esp","Bloodbond - Alternative Player Dialogue",0,1,10,7,7,7,7,7,2,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Listen.esp","Listen - Dark Brotherhood Radiant Quests",0,1,7,7,7,7,7,7,0,5,0,0,0,0,0,0,0,0,0,"",1.0
+"TWDQE - Wintersun patch.esp","The Whispering Door - Quest Expansion - Wintersun patch",0,1,10,11,9,7,7,7,2,0,0,0,0,0,0,0,0,0,2,"",1.0
+"Environs - Riften Warehouse.esp","Environs - Riften Warehouse",0,1,7,31,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"CompanionsTweaks.esp","Improved Companions - Questline Tweaks",0,1,9,17,7,7,5,5,2,0,0,0,0,0,0,2,0,0,0,"",1.0
+"CarriageAndStableDialogues.esp","Carriages and Stables Dialogue Bundle",0,1,9,27,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Wild Horses - Dialogues.esp","Wild Horses - Voiced Addon (CC)",0,1,6,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"BuyableGoldenClaw.esp","Buyable Golden Claw",0,1,3,6,6,6,6,6,1,2,0,0,0,0,0,0,0,0,0,"",1.0
+"Riverwood Trader Is A Mess.esp","Riverwood Trader Is A Mess",0,1,7,9,8,6,6,6,1,0,0,0,0,0,0,0,0,0,2,"",1.0
+"CWE Taluri fix.esp","Capital Windhelm Expansion Eastern gate blackscreen and other fixes",0,1,6,6,6,6,5,5,2,0,0,0,0,0,0,1,0,0,0,"",1.0
+"Zeus.esp","LoreRim - Zeus",0,1,5,6,6,6,6,6,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Narrative Gameplay Consistent Dialogue Tweaks - Favor Quests Separated Patch.esp","NGCDT - Favor Quests Separated Patch",0,1,6,6,6,6,6,6,1,2,0,0,0,0,0,0,0,0,0,"",1.0
+"CFTO bittercup fix.esp","Carriage Ferry Travel Overhaul (CFTO) Bittercup Fix",0,1,2,9,9,6,5,5,0,0,0,0,0,0,0,1,0,0,3,"",1.0
+"ccbgssse005-goldbrand.esl","Official Master Files - Cleaned Plugins",1,1,5,5,5,5,5,5,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"cceejsse003-hollow.esl","Official Master Files - Cleaned Plugins",1,1,3,5,5,5,5,5,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"ccafdsse001-dwesanctuary.esm","Official Master Files - Cleaned Plugins",1,1,4,5,5,5,4,4,0,0,0,0,0,0,0,1,0,0,0,"",1.0
+"StridingSiltStrider.esl","Striding Silt Strider",0,1,3,24,5,5,0,0,0,0,0,0,0,0,0,5,0,0,0,"",0.0
+"Andrealphus Scene Tweaks.esp","Andrealphus Scene Tweaks",0,1,24,24,5,5,3,2,0,0,0,0,0,0,0,2,0,1,0,"",0.6667
+"Toying With The Dead mQE.esp","Toying With The Dead - minor Quest Expansion",0,1,3,5,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Civil War Lines Expansion.esp","Civil War Lines Expansion",0,1,17,415,8,5,0,0,0,0,0,0,0,0,0,5,0,0,3,"",0.0
+"Fists Rewards.esp","[LoreRim] Fisting Rewards",0,1,4,5,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Triumvirate - Mage Archetypes.esp","Triumvirate (Balanced)",0,1,9,15,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"EbonyGetLost.esp","Mr. Ebony... Get Lost",0,1,6,6,5,5,5,5,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Hunters Dialogue Edit.esp","Hunters Dialogue Edit",0,1,6,8,5,5,5,5,3,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Skip Vampire Lord Tutorial.esp","Skip Vampire Lord Tutorial",0,1,6,6,6,4,2,2,1,0,0,0,0,0,0,2,0,0,2,"",1.0
+"SkyforgeImmersionAddon.esp","Skyforge Immersion Addon",0,1,2,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"GoldenLie.esp","Silence is Golden",0,1,3,6,6,4,4,4,0,0,0,0,0,0,0,0,0,0,2,"",1.0
+"WindhelmDialogueExpansion.esp","Dialogue Expansion - Windhelm",0,1,142,330,4,4,3,3,1,0,0,0,0,0,0,1,0,0,0,"",1.0
+"FDE Mjoll - Auri.esp","FDE Mjoll Auri patch",0,1,6,6,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Simple Outfit System.esp","Simple Outfit System",0,1,3,4,4,4,4,4,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Faction Ranks.esp","Faction Ranks",0,1,4,4,4,4,4,4,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Hunters Mark Animal Den on Map.esp","Hunters Mark Animal Den on Map",0,1,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"House of Horrors - Delayed Start.esp","Delayed Quest Starts - House of Horrors",0,1,2,4,4,4,2,2,0,0,0,0,0,0,0,2,0,0,0,"",1.0
+"ccmtysse002-ve.esl","Official Master Files - Cleaned Plugins",1,1,1,3,3,3,0,0,0,0,0,0,0,0,0,3,0,0,0,"",0.0
+"Snazzy Interiors - Riften AIO.esp","Snazzy Riften AIO",0,1,3,3,3,3,3,3,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"DeceiveDegaine.esp","Deceive Degaine",0,1,3,4,4,3,3,3,0,0,1,0,0,0,0,0,0,0,1,"",1.0
+"Severin Manor Has A Price.esp","Severin Manor Has A price",0,1,2,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Give Beggars Food.esp","Give Beggars Food SE",0,1,3,3,3,3,3,3,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Search and Seizure - Quest Expansion.esp","Search and Seizure - Quest Expansion",0,1,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"GORE - PaarthurnaxQuestExpansion Patch.esp","Gore - Paarthurnax Quest Expansion Patch",0,1,1,3,3,3,3,3,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"FDE Illia Inigo.esp","Follower Dialogue Expansion - Illia - Inigo Banter",0,1,1,3,3,3,0,0,0,0,0,0,0,0,0,3,0,0,0,"",0.0
+"SeranaCureQuestPlus.esp","SeranaCureQuestPlus",0,1,11,11,4,3,2,2,1,0,0,0,0,0,0,1,0,0,1,"",1.0
+"The Great Town of Shor's Stone.esp","Rob's Bug Fixes - TGC Shor's Stone",0,1,3,23,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Requiem - Minor Arcana - Roleplaying.esp","Requiem - Minor Arcana",0,1,11,18,9,3,3,3,0,0,1,0,1,0,0,0,0,0,6,"",1.0
+"NGCDT - Nurelion Edits.esp","NGCDT - Nurelion Edits",0,1,4,5,4,3,2,2,0,0,0,0,0,0,0,1,0,0,1,"",1.0
+"CT_AskToShowRoom.esp","Ask Innkeepers To Show Room SE",0,1,4,4,3,3,3,3,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"FDE Mjoll Remiel.esp","Follower Dialogue Expansion - Mjoll the Lioness - Remi",0,1,2,3,3,3,1,1,0,0,0,0,0,0,0,2,0,0,0,"",1.0
+"Shroom Beetles.esp","Shroom Beetles (Creature Series pt.6) SE",0,1,4,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Growl - Werebeasts of Skyrim.esp","LoreRim - xEdit64 Output",0,1,6,5,5,3,3,3,0,0,0,0,0,0,0,0,0,0,2,"",1.0
+"CFTO Bittercup fix + Bittercup TnE Patch.esp","CFTO Bittercup fix and Bittercup TnE Patch",0,1,1,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"LoreRim Respec.esp","[LoreRim] Respec",0,1,2,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"The Taste of Death - Delayed Start.esp","Delayed Quest Starts - Taste of Death",0,1,3,4,3,3,1,1,1,0,0,0,0,0,0,2,0,0,0,"",1.0
+"ccbgssse035-petnhound.esl","Official Master Files - Cleaned Plugins",1,1,3,4,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"ccbgssse034-mntuni.esl","Official Master Files - Cleaned Plugins",1,1,9,10,10,2,2,2,1,0,0,0,0,0,0,0,0,0,8,"",1.0
+"ccbgssse038-bowofshadows.esl","Official Master Files - Cleaned Plugins",1,1,3,3,3,2,1,1,0,0,0,0,0,0,0,1,0,0,1,"",1.0
+"ccbgssse059-ba_dragonplate.esl","Official Master Files - Cleaned Plugins",1,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"ccbgssse068-bloodfall.esl","Official Master Files - Cleaned Plugins",1,1,2,2,2,2,1,1,0,0,0,0,0,0,0,1,0,0,0,"",1.0
+"ccbgssse069-contest.esl","Official Master Files - Cleaned Plugins",1,1,1,2,2,2,0,0,0,0,0,0,0,0,0,2,0,0,0,"",0.0
+"CWFO_TheFallen.esp","Civil War F Off - No Season Unending",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"HonorThywordImpatiensofaSiantepilogue.esp","Honor Thy Word - Saint Jiub Opus Epilogue",0,1,1,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Escapeweave.esp","Escapeweave",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Quantity Trade - Ysolda.esp","Quantity Trade - Ysolda",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Civil War Champions - Reduced Cut.esp","Civil War Champions - Reduced Cut",0,1,1,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Kidmer - Adoptable Elf Children 1_2.esp","Charming Children - Simple Kidmer Revamped",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Erandur Dialogue Edits.esp","Erandur Dialogue Edits",0,1,24,60,6,2,0,0,0,0,0,0,0,0,0,2,0,0,4,"",0.0
+"Temper&Recharge.esp","Temper and Recharge Services",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"LovelyLetter.esp","A Lovely Letter Alternate Routes",0,1,19,25,16,2,2,2,0,0,0,0,0,0,0,0,0,0,14,"",1.0
+"SetHome.esp","Settling of Squad - Set Follower Home",0,1,2,2,2,2,2,2,0,1,0,0,0,0,0,0,0,0,0,"",1.0
+"The Gildergreen Grows.esp","The Gildergreen Grows",0,1,3,4,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Kynareth Replaces Talos - Civil War Consequence.esp","Kynareth Replaces Talos - Civil War Consequence",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Riverwood Trader Is A Mess - Silence is Golden Patch.esp","Riverwood Trader Is A Mess - Silence is Golden Patch",0,1,1,2,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"JELWyrmstoothCausePatch.esp","Wyrmstooth - The Cause Patch",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"The Great City of Solitude.esp","Rob's Bug Fixes - TGC Solitude",0,1,4,31,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"NGCDT - Caught Red Handed - QE Patch.esp","NGCDT - Caught Red Handed - QE Patch",0,1,3,3,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Xtended Stay - WindhelmSegregation.esp","Xtended Stay",0,1,2,4,4,2,2,2,0,0,0,0,0,0,0,0,0,0,2,"",1.0
+"Alternative Perspective - Reqtificated.esp","LoreRim - xEdit64 Output",0,1,2,4,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"TheGiftOfSaturalia_CC_Patch.esp","The Gift Of Saturalia",0,1,1,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Stendarr Rising.esp","Stendarr Rising - The Hall of the Vigilant Rebuild",0,1,2,4,4,2,2,2,0,0,0,0,0,0,1,0,0,0,2,"",1.0
+"The Cursed Tribe - LoreRim Patch.esp","LoreRim - xEdit64 Output",0,1,2,2,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Whispering_Door_Expansion_Addon_WSN.esp","Mephala's Curse - TWDQE - WSN",0,1,1,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Face Sculptor Expanded - Growl Patch.esp","CRAP FOMOD",0,1,2,2,2,2,2,2,1,1,0,0,0,0,0,0,0,0,0,"",1.0
+"JK's Castle Dour.esp","JK's Castle Dour",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"soldier_of_stendarr.esp","Soldier of Stendarr",0,1,5,5,5,2,2,2,1,0,0,0,0,0,0,0,0,0,3,"",1.0
+"Big Tweaks.esp","LoreRim - xEdit64 Output",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Ordinator - Perks of Skyrim.esp","LoreRim - xEdit64 Output",0,1,2,2,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"ccbgssse051-ba_daedricmail.esl","Official Master Files - Cleaned Plugins",1,1,7,8,8,1,1,1,0,0,0,0,0,0,0,0,0,0,7,"",1.0
+"cceejsse004-hall.esl","Official Master Files - Cleaned Plugins",1,1,6,6,4,1,0,0,0,0,0,0,0,0,0,1,0,0,3,"",0.0
+"unofficial skyrim creation club content patch.esl","Unofficial Skyrim Creation Club Content Patches",1,1,6,23,4,1,0,0,1,0,0,0,0,0,0,1,0,0,3,"",0.0
+"Bittercup - Tweaks and Enhancements.esp","Bittercup - Tweaks and Enhancements",0,1,2,4,4,1,1,1,0,0,0,0,0,0,0,0,0,0,3,"",1.0
+"Unofficial Daedric Mail Armor Patch.esl","Restored Helmets",1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,"",0.0
+"Nightgateinalternatedialogue.esp","Immersive Nightgate Inn dialogue",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Bow of Shadows - Reduced Cut.esp","Bow of Shadows - Reduced Cut",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Alchemical Appraisal Services.esp","Alchemical Appraisal Services",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"SimpleFunctionalApiary.esp","Simple Functional Apiary - A bee mod",0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,"",0.0
+"ImmersiveInteractions.esp","Immersive Interactions - Animated Actions",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"No Crime Teleport Voice Consistency Fix.esp","No Crime Teleport - Voice Consistency Fix",0,1,2,3,3,1,1,1,0,0,0,0,0,0,0,0,0,0,2,"",1.0
+"Waterskin.esp","Waterskin - Stay Hydrated In Tamriel",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"WormpleHagravens.esp","Wormpie's Hagravens (SE)",0,1,2,2,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Defeat the Dragon Cult.esp","Defeat the Dragon Cult",0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"SaadiaToIman.esp","Saadia to Iman - Dynamic Name Change",0,1,2,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Vilkas Spar Skip.esp","Vilkas Spar Skip",0,1,2,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Tools of Kagrenac - Forgotten Cities patch.esp","Tools of Kagrenac - Forgotten Cities Patch",0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,"",0.0
+"NGCDT - Nurelion - The Choice Is Yours Patch.esp","NGCDT - Nurelion - The Choice Is Yours Patch",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"LoreRim - Remi Patch.esp","LoreRim - xEdit64 Output",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Sanctified Stolen Goods.esp","Sanctified Stolen Goods",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Arcane Arsenal.esp","LoreRim Arcane Arsenal",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"TheGiftOfSaturalia_SGT_Patch.esp","The Gift Of Saturalia",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Whispering_Door_Expansion_Addon.esp","Mephala's Curse - Whispering Door Quest Addon",0,1,6,7,3,1,0,0,0,0,0,0,0,0,0,1,0,0,2,"",0.0
+"Wintersun - Faiths of Skyrim.esp","Wintersun and Daedric Shrines replacer",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"TOCQE - Wintersun.esp","The Only Cure Quest Expansion - Patches",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Better Carriage Destinations.esp","Better Carriage Destinations",0,1,5,7,3,1,1,1,0,0,0,0,0,0,1,0,0,0,2,"",1.0
+"Better Carriage Destinations - Wait Carriage in Inns Patch.esp","Better Carriage Destinations WCII",0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,"",1.0
+"Quick Follower Commands.esp","Swiftly Order Squad - Follower Commands UI",0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,"",0.0
+"Taliesin Patches.esp","LoreRim - xEdit64 Output",0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,"",0.0
+"Better Carriage Destinations - CFTO.esp","Better Carriage Destinations CFTO",0,1,2,1,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,"",1.0
+"LoreRim Tsuns Gift.esp","[LoreRim] Tsun's Gift",0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,"",0.0
+"Forlorn Hope.esp","A Forlorn Hope - an addon for Seeking The Cure",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"soldier_of_stendarr - Voiced.esp","Soldier of Stendarr - Voiced",0,1,4,4,4,1,0,0,0,0,0,0,0,0,0,1,0,0,3,"",0.0
+"ECSS - Ruin's Edge Patch.esp","Skyrim Extended Cut - Saints and Seducers",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"ECSS - Shadowrend Patch.esp","Skyrim Extended Cut - Saints and Seducers",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"CC Fishing - Delayed Start.esp","Delayed Quest Starts - CC Fishing",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"The Forsworn Conspiracy - Delayed Start.esp","Delayed Quest Starts - Forsworn Conspriracy",0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,"",1.0
+"LoreRim - Global Modifiers.esp","LoreRim - xEdit64 Output",0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,"",0.0
+"LoreRim - Better Carriages Patch.esp","LoreRim - xEdit64 Output",0,1,1,1,1,1,1,1,1,0,0,0,0,0,1,0,0,0,0,"",1.0
+"LoreRim - Undeath Patches.esp","LoreRim - xEdit64 Output",0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1,0,"",0.0
+"LoreRim - Alchemy Tweaks.esp","LoreRim - xEdit64 Output",0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,"",0.0
+"ccbgssse003-zombies.esl","Official Master Files - Cleaned Plugins",1,1,33,36,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"cctwbsse001-puzzledungeon.esm","Official Master Files - Cleaned Plugins",1,1,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"cceejsse001-hstead.esm","Official Master Files - Cleaned Plugins",1,1,1,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,"",0.0
+"ccbgssse036-petbwolf.esl","Official Master Files - Cleaned Plugins",1,1,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"ccbgssse067-daedinv.esm","Official Master Files - Cleaned Plugins",1,1,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"ccvsvsse003-necroarts.esl","Official Master Files - Cleaned Plugins",1,1,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"ccrmssse001-necrohouse.esl","Official Master Files - Cleaned Plugins",1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Siege at Icemoth.esp","Siege at Icemoth",0,1,5,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Extended Hireling Dialogue Teldryn.esp","Extended Dialogue Overhaul - Teldryn",0,1,74,1222,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Player Panting Loop Fix.esp","Player Panting Loop Fix",0,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Farming - Voiced.esp","Voiced Narrative - Farming (Creation Club)",0,1,3,11,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,"",0.0
+"Immersive Nurelion Dying.esp","Immersive Dying Nurelion - The White Phial Quest",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Gray Fox Cowl - Under New Management Start.esp","Under New Management Start",0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Audio Overhaul Skyrim.esp","Audio Overhaul for Skyrim (4.1.2)",0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Echolocating Falmer.esp","Falmer 'Dialogue' Overhaul - Echolocation",0,1,6,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"dunPOISoldiersRaidOnStartTweak.esp","dunPOISoldiersRaidOnStart Script Tweak",0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"suspiciouscityguards.esp","Suspicious City Guards",0,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"FDE Brelyna Auri.esp","Follower Dialogue Expansion - Brelyna Maryon - Auri",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"FDE Brelyna Inigo.esp","Follower Dialogue Expansion - Brelyna Maryon - Inigo",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"018InigoBanterPatch.esp","Song of the Green (Auri Follower) - Inigo Banter",0,1,77,98,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"AI Overhaul.esp","AI Overhaul SSE",0,1,8,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Naked Comments Overhaul.esp","Naked Comments Overhaul",0,1,14,1045,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Collision Dialogue Overhaul.esp","Collision Dialogue Overhaul",0,1,14,462,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Nightmares of Skyrim.esp","Nightmares of Skyrim - Dawnstar Only",0,1,4,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"mtsfollowerbanter.esp","More to Say - Main",0,1,67,287,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Shouts of Stallholders.esp","Shouts of Stallholders",0,1,2,118,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Press E To Heal Followers.esp","Press E to Heal Followers",0,1,1,65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Press E to heal Gore.esp","Gore - A Companion Mod",0,1,1,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Neutral Whiterun Guards.esp","Neutral Whiterun Guards",0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,"",0.0
+"Sleeping Expanded.esp","Sleeping Expanded - Animations and NPC reactions",0,1,1,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Smart_NPC_Potions.esp","Smart NPC Potions - Enemies Use Potions and Poisons",0,1,1,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"NPCsReactToFrenzy.esp","NPCs React To Frenzy",0,1,3,102,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"SkyrimsGotTalent-Bards_inigo.esp","Inigo Reacts To Your Music",0,1,3,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"SkyrimsGotTalent_AnimAddon.esp","Skyrim's Got Talent - Player Reactions Addon",0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Nocturnal's Favor.esp","Nocturnal's Favor",0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Golden Claw - More Choices.esp","Golden Claw - More Choices",0,1,1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"DawnguardQuestPrerequisite.esp","Sensible Dawnguard Prerequisite",0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Innocence Lost QE - USSEP Patch.esp","The Innocence Lost - Quest Expansion",0,1,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"The Whispering Door QE - USSEP Patch.esp","The Whispering Door - Quest Expansion",0,1,2,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Vampire Lines Expansion.esp","Vampire Lines Expansion",0,1,11,124,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Forsworn and Thalmor Lines Expansion.esp","Forsworn and Thalmor Lines Expansion",0,1,15,169,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Dremora Lines Expansion.esp","Dremora Lines Expansion",0,1,16,136,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Dremora Combat Dialogue Tweak - Dremora Lines Expansion.esp","DCDT - Dremora Lines Expansion",0,1,9,46,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Bandit Lines Expansion.esp","Bandit Lines Expansion",0,1,17,491,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Extended Bandit Dialogue.esp","Extended Bandit Dialogue",0,1,3,112,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Extended Guard Dialogue.esp","Extended Guard Dialogue",0,1,1,168,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"WindhelmSegregation.esp","Windhelm Segregation - Stay at New Gnisis Cornerclub",0,1,1,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,3,"",0.0
+"PirateBarks.esp","Realistic Pirate Sounds",0,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"ImperialSoldiersDialogueExpansion.esp","Dialogue Expansion - Imperial Soldiers",0,1,38,49,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"mihailtalkativehagravens.esp","Talkative Hagravens - 2023 Halloween Special (SE-AE version)",0,1,3,24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Chatty NPCs.esp","Chatty NPCs and Followers",0,1,52,1233,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"GoodnightSkyrim.esp","Goodnight Skyrim",0,1,2,47,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"FDE Aela Inigo.esp","Follower Dialogue Expansion - Aela the Huntress - Inigo",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"FDE Aela Auri.esp","Follower Dialogue Expansion - Aela the Huntress - Auri",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"FDE Jenassa Inigo.esp","Follower Dialogue Expansion - Jenassa - Inigo",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"SaadiaToImanFDEPatch.esp","Saadia to Iman - Dynamic Name Change - FDE",0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"FDE Jenassa Auri.esp","Follower Dialogue Expansion - Jenassa - Auri",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"No Swing Warnings When Wielding Tools.esp","No Swing Warnings When Wielding Tools",0,1,1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Brawl Lines Expansion.esp","Brawl Lines Expansion and Fixes",0,1,16,146,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Resources - The Great Cities.esp","The Great Cities- Resources",0,1,46,327,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"The Great Town of Ivarstead.esp","The Great Town of Ivarstead SSE",0,1,1,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"The Great Town of Karthwasten.esp","The Great Town of Karthwasten SSE",0,1,1,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"The Great Village of Old Hroldan.esp","Rob's Bug Fixes - TGC Old Hroldan",0,1,1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"The Great Village of Mixwater Mill.esp","Rob's Bug Fixes - TGC Mixwater Mill",0,1,1,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"NGCDT - Distance Checks - The Choice Is Yours Patch.esp","NGCDT - Distance Checks - The Choice Is Yours Patc",0,1,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,5,"",0.0
+"NGCDT - Brawl Lines Expansion Patch.esp","NGCDT - Brawl Lines Expansion Patch",0,1,1,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"NGCDT - Guard Dialogue Overhaul Patch.esp","NGCDT - Guard Dialogue Overhaul Patch",0,1,2,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"SkyrimRevoiced.esp","Skyrim Revoiced",0,1,111,769,165,0,0,0,0,0,0,0,0,0,0,0,0,0,165,"",0.0
+"Followers React to Crafting.esp","Followers React to Crafting",0,1,7,669,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"SkinWalker21_DireWolves.esp","Dire Wolves (Prehistoric Content Series) SE-AE - CUSTOM PLUGIN",0,1,11,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"FDE Aela Remiel.esp","Follower Dialogue Expansion - Aela the Huntress - Remi",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Alit.esp","Alit (Creature Series pt.4) SE",0,1,24,24,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Vittorias Alternate Wedding - GDO Patch.esp","Vittorias Alternate Wedding - Patches",0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Extended Encounters.esp","Extended Encounters",0,1,6,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Take a Nap.esp","Take a Nap - Sleep on Chairs",0,1,1,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Falmer Servant Lines Expansion.esp","Falmer Servant Lines Expansion",0,1,16,98,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"mihailgiantfamily.esp","Giants Overhaul- Mihail Monsters and Animals (SE-AE version)",0,1,6,10,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"mihailseagiants.esp","Sea Giants - Mihail Monsters and Animals (SE-AE version)",0,1,4,11,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"EbonyBladeCurse.esp","Mephala's Curse - Whispering Door Quest Addon",0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Scholar's Sting.esp","Scholar's Sting",0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,"",0.0
+"Transmog.esp","[LoreRim] TM",0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Environs - Tundra Farmhouse.esp","Environs - The Ruined Tundra Farmhouse",0,1,1,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Environs - Kolskeggr.esp","Environs - Kolskeggr",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Environs - Greenwood Shack.esp","Environs - The Greenwood Shack",0,1,1,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"CarriageAndStableDialogues - CFTO Patch.esp","Carriage and Ferry Travel Overhaul Patch",0,1,2,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"FDE Aela Lucien.esp","Follower Dialogue Expansion - Aela the Huntress - Lucien",0,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"Quantity Trade - Dragon Hunting.esp","Quantity Trade - Dragon Hunting",0,1,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"ECSS - Staff of Sheogorath Patch.esp","Skyrim Extended Cut - Saints and Seducers",0,1,2,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"LoreRim Second Breath.esp","LoreRim - MCM and INI Settings",0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0
+"AIAgent.esp","CHIM",0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"",0.0

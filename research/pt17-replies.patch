@@ -1,0 +1,1269 @@
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/PROTOCOL.md glue_verify/PROTOCOL.md
+--- glue_src/PROTOCOL.md	2026-09-23 22:08:56.667129700 -0400
++++ glue_verify/PROTOCOL.md	2026-09-23 22:07:08.393701900 -0400
+@@ -1816,3 +1816,103 @@
+ 
+ - [reviewer] A carried ask (inside the 90 s window) rides `<locked_facts>` only - it never owns a click or an open; the
+   player's words this turn or the model's own item decide (`lrgFacClickAsk`).
++- [pt17-replies] A carried ask must never make an unrelated line answerless. On a carried LIVE turn (his words now, no
++  ask in them) the first `faction` line is prefixed "(background to what he asked a moment ago, not what he is saying
++  now)" and the rule says his words now may be about something else - answer them, in words; on every other faction
++  turn the rule ends "Answer what he says, in words." A rechat carry keeps the plain wording (`lrgFacCarriedLive`;
++  `factions.carried_note`, `factions.answer_in_words`; `test_dialogue` 13 (i)). The floor for a reply that carries no
++  words at all is 10.23.
++
++## 10.23 [pt17-replies / owner addendum 11] NEVER EMPTY - the validator, the re-ask, the floor line, the next-turn rule
++
++Captain Aldis, 2026-09-23 20:10:31: twelve seconds after "I would like to join the Legion" the player said "it says it's
++locked" and grok-4.3 (openrouterjson, strict json_schema) answered `{"action":"Talk", ..., "message":"", ...}` - a
++schema-valid JSON with no words (audit request 850). CHIM core has no floor for that: the stream loop never reaches a
++sentence, `returnLines()` never runs, `processActions()` yields 0 commands, `call_llm_internal()` returns TRUE, the
++`LLM_RETRY_FNCT` seam (main.php:2825) is consulted only for an INVALID reply and nobody had registered one, main.php:2830
++only writes a log row, X-CUSTOM-CLOSE goes out. The glue logged `llm ... spoke=0` and had no rail either. 17 of the 322
++replies logged since the log began (5.3 %) have `"message": ""` (research/pt17-replies.md section 3: 10 ordinary-speech
++defects, 6 in-scene, 1 the glue itself asked for). `lib/lrg_replies.php` (registered from `functions.php` after the two
++post-gates and again from `context_pre.php`, which runs on every request):
++
++### 1. Three layers
++
++- **Validator** (`$GLOBALS['VALIDATE_LLM_OUTPUT_FNCT']`, lib/data_functions.php:5937, per streamed chunk, EVERY LLM turn -
++  the voiced funcret turn included, where `FUNCTIONS_ARE_ENABLED` is false and no post-process hook runs). It judges only
++  a COMPLETE decoded reply (`$GLOBALS['LAST_LLM_RESPONSE']`, set per chunk by every JSON connector): every schema-required
++  key present, the schema's last property present, and `message` not the last key the model wrote (connector/__jpd.php
++  closes a partial object with `"}`, so a mid-stream "" is not a verdict). Trimmed message "" on one of OUR turns -> the
++  reply is rejected: CHIM marks the output invalid, discards it, `call_llm()` returns false and the retry runs. Let
++  through untouched: a business pick the game answers itself (`lrgDlgWillEmit` - the real line plays and the mute would
++  drop any line of ours), a scene / outro turn (log only unless `never_empty.in_scene`), and - with `reask` off - an
++  action-bearing reply (a rejection would throw Follow / Come_Closer / Trade_Items away with the words).
++- **Retry** (`$GLOBALS['LLM_RETRY_FNCT']`). `why` = `empty message` (our rejection), `no reply` (no decoded reply at all:
++  connector error body, the 60 s receive timeout, non-JSON) or `invalid output` (a decoded reply CHIM rejected). For an
++  empty message it RE-ASKS ONCE (`never_empty.reask`, default on): the rule "<npc> answers in words - the message field
++  carries at least one short spoken sentence ... An empty message is not an answer." is appended to the last user
++  message of `$GLOBALS['contextData']`, `call_llm()` runs again under `$GLOBALS['IN_FALLBACK_MODE']` (exactly what CHIM's
++  own fallback re-entry sets, data_functions.php:5810; it is what skips processor/player_tts.php on the second pass;
++  nothing of the rejected attempt was echoed, so nothing is duplicated), the context is restored. Her own words beat any
++  line of ours (addendum 11). Only when the second reply is empty too (`empty message twice`), or on `no reply` /
++  `invalid output`, does she say ONE floor line through CHIM's own `returnLines()` - TTS, `$talkedSoFar`, the chat
++  eventlog row (the next prompt no longer shows two player lines in a row), the ScriptQueue echo, all before
++  X-CUSTOM-CLOSE. If sentences were already spoken mid-stream (the invalid branch), nothing is added.
++- **Hook** (last entry of `action_post_process_fnct_ex`, after `LRG_POSTGATE` and `LRG_DLG_POSTGATE`). It floors what the
++  validator let through on purpose - an action-bearing empty reply with `reask` off, a reply whose `message` came last -
++  BEFORE CHIM echoes the command lines (data_functions.php:6483), so "she says a line before starting anything herself"
++  holds for CHIM's own actions. It never touches the action list, and it stays idle on an emitted pick (`do=pick` among
++  the final lines, or `lrgDlgWillEmit`). After `returnLines()` the rail re-reads `lrgSpokenThisTurn()`: a line the
++  transformer chain dropped is logged as not spoken and not remembered.
++
++### 2. The lines, the memory, the note
++
++- The floor lines are SPOKEN text, never prompt text: `never_empty.lines.question` (his words ended in `?` or began with a
++  question word), `.statement`, `.trouble` (no reply / invalid output: she did not catch it - never a line that implies
++  she heard and understood); each capped at `max_chars` (60), rotated per NPC so the same line is not heard twice running.
++  Config `never_empty {enabled true, reask true, in_scene false, note_seconds 120, max_chars 60, lines}` (defaults in
++  code, `lrgNeDefaults`).
++- `lrg_memory.empty_reply {at, cid, n, why, line, i, kind, told}` - `n` counts every empty reply the rail handled (the
++  re-ask that spoke included), for the owner's greps.
++- Next turn (rules only): `lrgNeNote()` gives Phase 2's volatile guidance one sentence while `empty_reply.at` is within
++  `note_seconds`, on the player's next speech / lrg_dlgtalk turn with this NPC, told once: "<npc>'s last reply carried no
++  words at all. Whatever the player says now, <npc> answers in words: one or two short spoken sentences, then the action
++  if any."
++
++### 3. Prevention on the prompt side (rules only, section 0)
++
++- `lrgDlgJsonTemplate()` appends "Never empty: at least one short spoken sentence, even when the action says it all." to
++  `message`'s DESCRIPTION in the strict schema and to the text template - never a schema keyword (`minLength` would 400
++  in strict modes). `dialogue.reorder_json_scope` (`always`, as D3 decided; `business` = the action-first order only when
++  the turn carries a <business> list, a service, a follower verb, a fresh enlistment ask, an arrest or a list / next
++  question) is the second lever after `dialogue.reorder_json=false`: since the reorder went live 10 of 100 action-first
++  replies came back empty against 1 of 41 character-first ones.
++- The <business> block no longer says "With the action leave message empty": request 706 (Beirand, 2026-09-23 04:43)
++  picked a [commits] key with message "", the gate PARKED it and her confirming question - which IS the message - was
++  never heard. It now says: say your one line in message even with the action; when the world answers for you that line
++  is simply not played (the mute only ever silences a pick that is really emitted).
++- 10.22: the carried faction wording (background mark, "answer what he says, in words").
++
++### 4. Log
++
++`never-empty npc=<n> action=<code> item="<i>" verdict=rejected|let-through (...)|log-only (...)|idle (...)` from the
++validator / hook, and `never-empty npc=<n> action=<code> why=<why> said="<line>"` or `... reask=spoke chars=<n>` from the
++retry. `grep never-empty lorerim_glue.log` is the count of turns the model returned no words.
++
++### 5. Cost and limits
++
++No new LLM call on an ordinary turn. On the ~5 % of turns the model returns no words: one more LLM call (about 1.5-2 s
++under the MAIN lock) and, only if that fails too, one short TTS line. The `no reply` / `invalid output` branch is
++speculative - zero "Invalid JSON Output" / "LLM didn't output anything" lines in chim.log so far - so it is gated on
++`lrgSpokenThisTurn() === ''` and kept simple. A connector that never sets `LAST_LLM_RESPONSE` (all six JSON connectors
++do) leaves the rail idle, i.e. today's behaviour. Owner-side levers, cheaper than any server code: try another model,
++json_schema off (json_object) for a session, `reasoning.effort` above `none`, `dialogue.reorder_json=false`.
++
++### 6. Tests
++
++`test_gates` 36 (the validator on complete / incomplete / message-last / character-first / json_object replies, the
++re-ask that speaks, the re-ask that fails -> one question line, a statement line, two consecutive empties -> two lines,
++`reask=false`, the emitted pick vs the parked [commits] pick (request 706's shape), the muted shape, not-our turns, the
++VOICED funcret turn with functions off, `no reply` / `invalid output` after spoken sentences, the scene turn, `enabled=false`,
++the note); `test_dialogue` 13 (i) (the carried wording) and (j) (the JSON template clause, the <business> wording,
++`lrgDlgTurnHasBusiness`); flow `31` (all of it through the real hook files, plus the barter shape); `16` (three
++post-filters now).
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/server/lorerim_glue/config/lrg_config.default.json glue_verify/server/lorerim_glue/config/lrg_config.default.json
+--- glue_src/server/lorerim_glue/config/lrg_config.default.json	2026-09-23 22:08:56.468882400 -0400
++++ glue_verify/server/lorerim_glue/config/lrg_config.default.json	2026-09-23 22:07:08.453603600 -0400
+@@ -115,6 +115,20 @@
+     "watch": { "enabled": true, "min_seconds": 6, "max_seconds": 30, "near_units": 350, "moved_units": 100 }
+   },
+ 
++  "_never_empty_readme": "[pt17-replies / owner addendum 11] NEVER EMPTY (lib/lrg_replies.php). Captain Aldis, 2026-09-23 20:10:31: the model answered a schema-valid JSON whose message was empty and nothing was spoken - 17 of 322 logged replies (5.3 %) since the log began look like that. enabled: a reply with no words on a player-speech / lrg_dlgtalk / voiced-funcret turn is caught. reask: one more LLM call with the rule 'answer in words' appended before any floor line (about 1.5-2 s on the few turns it happens; false = the floor line straight away, and an action-bearing empty reply keeps its action). in_scene: also inside an OStim scene / the outro (default off: log only there). note_seconds: how long the next-turn rule ('her last reply carried no words ...') rides the prompt. lines: the SPOKEN floor lines, rotated per NPC - question (the player asked something), statement (he did not), trouble (no reply at all / invalid output: she did not catch it - never a line that implies she heard and understood). max_chars caps each. grep lorerim_glue.log for 'never-empty' to count how often the model does it.",
++  "never_empty": {
++    "enabled": true,
++    "reask": true,
++    "in_scene": false,
++    "note_seconds": 120,
++    "max_chars": 60,
++    "lines": {
++      "question": ["Hm. Ask me that again.", "I'm not sure what to tell you.", "Give me a moment to think on that."],
++      "statement": ["Mm-hm.", "Is that so.", "I hear you.", "Go on."],
++      "trouble": ["Say that again?", "Sorry, I didn't catch that."]
++    }
++  },
++
+   "_paid_intimacy_readme": "OWNER ADDENDA 6 - 'EVERYONE HAS A PRICE'. Prices are expressed in DAYS OF WAGE and turned into gold by the server: [pt15 / addenda 12e-f] a day is HER day - band days x the day wage of her own trade (wage_tiers below), so a jarl's day is not a farmhand's. price_multiplier (and the MCM price multiplier) still rescale the whole economy at once. A price is only ever NEEDED when the NPC is not already willing (interest score < 0): a WILLING NPC IS NEVER FOR SALE - she is interested, and money would only insult her. Gold removes exactly ONE gate reason (not_close_enough) and nothing else: never, married-refuse, witnesses, a companion present, a child nearby, combat, a quest scene, adults-only and the kill switch are all untouched, and a refusal she gives for any other reason stands. not_for_sale removes the whole subject: money is then never mentioned to her at all, which is what stops the model inventing a price for somebody who has none. The number the LLM is told is her FLOOR, never a fixed fee - she may name any higher figure in her own voice, and gold can never exceed a number the PLAYER said out loud. Nothing is refunded if the player stops early.",
+   "paid_intimacy": {
+     "enabled": true,
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/server/lorerim_glue/context_pre.php glue_verify/server/lorerim_glue/context_pre.php
+--- glue_src/server/lorerim_glue/context_pre.php	2026-09-23 22:08:56.493377800 -0400
++++ glue_verify/server/lorerim_glue/context_pre.php	2026-09-23 22:07:08.460618400 -0400
+@@ -13,6 +13,11 @@
+ // (PROTOCOL 6.2 lists them). The VOICED funcret turn (mode `voiced`) injects nothing here: its cue is set
+ // from prompts.php (lrgVoicedCue).
+ require_once __DIR__ . '/lib/lrg_actions.php';
++// [pt17-replies] NEVER EMPTY: main.php:2540 runs this file on EVERY request, functions enabled or not, and it runs
++// before call_llm() (main.php:2817) - so the validator / retry seams of lib/lrg_replies.php are in place for the
++// voiced funcret turn as well. Idempotent with the registration in functions.php.
++require_once __DIR__ . '/lib/lrg_replies.php';
++lrgNeRegister();
+ 
+ // [0.5.5 / owner addendum 11] A glue failure that preprocessing decided to VOICE reaches this point on its way
+ // to CHIM's funcret follow-up turn (processor/funcret.php, main.php:2657). It is stopped HERE when that turn
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/server/lorerim_glue/functions.php glue_verify/server/lorerim_glue/functions.php
+--- glue_src/server/lorerim_glue/functions.php	2026-09-23 22:08:56.494377700 -0400
++++ glue_verify/server/lorerim_glue/functions.php	2026-09-23 22:07:08.462616700 -0400
+@@ -42,6 +42,14 @@
+ if (!in_array($GLOBALS['LRG_DLG_POSTGATE'], (array) ($GLOBALS['action_post_process_fnct_ex'] ?? []), true)) {
+     $GLOBALS['action_post_process_fnct_ex'][] = $GLOBALS['LRG_DLG_POSTGATE'];
+ }
++// [pt17-replies] NEVER EMPTY (owner addendum 11; lib/lrg_replies.php). Brace depth 0, right after the two post-gates
++// and BEFORE the hide policies below (those are pre-LLM ENABLED_FUNCTIONS filters, not post-process entries): the
++// only post-process filters ahead of this one are LRG_POSTGATE and LRG_DLG_POSTGATE, so it sees the final action
++// list of both lanes and runs under SHARMAT too. It also chains CHIM's VALIDATE_LLM_OUTPUT_FNCT / LLM_RETRY_FNCT,
++// which run on every LLM turn - the voiced funcret turn included, where FUNCTIONS_ARE_ENABLED is false and no
++// post-process hook ever runs. context_pre.php registers the same three again (idempotent).
++require_once __DIR__ . '/lib/lrg_replies.php';
++lrgNeRegister();
+ // decision D3: action / target / item ahead of message on a business turn, through CHIM's own real hook
+ // (functions/json_response.php:43-51 calls every HOOKS['JSON_TEMPLATE'] callable at the end of
+ // chimRefreshJsonResponseState(), after setStructuredOutputTemplate()).
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/server/lorerim_glue/lib/lrg_dialogue.php glue_verify/server/lorerim_glue/lib/lrg_dialogue.php
+--- glue_src/server/lorerim_glue/lib/lrg_dialogue.php	2026-09-23 22:08:56.488878000 -0400
++++ glue_verify/server/lorerim_glue/lib/lrg_dialogue.php	2026-09-23 22:07:08.465116200 -0400
+@@ -60,6 +60,12 @@
+     return [
+         'enabled' => true,
+         'reorder_json' => true,                       // decision D3: action before message on speech turns
++        // [pt17-replies] 'always' (D3 as decided) | 'business': reorder only when the turn really carries something the
++        // action-first order is for (a <business> list, a service, a follower verb, an enlistment ask, an arrest).
++        // Since the reorder went live 10 of 100 action-first replies came back with message "" against 1 of 41
++        // character-first ones (research/pt17-replies.md); the message description now carries a never-empty clause
++        // on every reordered turn, and this switch is the second lever after dialogue.reorder_json=false.
++        'reorder_json_scope' => 'always',
+         'dedupe_player_prompt' => 'relabel',          // relabel | keep | drop
+         'intent_open' => true,                        // bIntentOpen
+         'quest_colour' => false,                      // bQuestColour - off until probe P17 passes
+@@ -1938,6 +1944,11 @@
+     if (!empty($t['result_block'])) { $parts[] = (string) $t['result_block']; }
+     $chk = lrgDlgCheckDirective($t);
+     if ($chk !== '') { $parts[] = $chk; }
++    // [pt17-replies] her last reply carried no words at all (lib/lrg_replies.php): one rule, once, within note_seconds
++    if (function_exists('lrgNeNote')) {
++        $ne = lrgNeNote((string) ($t['npc'] ?? ''));
++        if ($ne !== '') { $parts[] = $ne; }
++    }
+     return implode("\n", $parts);
+ }
+ 
+@@ -2025,7 +2036,13 @@
+     }
+     $out .= 'Use ' . lrgDlgActionName() . ' with item = one key ONLY when ' . $player . "'s last words clearly do that thing.\n";
+     $out .= "Two keys fit, or unsure: do not act - ask which they mean, in character.\n";
+-    $out .= "With the action leave message empty: your real answer follows by itself.\n";
++    // [pt17-replies] This line used to read "With the action leave message empty: your real answer follows by
++    // itself." It taught the model that an empty message is a valid reply: request 706 (Beirand, 2026-09-23 04:43)
++    // picked a [commits] key with message "", the gate PARKED it and her confirming question - which IS the message
++    // - was never heard. The mute (lrgDlgTransformer) only ever silences a pick that is really EMITTED, so words
++    // cost nothing there and are needed everywhere else.
++    $out .= "Say your one line in message even with the action - never leave message empty; when the world answers\n"
++        . "for you, that line is simply not played.\n";
+     $out .= 'A [commits] key: the first time, ask plainly whether they mean it, naming the choice, and use the'
+         . " action in the same reply; it only happens after they confirm.\n";
+     // while sent < n the NPC MAY NOT deny the matter exists (CMP-M4): a follower with command frameworks
+@@ -2970,23 +2987,31 @@
+     $t = $GLOBALS['LRG_DLG_TURN'] ?? null;
+     if (!is_array($t) || empty($t['on']) || empty(lrgDlgCfg('reorder_json'))) { return; }
+     if (!($t['speech'] ?? false) && !($t['talk'] ?? false)) { return; }
++    // [pt17-replies] reorder_json_scope 'business': the action-first order only when the turn carries what it is for
++    $reorder = (string) lrgDlgCfg('reorder_json_scope', 'always') !== 'business' || lrgDlgTurnHasBusiness($t);
+     $sch = &$GLOBALS['structuredOutputTemplate'];
+     if (isset($sch['json_schema']['schema']['properties']) && is_array($sch['json_schema']['schema']['properties'])) {
+         $p = $sch['json_schema']['schema']['properties'];
+         $first = [];
+-        foreach (['action', 'target', 'item'] as $k) { if (isset($p[$k])) { $first[$k] = $p[$k]; } }
++        if ($reorder) { foreach (['action', 'target', 'item'] as $k) { if (isset($p[$k])) { $first[$k] = $p[$k]; } } }
+         foreach ($p as $k => $v) { if (!isset($first[$k])) { $first[$k] = $v; } }
+-        if (isset($first['item']['description'])) {
++        if ($reorder && isset($first['item']['description'])) {
+             $first['item']['description'] = rtrim((string) $first['item']['description'])
+                 . ' OR, when action is ' . lrgDlgActionName() . ', one key from the <business> block, e.g. T3,'
+                 . ' or 3-8 plain words naming the matter.';
+         }
+-        if (isset($first['target']['description'])) {
++        if ($reorder && isset($first['target']['description'])) {
+             $first['target']['description'] = rtrim((string) $first['target']['description'])
+                 . ' When action is ' . lrgDlgActionName() . ', the NPC you are speaking to.';
+         }
++        // [pt17-replies] the never-empty clause: a DESCRIPTION, never a schema keyword (strict structured-output modes
++        // reject unsupported keywords such as minLength with a 400). 5.3 % of all replies came back with message ""
++        // and the model commits to `action` before it writes words in this order (research/pt17-replies.md).
++        if (isset($first['message']['description'])) {
++            $first['message']['description'] = rtrim((string) $first['message']['description']) . ' ' . lrgDlgNeverEmptyClause();
++        }
+         $sch['json_schema']['schema']['properties'] = $first;
+-        if (isset($sch['json_schema']['schema']['required']) && is_array($sch['json_schema']['schema']['required'])) {
++        if ($reorder && isset($sch['json_schema']['schema']['required']) && is_array($sch['json_schema']['schema']['required'])) {
+             $req = array_values(array_unique(array_merge(['action'], (array) $sch['json_schema']['schema']['required'])));
+             $sch['json_schema']['schema']['required'] = $req;
+         }
+@@ -2994,11 +3019,35 @@
+     if (isset($GLOBALS['responseTemplate']) && is_array($GLOBALS['responseTemplate'])) {
+         $r = $GLOBALS['responseTemplate'];
+         $ordered = [];
+-        foreach (['action', 'target', 'item'] as $k) { if (array_key_exists($k, $r)) { $ordered[$k] = $r[$k]; } }
++        if ($reorder) { foreach (['action', 'target', 'item'] as $k) { if (array_key_exists($k, $r)) { $ordered[$k] = $r[$k]; } } }
+         foreach ($r as $k => $v) { if (!array_key_exists($k, $ordered)) { $ordered[$k] = $v; } }
++        if (isset($ordered['message']) && is_string($ordered['message'])) { $ordered['message'] = rtrim($ordered['message']) . ' - ' . lrgDlgNeverEmptyClause(); }
+         $GLOBALS['responseTemplate'] = $ordered;
+     }
+-    lrgDlgLog('json template: action/target/item ahead of message, item + target descriptions extended', (string) $t['cid']);
++    lrgDlgLog($reorder ? 'json template: action/target/item ahead of message, item + target descriptions extended, message never empty'
++        : 'json template: message never empty (reorder_json_scope=business, no business this turn)', (string) $t['cid']);
++}
++
++/** [pt17-replies] The clause appended to the message description / text template. Rules only, no example line. */
++function lrgDlgNeverEmptyClause(): string
++{
++    return 'Never empty: at least one short spoken sentence, even when the action says it all.';
++}
++
++/**
++ * [pt17-replies] Does this turn carry what the action-first order is FOR: a <business> list, a service, a follower
++ * verb, an enlistment ask, an arrest, or a list / next question? Captain Aldis's 20:10:31 turn carried none of them
++ * (list=none n=0 sent=0 keys=0, only a carried faction ask) and was still reordered.
++ */
++function lrgDlgTurnHasBusiness(array $t): bool
++{
++    if (!empty($t['entries']) || !empty($t['tail'])) { return true; }
++    $svc = (array) ($t['svc'] ?? []);
++    if (!empty($svc['pricelist']) || !empty($svc['direct']) || (string) ($svc['kind'] ?? '') !== '') { return true; }
++    if ((string) ((($t['fol'] ?? [])['asked'] ?? '')) !== '') { return true; }
++    if ((string) ((($t['faction'] ?? [])['asked'] ?? '')) !== '' && empty($t['faction']['carried'])) { return true; }
++    if ((string) ($t['arrest'] ?? '') !== '') { return true; }
++    return in_array((string) ($t['ask'] ?? ''), ['list', 'next'], true);
+ }
+ 
+ /**
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/server/lorerim_glue/lib/lrg_replies.php glue_verify/server/lorerim_glue/lib/lrg_replies.php
+--- glue_src/server/lorerim_glue/lib/lrg_replies.php	1969-12-31 19:00:00.000000000 -0500
++++ glue_verify/server/lorerim_glue/lib/lrg_replies.php	2026-09-23 22:07:08.521179700 -0400
+@@ -0,0 +1,447 @@
++<?php
++/**
++ * LoreRim Glue - [pt17-replies] NEVER EMPTY: the floor under a reply that carried no words.
++ *
++ * Playtest 2026-09-23 20:10:31, Captain Aldis, Solitude: the player said "it says it's locked" and grok-4.3 (openrouterjson,
++ * strict json_schema) answered a schema-valid JSON whose `message` was "" (audit request 850). CHIM core has no floor for
++ * that: the stream loop never reaches a sentence, `returnLines()` never runs, `processActions()` yields 0 commands,
++ * `call_llm_internal()` returns TRUE (the JSON was valid), `LLM_RETRY_FNCT` is consulted only for an INVALID reply and
++ * nobody sets it, main.php:2830-2846 only writes a log row, and X-CUSTOM-CLOSE goes out. Nothing was spoken. The glue
++ * saw it (`llm npc=Captain Aldis action=none item="" spoke=0`) and had no rail either. 17 of the 322 logged replies
++ * since the log began (5.3 %) have `"message": ""` - research/pt17-replies.md has the table.
++ *
++ * Owner addendum 11: "Silence after a request is a defect in every case." This file is that rail, in three layers:
++ *
++ *  1. VALIDATOR ($GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'], lib/data_functions.php:5937). It runs per streamed chunk on EVERY
++ *     LLM turn - including the voiced funcret turn, where CHIM has switched functions off (processor/funcret.php:199)
++ *     and the post-process hooks never run. It judges only a COMPLETE decoded reply (every schema-required key present,
++ *     the schema's last property present, and `message` not the last key the model wrote - connector/__jpd.php closes
++ *     a partial object with "}, so a mid-stream "" is not a verdict): trimmed message "" on one of OUR turns -> the
++ *     reply is rejected (`LRG_NE_REJECT`), CHIM marks the output invalid, discards it, and calls the retry hook.
++ *     A business pick the game answers itself (lrgDlgWillEmit: the real dialogue line plays and the mute would drop any
++ *     line of ours) is let through untouched; a scene / outro turn is log-only unless never_empty.in_scene.
++ *  2. RETRY ($GLOBALS['LLM_RETRY_FNCT'], main.php:2825). For an empty message it RE-ASKS ONCE (never_empty.reask): the
++ *     rule "answer in words" is appended to the last user message and `call_llm()` runs again with
++ *     $GLOBALS['IN_FALLBACK_MODE'] set - exactly what CHIM's own fallback re-entry sets (data_functions.php:5810), and
++ *     what skips processor/player_tts.php on the second pass; nothing of the rejected attempt was echoed, so nothing
++ *     is duplicated. Real words in her own voice beat any line of ours (addendum 11: "in her own words"). Only when
++ *     the second reply is empty too, or the reply was invalid / never came (connector error, timeout, non-JSON - the
++ *     branch main.php already had and nobody used), does she say ONE short floor line through CHIM's own
++ *     `returnLines()`: TTS, $talkedSoFar, the chat eventlog row (so the next prompt does not show two player lines in
++ *     a row), the ScriptQueue echo - all before X-CUSTOM-CLOSE.
++ *  3. HOOK (last entry of $GLOBALS['action_post_process_fnct_ex'], after LRG_POSTGATE and LRG_DLG_POSTGATE). It floors
++ *     what the validator let through on purpose: an action-bearing empty reply when the re-ask is OFF (the validator
++ *     would otherwise discard Follow / Come_Closer / Trade_Items with the words), and a reply whose `message` came last.
++ *     The line is spoken BEFORE CHIM echoes the command lines (data_functions.php:6483), so "she says a line before
++ *     starting anything herself" holds for CHIM's own actions too. It never touches the action list.
++ *
++ * The floor lines are spoken text, not prompt text: short, neutral, non-committal, never pretending to have answered,
++ * rotated per NPC through lrg_memory.empty_reply so the same line is not heard twice running, and the owner edits them
++ * in lrg_config.json (`never_empty.lines.{question|statement|trouble}`). `trouble` is for the no-reply / invalid branch:
++ * it must not imply she heard and understood. Next turn, prevention (rules only): lrgNeNote() gives Phase 2's volatile
++ * guidance one sentence while empty_reply.at is within note_seconds.
++ *
++ * Log: `never-empty npc=<n> action=<code> item="<i>" verdict=rejected|let-through|log-only|idle` (the validator / hook)
++ * and `never-empty npc=<n> action=<code> why=<empty message|empty message twice|no reply|invalid output|the re-ask
++ * failed> said="<line>"` / `reask=spoke chars=<n>` (the retry). grep 'never-empty' counts how often the model does it.
++ *
++ * Offline seams (PROTOCOL 7.2): $GLOBALS['LRG_TEST_SAY'] collects the line when returnLines() does not exist (and
++ * $GLOBALS['talkedSoFar'] grows the way CHIM's returnLines makes it grow); $GLOBALS['LRG_TEST_REASK'] stands in for
++ * call_llm(); $GLOBALS['LRG_NE_TEST_OVERRIDE'] merges over the config.
++ */
++
++if (defined('LRG_REPLIES_LOADED')) { return; }
++define('LRG_REPLIES_LOADED', true);
++
++require_once __DIR__ . '/lrg_core.php';
++require_once __DIR__ . '/lrg_actions.php';    // lrgSpokenThisTurn(), lrgShortCode(), LRG_PLAYER_SPEECH_TYPES (core)
++require_once __DIR__ . '/lrg_dialogue.php';   // lrgDlgWillEmit(), LRG_DLG_GATE_NAMES, $GLOBALS['LRG_DLG_TURN']
++
++// ================================================================== config
++function lrgNeDefaults(): array
++{
++    return [
++        'enabled' => true,
++        // one more LLM call with the words rule before any floor line (about 1.5-2 s on the ~5 % of turns it happens)
++        'reask' => true,
++        // inside an OStim scene / the outro a canned line is worse than a breath: log only, unless the owner wants it
++        'in_scene' => false,
++        // the next-turn rule ("<npc>'s last reply carried no words ...") rides Phase 2's volatile guidance this long
++        'note_seconds' => 120,
++        'max_chars' => 60,
++        // SPOKEN lines, not prompt text. Neutral, non-committal, never pretending to have answered. Owner-editable.
++        'lines' => [
++            'question' => ['Hm. Ask me that again.', "I'm not sure what to tell you.", 'Give me a moment to think on that.'],
++            'statement' => ['Mm-hm.', 'Is that so.', 'I hear you.', 'Go on.'],
++            // no reply / invalid output: she did NOT catch it - the line must not imply she heard and understood
++            'trouble' => ['Say that again?', "Sorry, I didn't catch that."],
++        ],
++    ];
++}
++
++/** Defaults in code + the owner's top-level `never_empty` block (lrgMerge: maps merge, lists replace) + the test seam. */
++function lrgNeCfg(string $path = '', $default = null)
++{
++    static $cfg = null;
++    static $seam = false;
++    if ($cfg === null || $seam || array_key_exists('LRG_NE_TEST_OVERRIDE', $GLOBALS)) {
++        $cfg = lrgNeDefaults();
++        $over = lrgConfig()['never_empty'] ?? null;
++        if (is_array($over)) { $cfg = lrgMerge($cfg, $over); }
++        $seam = is_array($GLOBALS['LRG_NE_TEST_OVERRIDE'] ?? null);
++        if ($seam) { $cfg = lrgMerge($cfg, $GLOBALS['LRG_NE_TEST_OVERRIDE']); }
++    }
++    if ($path === '') { return $cfg; }
++    $v = $cfg;
++    foreach (explode('.', $path) as $k) {
++        if (!is_array($v) || !array_key_exists($k, $v)) { return $default; }
++        $v = $v[$k];
++    }
++    return $v;
++}
++
++// ================================================================== registration
++/**
++ * Idempotent, called from functions.php (brace depth 0, after LRG_DLG_POSTGATE) and again from context_pre.php
++ * (main.php:2540, which runs on every request whether or not functions are enabled). The hook is appended LAST so it
++ * sees every other filter's final output; the validator and the retry are CHAINED onto whatever another plugin set.
++ */
++function lrgNeRegister(): void
++{
++    if (!isset($GLOBALS['LRG_NE_VALIDATOR'])) {
++        $GLOBALS['LRG_NE_VALIDATOR'] = static function ($chunk) { return lrgNeValidate($chunk); };
++    }
++    $prevV = $GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'] ?? null;
++    if (is_callable($prevV) && $prevV !== $GLOBALS['LRG_NE_VALIDATOR']) { $GLOBALS['LRG_NE_PREV_VALIDATOR'] = $prevV; }
++    $GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'] = $GLOBALS['LRG_NE_VALIDATOR'];
++
++    if (!isset($GLOBALS['LRG_NE_RETRY'])) {
++        $GLOBALS['LRG_NE_RETRY'] = static function () { lrgNeRetry(); };
++    }
++    $prevR = $GLOBALS['LLM_RETRY_FNCT'] ?? null;
++    if (is_callable($prevR) && $prevR !== $GLOBALS['LRG_NE_RETRY']) { $GLOBALS['LRG_NE_PREV_RETRY'] = $prevR; }
++    $GLOBALS['LLM_RETRY_FNCT'] = $GLOBALS['LRG_NE_RETRY'];
++
++    if (!isset($GLOBALS['LRG_NE_HOOK'])) {
++        $GLOBALS['LRG_NE_HOOK'] = static function ($actions) { return lrgNeHook(is_array($actions) ? $actions : []); };
++    }
++    $list = (array) ($GLOBALS['action_post_process_fnct_ex'] ?? []);
++    if (!in_array($GLOBALS['LRG_NE_HOOK'], $list, true)) { $GLOBALS['action_post_process_fnct_ex'][] = $GLOBALS['LRG_NE_HOOK']; }
++}
++
++// ================================================================== is this one of our turns?
++/**
++ * ['kind' => '' | speech | talk | voiced, 'npc', 'type', 'scene' => bool, 'why' => ''].
++ * speech = the player's own line (LRG_PLAYER_SPEECH_TYPES); talk = lrg_dlgtalk (Phase 2's "answer his last words");
++ * voiced = CHIM's funcret follow-up turn that Phase 1 marked mode `voiced` (PROTOCOL 10.21). A rechat, a scene tick,
++ * an initiative tick, the diary, an infoaction and everything else: not ours - nothing was asked that needs an answer.
++ * Under SHARMAT there is no LRG_TURN: that is "not a scene", and speech turns still count.
++ */
++function lrgNeKind(): array
++{
++    $type = strtolower((string) ($GLOBALS['gameRequest'][0] ?? ''));
++    $npc = (string) ($GLOBALS['HERIKA_NAME'] ?? '');
++    $out = ['kind' => '', 'npc' => $npc, 'type' => $type, 'scene' => false, 'why' => ''];
++    if (empty(lrgNeCfg('enabled', true))) { $out['why'] = 'never_empty.enabled is off'; return $out; }
++    if (!lrgEnabled()) { $out['why'] = 'the glue is off (kill switch)'; return $out; }
++    $player = strtolower(trim((string) ($GLOBALS['PLAYER_NAME'] ?? '')));
++    $lo = strtolower(trim($npc));
++    if ($lo === '' || in_array($lo, ['player', 'the narrator', 'narrator'], true) || ($player !== '' && $lo === $player)) {
++        $out['why'] = 'no NPC'; return $out;
++    }
++    $turn = $GLOBALS['LRG_TURN'] ?? null;
++    $mode = is_array($turn) ? (string) ($turn['mode'] ?? '') : '';
++    if (in_array($type, LRG_PLAYER_SPEECH_TYPES, true)) { $out['kind'] = 'speech'; }
++    elseif ($type === 'lrg_dlgtalk') { $out['kind'] = 'talk'; }
++    elseif ($type === 'funcret' && $mode === 'voiced') { $out['kind'] = 'voiced'; }
++    else { $out['why'] = 'type ' . ($type !== '' ? $type : '(none)'); return $out; }
++    $out['scene'] = in_array($mode, ['scene', 'outro'], true);
++    return $out;
++}
++
++function lrgNeCid(): string
++{
++    $t = $GLOBALS['LRG_TURN'] ?? null;
++    return is_array($t) ? (string) ($t['cid'] ?? '') : '';
++}
++
++/** The raw model text of this reply, '' when the model wrote none, null when no decoded reply exists at all. */
++function lrgNeRawMessage(): ?string
++{
++    $r = $GLOBALS['LAST_LLM_RESPONSE'] ?? null;
++    if (!is_array($r) || !array_key_exists('message', $r)) { return null; }
++    $m = $r['message'];
++    if (is_array($m)) { $m = implode(',', array_map('strval', $m)); }
++    return trim((string) $m);
++}
++
++/** '' / none / Talk normalised: an action that carries nothing worth keeping over the words. */
++function lrgNeActionless(string $act): bool
++{
++    $n = str_replace(['_', ' '], '', strtolower(trim($act)));
++    return $n === '' || $n === 'none' || $n === 'talk';
++}
++
++/**
++ * A business pick the game answers ITSELF this turn: the real dialogue line plays, the gate emits the pick and
++ * lrgDlgTransformer mutes any spoken line (returnLines drops a transformed line under 2 chars without touching
++ * $talkedSoFar). A floor line there would be recorded and never heard - so the rail stays out of it.
++ */
++function lrgNeWillEmitPick(string $act, string $item): bool
++{
++    $n = str_replace(['_', ' '], '', strtolower(trim($act)));
++    if ($n === '' || !in_array($n, LRG_DLG_GATE_NAMES, true)) { return false; }
++    $t = $GLOBALS['LRG_DLG_TURN'] ?? null;
++    if (!is_array($t) || empty($t['on'])) { return false; }
++    return lrgDlgWillEmit($t, $item);
++}
++
++/** An emitted pick among the FINAL command lines (the dialogue gate ran before this hook). */
++function lrgNeLinesCarryPick(array $lines): bool
++{
++    foreach ($lines as $l) {
++        $parts = explode('|', rtrim((string) $l, "\r\n"), 3);
++        $code = trim((string) (explode('@', $parts[2] ?? '', 2)[0] ?? ''));
++        if (strcasecmp($code, 'ExtCmdLRG_SelectTopic') === 0 && str_contains((string) ($parts[2] ?? ''), ';do=pick')) { return true; }
++    }
++    return false;
++}
++
++// ================================================================== layer 1: the validator
++/**
++ * COMPLETE = every schema-required key present, the schema's LAST property present, and `message` not the last key
++ * the model wrote. The connector re-decodes the whole buffer per chunk and __jpd closes a partial object with "}, so
++ * before the tail keys arrive a "" message is the model still writing, not a verdict. In both key orders CHIM uses
++ * (character-first, and the glue's D3 action-first) `message` sits in the middle; a model that put it LAST is left
++ * to the hook, which judges only when the stream has ended.
++ */
++function lrgNeComplete(array $r): bool
++{
++    $sch = $GLOBALS['structuredOutputTemplate']['json_schema']['schema'] ?? null;
++    $props = is_array($sch) && is_array($sch['properties'] ?? null) ? array_map('strval', array_keys($sch['properties'])) : [];
++    $req = is_array($sch) && is_array($sch['required'] ?? null) ? array_map('strval', $sch['required']) : [];
++    if (!$props) {
++        // json_object mode: the text template's keys are what the model imitates
++        $props = is_array($GLOBALS['responseTemplate'] ?? null) ? array_map('strval', array_keys($GLOBALS['responseTemplate'])) : [];
++        $req = $props;
++    }
++    if (!$props) { return false; }
++    foreach ($req as $k) { if (!array_key_exists($k, $r)) { return false; } }
++    if (!array_key_exists((string) end($props), $r)) { return false; }
++    $keys = array_keys($r);
++    if ((string) end($keys) === 'message') { return false; }
++    return true;
++}
++
++function lrgNeValidate($chunk): bool
++{
++    $prev = $GLOBALS['LRG_NE_PREV_VALIDATOR'] ?? null;
++    if (is_callable($prev) && !$prev($chunk)) { return false; }
++    if (!empty($GLOBALS['LRG_NE_REJECT']) || !empty($GLOBALS['LRG_NE_DONE'])) { return true; }
++    $k = lrgNeKind();
++    if ($k['kind'] === '') { return true; }
++    $msg = lrgNeRawMessage();
++    if ($msg === null || $msg !== '') { return true; }
++    $r = (array) $GLOBALS['LAST_LLM_RESPONSE'];
++    if (!lrgNeComplete($r)) { return true; }
++    $act = (string) ($r['action'] ?? '');
++    $item = (string) ($r['item'] ?? '');
++    $cid = lrgNeCid();
++    $tag = sprintf('never-empty npc=%s action=%s item="%s"', $k['npc'], lrgShortCode($act === '' ? 'none' : $act), substr($item, 0, 40));
++    if (lrgNeWillEmitPick($act, $item)) {
++        if (empty($GLOBALS['LRG_NE_SEEN'])) { $GLOBALS['LRG_NE_SEEN'] = 1; lrgLog($tag . ' verdict=let-through (a business pick the game answers itself)', $cid); }
++        return true;
++    }
++    if ($k['scene'] && empty(lrgNeCfg('in_scene', false))) {
++        if (empty($GLOBALS['LRG_NE_SEEN'])) { $GLOBALS['LRG_NE_SEEN'] = 1; lrgLog($tag . ' verdict=log-only (a scene turn; never_empty.in_scene is off)', $cid); }
++        return true;
++    }
++    $keep = !lrgNeActionless($act);
++    if ($keep && empty(lrgNeCfg('reask', true))) {
++        // no re-ask: a rejection would throw the action away with the words - the hook floors it with the action kept
++        if (empty($GLOBALS['LRG_NE_SEEN'])) { $GLOBALS['LRG_NE_SEEN'] = 1; lrgLog($tag . ' verdict=let-through (an action to keep; the hook adds the line)', $cid); }
++        return true;
++    }
++    $GLOBALS['LRG_NE_REJECT'] = ['why' => 'empty message', 'action' => $act, 'item' => $item, 'at' => lrgNow()];
++    lrgLog($tag . ' verdict=rejected (the model wrote no words' . ($keep ? '; the action rides the re-ask' : '') . ')', $cid);
++    return false;
++}
++
++// ================================================================== layer 2: the retry (main.php:2825)
++function lrgNeRetry(): void
++{
++    $prev = $GLOBALS['LRG_NE_PREV_RETRY'] ?? null;
++    $k = lrgNeKind();
++    if ($k['kind'] === '') { if (is_callable($prev)) { $prev(); } return; }
++    $rej = $GLOBALS['LRG_NE_REJECT'] ?? null;
++    $why = is_array($rej) ? 'empty message' : (is_array($GLOBALS['LAST_LLM_RESPONSE'] ?? null) ? 'invalid output' : 'no reply');
++    $act = is_array($rej) ? (string) ($rej['action'] ?? '') : '';
++    $cid = lrgNeCid();
++    if ($why === 'empty message' && !empty(lrgNeCfg('reask', true)) && empty($GLOBALS['LRG_NE_REASKED'])) {
++        $GLOBALS['LRG_NE_REASKED'] = 1;
++        unset($GLOBALS['LRG_NE_REJECT']);
++        $before = strlen(lrgSpokenThisTurn());
++        $ok = lrgNeReask($k);
++        $after = strlen(lrgSpokenThisTurn());
++        if ($ok && $after > $before) {
++            lrgLog(sprintf('never-empty npc=%s action=%s why=empty message reask=spoke chars=%d', $k['npc'], lrgShortCode($act === '' ? 'none' : $act), $after - $before), $cid);
++            lrgNeRemember($k['npc'], $cid, 'empty message', '', -1, 'reask');
++            return;
++        }
++        $rej2 = $GLOBALS['LRG_NE_REJECT'] ?? null;
++        $why = is_array($rej2) ? 'empty message twice' : 'the re-ask failed';
++        if (is_array($rej2)) { $act = (string) ($rej2['action'] ?? $act); }
++    }
++    if (is_callable($prev)) { $prev(); }
++    lrgNeFloor($k, $why, $act);
++}
++
++/** The rule appended to the last user message for the second call. Rules only, no example lines (PROTOCOL 0). */
++function lrgNeNudge(string $npc): string
++{
++    return '(Rule for this reply: ' . $npc . ' answers in words - the message field carries at least one short spoken sentence in '
++        . $npc . "'s own voice, then the action if any. An empty message is not an answer.)";
++}
++
++/** One more call_llm() with the rule, under IN_FALLBACK_MODE (no second player TTS). True = it produced words. */
++function lrgNeReask(array $k): bool
++{
++    $nudge = lrgNeNudge($k['npc']);
++    $restore = null;
++    $ctx = $GLOBALS['contextData'] ?? null;
++    if (is_array($ctx) && $ctx) {
++        for ($i = count($ctx) - 1; $i >= 0; $i--) {
++            if ((string) ($ctx[$i]['role'] ?? '') === 'user' && is_string($ctx[$i]['content'] ?? null)) {
++                $restore = $ctx;
++                $GLOBALS['contextData'][$i]['content'] = rtrim($ctx[$i]['content']) . "\n" . $nudge;
++                break;
++            }
++        }
++    }
++    unset($GLOBALS['patch_openrouter_timeout']);   // the connector's 60 s receive clock is per process: start it afresh
++    $GLOBALS['IN_FALLBACK_MODE'] = true;
++    $before = strlen(lrgSpokenThisTurn());
++    $ok = false;
++    try {
++        if (isset($GLOBALS['LRG_TEST_REASK']) && is_callable($GLOBALS['LRG_TEST_REASK'])) { $ok = (bool) $GLOBALS['LRG_TEST_REASK']($nudge); }
++        elseif (function_exists('call_llm')) { $ok = (bool) call_llm(); }
++    } finally {
++        unset($GLOBALS['IN_FALLBACK_MODE']);
++        if ($restore !== null) { $GLOBALS['contextData'] = $restore; }
++    }
++    return $ok && strlen(lrgSpokenThisTurn()) > $before;
++}
++
++// ================================================================== layer 3: the hook (last post-process filter)
++function lrgNeHook(array $actions): array
++{
++    $k = lrgNeKind();
++    if ($k['kind'] === '' || !empty($GLOBALS['LRG_NE_DONE'])) { return $actions; }
++    $msg = lrgNeRawMessage();
++    if ($msg === null || $msg !== '') { return $actions; }
++    $r = (array) $GLOBALS['LAST_LLM_RESPONSE'];
++    $act = (string) ($r['action'] ?? '');
++    $item = (string) ($r['item'] ?? '');
++    if (lrgNeWillEmitPick($act, $item) || lrgNeLinesCarryPick($actions)) {
++        lrgLog(sprintf('never-empty npc=%s action=%s item="%s" verdict=idle (a business pick the game answers itself)',
++            $k['npc'], lrgShortCode($act === '' ? 'none' : $act), substr($item, 0, 40)), lrgNeCid());
++        return $actions;
++    }
++    lrgNeFloor($k, 'empty message', $act);
++    return $actions;
++}
++
++// ================================================================== the floor line
++function lrgNeFloor(array $k, string $why, string $act): void
++{
++    if (!empty($GLOBALS['LRG_NE_DONE'])) { return; }
++    $GLOBALS['LRG_NE_DONE'] = 1;
++    $npc = (string) $k['npc'];
++    $cid = lrgNeCid();
++    $code = lrgShortCode($act === '' ? 'none' : $act);
++    $already = lrgSpokenThisTurn();
++    if ($already !== '') {
++        // the invalid-output branch: sentences may already have been spoken mid-stream - nothing is added
++        lrgLog(sprintf('never-empty npc=%s action=%s why=%s said=(she already spoke %d chars this turn; nothing added)', $npc, $code, $why, strlen($already)), $cid);
++        return;
++    }
++    if (!empty($k['scene']) && empty(lrgNeCfg('in_scene', false))) {
++        lrgLog(sprintf('never-empty npc=%s action=%s why=%s verdict=log-only (a scene turn; never_empty.in_scene is off)', $npc, $code, $why), $cid);
++        lrgNeRemember($npc, $cid, $why, '', -1, 'scene');
++        return;
++    }
++    $kind = in_array($why, ['empty message', 'empty message twice'], true) ? (lrgNeIsQuestion() ? 'question' : 'statement') : 'trouble';
++    [$line, $idx] = lrgNePick($npc, $kind);
++    if ($line === '') {
++        lrgLog(sprintf('never-empty npc=%s action=%s why=%s said=(no %s line configured)', $npc, $code, $why, $kind), $cid);
++        return;
++    }
++    lrgNeSay($line);
++    if (lrgSpokenThisTurn() === '') {
++        // the transformer chain dropped it (a line shorter than 2 chars after every transformer): not a spoken line
++        lrgLog(sprintf('never-empty npc=%s action=%s why=%s said="%s" BUT it was not spoken (dropped by a transformer)', $npc, $code, $why, $line), $cid);
++        return;
++    }
++    lrgLog(sprintf('never-empty npc=%s action=%s why=%s said="%s"', $npc, $code, $why, $line), $cid);
++    lrgNeRemember($npc, $cid, $why, $line, $idx, $kind);
++}
++
++/** CHIM's own spoken path when it is there (TTS, $talkedSoFar, the chat row, the ScriptQueue echo); the seam offline. */
++function lrgNeSay(string $line): void
++{
++    if (function_exists('returnLines')) { returnLines([$line]); return; }
++    $GLOBALS['LRG_TEST_SAY'][] = $line;
++    $GLOBALS['talkedSoFar'][] = $line;   // what returnLines() does at lib/chat_helper_functions.php:1635
++}
++
++/** Did the player's words this turn ask something? A '?' or a leading question word; a funcret text never does. */
++function lrgNeIsQuestion(): bool
++{
++    $type = strtolower((string) ($GLOBALS['gameRequest'][0] ?? ''));
++    if (!in_array($type, LRG_PLAYER_SPEECH_TYPES, true) && $type !== 'lrg_dlgtalk') { return false; }
++    $s = trim(lrgStripContext((string) ($GLOBALS['gameRequest'][3] ?? '')));
++    if ($type === 'lrg_dlgtalk') { $s = trim(lrgStripContext((string) (($GLOBALS['LRG_DLG_TALK']['utter'] ?? [])['text'] ?? $s))); }
++    if ($s === '') { return false; }
++    if (str_ends_with($s, '?')) { return true; }
++    return (bool) preg_match('/^(who|what|where|when|why|how|do|does|did|is|are|can|could|would|will|should|have|has|which|am)\b/i', $s);
++}
++
++/** [line, index] from never_empty.lines.<kind>, rotated per NPC so the same line is not heard twice running. */
++function lrgNePick(string $npc, string $kind): array
++{
++    $lines = array_values(array_filter(array_map('strval', (array) lrgNeCfg('lines.' . $kind, [])), static fn($l) => trim($l) !== ''));
++    if (!$lines) { return ['', -1]; }
++    $max = max(12, (int) lrgNeCfg('max_chars', 60));
++    $e = (array) (lrgMemGet($npc)['empty_reply'] ?? []);
++    $n = (int) ($e['n'] ?? 0);
++    $i = $n % count($lines);
++    if (count($lines) > 1 && (string) ($e['line'] ?? '') === $lines[$i]) { $i = ($i + 1) % count($lines); }
++    return [substr(trim($lines[$i]), 0, $max), $i];
++}
++
++/** lrg_memory.empty_reply {at, cid, n, why, line, i, kind, told}: the count for the owner's greps and the next-turn note. */
++function lrgNeRemember(string $npc, string $cid, string $why, string $line, int $idx, string $kind): void
++{
++    if ($npc === '') { return; }
++    $e = (array) (lrgMemGet($npc)['empty_reply'] ?? []);
++    lrgMemSet($npc, ['empty_reply' => ['at' => lrgNow(), 'cid' => $cid, 'n' => (int) ($e['n'] ?? 0) + 1, 'why' => $why,
++        'line' => $line, 'i' => $idx, 'kind' => $kind, 'told' => false]]);
++}
++
++// ================================================================== next turn: the rule (Phase 2 volatile guidance)
++/**
++ * One sentence for lrgDlgVolatileGuidance() while empty_reply.at is within never_empty.note_seconds, on the player's
++ * next speech / lrg_dlgtalk turn with this NPC, told once. Rules only, no example lines.
++ */
++function lrgNeNote(string $npc): string
++{
++    if ($npc === '' || empty(lrgNeCfg('enabled', true))) { return ''; }
++    $type = strtolower((string) ($GLOBALS['gameRequest'][0] ?? ''));
++    if (!in_array($type, LRG_PLAYER_SPEECH_TYPES, true) && $type !== 'lrg_dlgtalk') { return ''; }
++    $e = (array) (lrgMemGet($npc)['empty_reply'] ?? []);
++    if (!$e || !empty($e['told'])) { return ''; }
++    if (lrgNow() - (int) ($e['at'] ?? 0) > max(10, (int) lrgNeCfg('note_seconds', 120))) { return ''; }
++    lrgMemSet($npc, ['empty_reply' => ['told' => true] + $e]);
++    return $npc . "'s last reply carried no words at all. Whatever the player says now, " . $npc
++        . ' answers in words: one or two short spoken sentences, then the action if any.';
++}
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/tools/flows/adapter.php glue_verify/tools/flows/adapter.php
+--- glue_src/tools/flows/adapter.php	2026-09-23 22:08:56.515879200 -0400
++++ glue_verify/tools/flows/adapter.php	2026-09-23 22:07:08.553216300 -0400
+@@ -110,8 +110,19 @@
+     unset($GLOBALS['LRG_TEST_SPAWNED'], $_GET['profile']);
+     unset($GLOBALS['LRG_TURN'], $GLOBALS['ENABLED_FUNCTIONS'], $GLOBALS['FUNCTIONS_ARE_ENABLED'], $GLOBALS['HERIKA_NAME'], $GLOBALS['gameRequest'],
+         $GLOBALS['action_post_process_fnct_ex'], $GLOBALS['PROMPTS'], $GLOBALS['FORCE_MAX_TOKENS'], $GLOBALS['SCRIPTLINE_ANIMATION_SENT'], $GLOBALS['OPENAI_FILTER_DISABLED']);
++    fxNeReset();
+     Fx::$injections = []; Fx::$events = [];
+ }
++/** [pt17-replies] The never-empty rail's per-request state and its offline seams (lib/lrg_replies.php). */
++function fxNeReset(): void
++{
++    unset($GLOBALS['LRG_NE_REJECT'], $GLOBALS['LRG_NE_DONE'], $GLOBALS['LRG_NE_REASKED'], $GLOBALS['LRG_NE_SEEN'], $GLOBALS['LRG_TEST_SAY'],
++        $GLOBALS['LRG_TEST_REASK'], $GLOBALS['LAST_LLM_RESPONSE'], $GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'], $GLOBALS['LLM_RETRY_FNCT'],
++        $GLOBALS['LRG_NE_PREV_VALIDATOR'], $GLOBALS['LRG_NE_PREV_RETRY'], $GLOBALS['structuredOutputTemplate'], $GLOBALS['responseTemplate'],
++        $GLOBALS['contextData'], $GLOBALS['IN_FALLBACK_MODE']);
++}
++/** [pt17-replies] What the rail said through the offline seam this request (the ScriptQueue lines it would have sent). */
++function fxSaid(): array { return array_values(array_map('strval', (array) ($GLOBALS['LRG_TEST_SAY'] ?? []))); }
+ 
+ function fxDb(): FxDb { return $GLOBALS['db']; }
+ function fxAff(string $npc, int $aff): void { RelationshipManager::$aff[$npc] = $aff; }
+@@ -320,6 +331,10 @@
+ function fxSpoke(?string $message): void
+ {
+     $GLOBALS['talkedSoFar'] = $message === '' ? [] : [$message ?? 'one short spoken line'];
++    // [pt17-replies] the RAW model text as every JSON connector stores it (openrouterjson.php:1038): the never-empty
++    // rail keys on this, not on talkedSoFar, because a muted business pick has words here and none there
++    if (!isset($GLOBALS['LAST_LLM_RESPONSE']) || !is_array($GLOBALS['LAST_LLM_RESPONSE'])) { $GLOBALS['LAST_LLM_RESPONSE'] = []; }
++    $GLOBALS['LAST_LLM_RESPONSE']['message'] = $message === '' ? '' : ($message ?? 'one short spoken line');
+ }
+ function fxLlm(string $npc, string $codeOrName, string $item, ?string $message = null): array
+ {
+@@ -592,6 +607,7 @@
+     $req = [$type, fxNow(), 100000, $text];
+     unset($GLOBALS['LRG_TURN'], $GLOBALS['ENABLED_FUNCTIONS'], $GLOBALS['action_post_process_fnct_ex'], $GLOBALS['PROMPTS'], $GLOBALS['FORCE_MAX_TOKENS'],
+         $GLOBALS['SCRIPTLINE_ANIMATION_SENT'], $GLOBALS['external_fast_commands'], $GLOBALS['OPENAI_FILTER_DISABLED']);
++    fxNeReset();   // [pt17-replies] a new request: the rail's seams are registered afresh by the hook files (talkedSoFar is the scenario's: fxSpoke)
+     Fx::$injections = [];
+     $GLOBALS['gameRequest'] = $req;
+     $GLOBALS['HERIKA_NAME'] = $npc;
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/tools/flows/scenarios/16_hook_wiring.php glue_verify/tools/flows/scenarios/16_hook_wiring.php
+--- glue_src/tools/flows/scenarios/16_hook_wiring.php	2026-09-23 22:08:56.541909000 -0400
++++ glue_verify/tools/flows/scenarios/16_hook_wiring.php	2026-09-23 22:07:08.573307700 -0400
+@@ -33,9 +33,9 @@
+     // [0.4.0] TWO filters now, and the ORDER is the contract (PHASE2_DESIGN 6.1): Phase 1's gate first -
+     // it passes ExtCmdLRG_SelectTopic through untouched (integrator edit D-12) - then Phase 2's.
+     // Each is registered exactly once per filter list; a second registration would let a gate see its own output.
+-    $t->must('functions.php registers each post-LLM filter exactly once (Phase 1 then Phase 2)',
+-        count($r->closures) === 2 && $r->closures[0] === ($GLOBALS['LRG_POSTGATE'] ?? null)
+-        && $r->closures[1] === ($GLOBALS['LRG_DLG_POSTGATE'] ?? null), (string) count($r->closures));
++    $t->must('functions.php registers each post-LLM filter exactly once (Phase 1, Phase 2, then the never-empty rail [pt17-replies])',
++        count($r->closures) === 3 && $r->closures[0] === ($GLOBALS['LRG_POSTGATE'] ?? null)
++        && $r->closures[1] === ($GLOBALS['LRG_DLG_POSTGATE'] ?? null) && $r->closures[2] === ($GLOBALS['LRG_NE_HOOK'] ?? null), (string) count($r->closures));
+     fxSpoke(null); // [0.3 / R10] she says her line in the same reply, or the start does not happen at all
+     $w = fxHookLlm($r, [fxLine($npc, 'Follow', 'Player'), fxLine($npc, FX_NAME[FX_ACT_START], 'Player')]);
+     $t->must('the registered filter rewrites BeginIntimacy and leaves Follow alone', count($w) === 2 && $w[0] === fxLine($npc, 'Follow', 'Player') && str_contains($w[1], FX_ACT_START . '@ok=1;'), implode(' ', array_map('trim', $w)));
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/tools/flows/scenarios/31_never_empty.php glue_verify/tools/flows/scenarios/31_never_empty.php
+--- glue_src/tools/flows/scenarios/31_never_empty.php	1969-12-31 19:00:00.000000000 -0500
++++ glue_verify/tools/flows/scenarios/31_never_empty.php	2026-09-23 22:07:08.590306500 -0400
+@@ -0,0 +1,119 @@
++<?php
++// 31 - [pt17-replies / owner addendum 11] NEVER EMPTY.
++//
++// Captain Aldis, 2026-09-23 20:10:31: "i didn't uh it says it's locked" got a schema-valid JSON whose message was ""
++// (audit request 850, grok-4.3 through openrouterjson, strict json_schema) and nothing was spoken: CHIM's stream loop
++// never reaches a sentence, returnLines() never runs, call_llm_internal() returns TRUE, the retry seam is consulted only
++// for an INVALID reply and nobody had registered one. 17 of 322 logged replies look like that. lib/lrg_replies.php:
++//   - the validator (VALIDATE_LLM_OUTPUT_FNCT, per chunk on EVERY LLM turn) rejects a COMPLETE empty reply on a
++//     player-speech / lrg_dlgtalk / voiced-funcret turn;
++//   - the retry (LLM_RETRY_FNCT) re-asks ONCE with the words rule appended to the last user message, under
++//     IN_FALLBACK_MODE (no second player TTS), and only then speaks ONE short floor line through returnLines();
++//   - the hook (the LAST post-LLM filter) floors what the validator lets through on purpose, before the actions echo;
++//   - a business pick the game answers itself and a reply with words are left alone; the next turn carries one rule.
++// Played through the REAL hook files (fxHookTurn / fxFuncretTurn). The LLM and CHIM's returnLines() are the seams
++// LRG_TEST_REASK / LRG_TEST_SAY. Every line below is the PLAYER's, a CONFIG floor line, or the game's result - never a
++// prompt example line.
++
++fx_scenario('31', 'never empty: a schema-valid reply with no words is caught on the real hook files - rejected, re-asked once with the words rule, then one floor line through returnLines; words + an action and a business pick the game answers itself are left alone; the voiced funcret turn is covered although functions are off; the next turn carries one rule', function (FxT $t) {
++    $c = fxCast('innkeeper'); $npc = $c['name'];
++    $alone = fxSnap($c['snap']);
++    fxSay($npc, $alone, 'Hello.');
++    // CHIM's own schema and text template (functions/json_response.php:457-520), character-first, as setStructuredOutputTemplate() builds them
++    $schema = static function (): void {
++        $keys = ['character', 'listener', 'message', 'mood', 'action', 'target', 'item', 'amount'];
++        $props = [];
++        foreach ($keys as $k) { $props[$k] = ['type' => $k === 'amount' ? 'integer' : 'string', 'description' => $k === 'message' ? 'lines of dialogue' : $k]; }
++        $GLOBALS['structuredOutputTemplate'] = ['type' => 'json_schema', 'json_schema' => ['name' => 'response', 'strict' => true,
++            'schema' => ['type' => 'object', 'properties' => $props, 'required' => $keys, 'additionalProperties' => false]]];
++        $GLOBALS['responseTemplate'] = ['character' => 'x', 'listener' => 'x', 'message' => 'lines of dialogue', 'mood' => 'x', 'action' => 'x', 'target' => 'x', 'item' => 'x', 'amount' => 0];
++    };
++    // the decoded object as the JSON connector stores it per chunk (openrouterjson.php:1038), complete
++    $reply = static function (string $message, string $action = 'Talk', string $item = '') use ($npc): array {
++        return ['character' => $npc, 'listener' => 'Flowtest Player', 'message' => $message, 'mood' => 'calm', 'action' => $action, 'target' => 'Flowtest Player', 'item' => $item, 'amount' => 0];
++    };
++
++    // ---------------------------------------------------------------- 1. the wiring, through the real hook files
++    $r = fxHookTurn($npc, 'inputtext', "i didn't uh it says it's locked");
++    $t->must('functions.php / context_pre.php register CHIM\'s VALIDATE_LLM_OUTPUT_FNCT and LLM_RETRY_FNCT (main.php:2825 had nobody on that seam)',
++        is_callable($GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'] ?? null) && is_callable($GLOBALS['LLM_RETRY_FNCT'] ?? null));
++    $last = $r->closures ? $r->closures[count($r->closures) - 1] : null;
++    $t->must('...and the never-empty hook is the LAST post-LLM filter, after Phase 1\'s and Phase 2\'s gates',
++        count($r->closures) === 3 && $last === ($GLOBALS['LRG_NE_HOOK'] ?? null) && $r->closures[0] === ($GLOBALS['LRG_POSTGATE'] ?? null), (string) count($r->closures));
++    $schema();
++    $hook = $GLOBALS['LRG_DLG_JSONHOOK'] ?? null;
++    if (is_callable($hook)) { $hook(); }
++    $desc = (string) ($GLOBALS['structuredOutputTemplate']['json_schema']['schema']['properties']['message']['description'] ?? '');
++    $t->must('the JSON template hook adds the never-empty clause to message\'s DESCRIPTION (a rule) and no schema keyword (strict modes 400 on minLength)',
++        str_contains($desc, 'Never empty: at least one short spoken sentence') && !isset($GLOBALS['structuredOutputTemplate']['json_schema']['schema']['properties']['message']['minLength'])
++        && str_contains((string) $GLOBALS['responseTemplate']['message'], 'Never empty'), $desc);
++
++    // ---------------------------------------------------------------- 2. the Aldis turn: message "" -> rejected -> re-ask -> one floor line
++    $GLOBALS['LAST_LLM_RESPONSE'] = $reply('');
++    $t->must('a COMPLETE reply whose message is "" is REJECTED by the validator', $GLOBALS['VALIDATE_LLM_OUTPUT_FNCT']('') === false && (($GLOBALS['LRG_NE_REJECT']['why'] ?? '') === 'empty message'));
++    $asked = 0; $nudge = '';
++    $GLOBALS['contextData'] = [['role' => 'system', 'content' => 'system'], ['role' => 'user', 'content' => "Write $npc's next dialogue line."]];
++    $GLOBALS['LRG_TEST_REASK'] = static function (string $n) use (&$asked, &$nudge): bool {
++        $asked++; $nudge = (string) $GLOBALS['contextData'][1]['content'];
++        $GLOBALS['LRG_NE_REJECT'] = ['why' => 'empty message', 'action' => 'Talk', 'item' => ''];
++        return false;
++    };
++    $GLOBALS['LLM_RETRY_FNCT']();
++    $said = fxSaid();
++    $t->must('the retry re-asked ONCE with the words rule appended to the last user message (a rule, no example line), and it came back empty again',
++        $asked === 1 && str_contains($nudge, "Write $npc's next dialogue line.\n(Rule for this reply: $npc answers in words") && !str_contains($nudge, '"'), $nudge);
++    $t->must('...so exactly ONE floor line reaches the game (returnLines: TTS, the chat row, the ScriptQueue echo - before X-CUSTOM-CLOSE)',
++        count($said) === 1 && strlen($said[0]) <= 60 && in_array($said[0], (array) lrgNeCfg('lines.statement'), true), json_encode($said));
++    $t->must('...and the turn counts as spoken', lrgSpokenThisTurn() === $said[0]);
++    $t->must('...the context was restored and IN_FALLBACK_MODE cleared', (string) $GLOBALS['contextData'][1]['content'] === "Write $npc's next dialogue line." && !isset($GLOBALS['IN_FALLBACK_MODE']));
++    $t->mustCap('memory', '...remembered per NPC: lrg_memory.empty_reply n=1', fn() => (int) (fxMem($npc)['empty_reply']['n'] ?? 0) === 1, fn() => json_encode(fxMem($npc)['empty_reply'] ?? null));
++    $t->must('the log carries the count line: never-empty npc=<n> ... why=empty message twice said="<line>"',
++        str_contains((string) @file_get_contents(fxLogFile()), 'never-empty npc=' . $npc . ' action=Talk why=empty message twice said="' . $said[0] . '"'));
++
++    // ---------------------------------------------------------------- 3. her next line: the rule, once
++    fxAdvance(20);
++    $r2 = fxHookTurn($npc, 'inputtext', 'well?');
++    $t->must('her next player turn carries the rule once: "last reply carried no words ... answers in words"',
++        str_contains($r2->volatile, "$npc's last reply carried no words at all") && str_contains($r2->volatile, 'answers in words'), fx_short($r2->volatile, 300));
++    $r3 = fxHookTurn($npc, 'inputtext', 'still there?');
++    $t->must('...and not again', !str_contains($r3->volatile, 'carried no words'));
++
++    // ---------------------------------------------------------------- 4. words + an action (the barter shape): every filter leaves the action alone, the rail adds nothing
++    $r4 = fxHookTurn($npc, 'inputtext', 'what do you got for sale?');
++    fxSpoke('Have a look, then.');
++    $lines = [fxLine($npc, 'OpenInventory', '')];
++    foreach ($r4->closures as $f) { $lines = $f($lines); }
++    $t->must('a reply WITH words: OpenInventory goes out untouched and the rail adds no line', in_array(fxLine($npc, 'OpenInventory', ''), $lines, true) && fxSaid() === [], json_encode(array_map('trim', $lines)));
++    $schema();
++    $GLOBALS['LAST_LLM_RESPONSE'] = $reply('Have a look, then.', 'Trade_Items');
++    $t->must('...and the validator passes it', $GLOBALS['VALIDATE_LLM_OUTPUT_FNCT']('Have') === true && !isset($GLOBALS['LRG_NE_REJECT']));
++
++    // ---------------------------------------------------------------- 5. the re-ask that WORKS: her own words, no floor line
++    $r5 = fxHookTurn($npc, 'inputtext', 'do you rent rooms?');
++    $GLOBALS['talkedSoFar'] = [];   // a fresh request: nothing spoken yet (main.php starts every request so)
++    $schema();
++    $GLOBALS['LAST_LLM_RESPONSE'] = $reply('');
++    $GLOBALS['VALIDATE_LLM_OUTPUT_FNCT']('');
++    $GLOBALS['LRG_TEST_REASK'] = static function (string $n): bool { $GLOBALS['talkedSoFar'][] = 'Ten septims a night.'; return true; };
++    $GLOBALS['LLM_RETRY_FNCT']();
++    $t->must('when the re-ask brings her own words there is NO floor line (addendum 11: in her own words)', fxSaid() === [] && lrgSpokenThisTurn() === 'Ten septims a night.');
++
++    // ---------------------------------------------------------------- 6. the voiced funcret turn: functions OFF, and she still says a line
++    $stage = fxSnap($c['snap'] + ['scene' => '1', 'fac' => 'JobBardFaction,BardSingerFaction']);
++    $opt = ['enabled' => array_merge(fxEnabledDefault(), ['FollowPlayer'])];
++    fxSay($npc, $stage, 'okay so come on follow me now', 'inputtext', $opt);
++    $esc = null;
++    foreach (fxLlmLines([fxLine($npc, 'FollowPlayer', '')]) as $l) { if (fxCode((string) $l) === 'ExtCmdLRG_Escort') { $esc = (string) $l; } }
++    $t->must('set-up: the escort went out in front of CHIM\'s follow', $esc !== null);
++    $v = fxFuncretTurn($npc, (string) $esc, 'Error: ' . $npc . ' is in the middle of something she cannot leave (not a performance or idle scene she may leave)');
++    $t->must('set-up: the refusal is the VOICED funcret turn', $v->mode() === 'voiced', (string) $v->mode());
++    $t->must('...the validator / retry seams are registered on it all the same (context_pre.php runs on every request)',
++        is_callable($GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'] ?? null) && is_callable($GLOBALS['LLM_RETRY_FNCT'] ?? null));
++    $GLOBALS['FUNCTIONS_ARE_ENABLED'] = false;   // processor/funcret.php:199 (use_functions_again false on every glue row): no post-process hook runs
++    $schema();
++    $GLOBALS['LAST_LLM_RESPONSE'] = $reply('');
++    $t->must('an empty reply on the voiced turn is rejected', $GLOBALS['VALIDATE_LLM_OUTPUT_FNCT']('') === false);
++    $GLOBALS['LRG_TEST_REASK'] = static function (string $n): bool { $GLOBALS['LRG_NE_REJECT'] = ['why' => 'empty message', 'action' => 'Talk', 'item' => '']; return false; };
++    $GLOBALS['LLM_RETRY_FNCT']();
++    $t->must('...and she says one line anyway (a statement line: a funcret asks nothing)', count(fxSaid()) === 1 && in_array(fxSaid()[0], (array) lrgNeCfg('lines.statement'), true), json_encode(fxSaid()));
++});
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/tools/test_dialogue.php glue_verify/tools/test_dialogue.php
+--- glue_src/tools/test_dialogue.php	2026-09-23 22:08:56.561279300 -0400
++++ glue_verify/tools/test_dialogue.php	2026-09-23 22:07:08.599792000 -0400
+@@ -1131,6 +1131,62 @@
+ lrgFacCfg();
+ chk('(i) ...both default ON', !empty(lrgFacCfg('carried_note')) && !empty(lrgFacCfg('answer_in_words')));
+ unset($GLOBALS['LRG_DLG_MCM']);
++
++// --- (j) [pt17-replies, lib/lrg_replies.php] the prompt-side prevention in lrg_dialogue.php: the never-empty clause on
++// message's DESCRIPTION (never a schema keyword), the <business> wording, the reorder scope, the next-turn rule
++require_once $root . '/server/lorerim_glue/lib/lrg_replies.php';
++$GLOBALS['LRG_TEST_NOW'] = 1700000000;
++$GLOBALS['LRG_DLG_STATE'] = [];
++$schemaJ = static function (): void {
++    $keys = ['character', 'listener', 'message', 'mood', 'action', 'target', 'item', 'amount'];
++    $props = [];
++    foreach ($keys as $k) { $props[$k] = ['type' => $k === 'amount' ? 'integer' : 'string', 'description' => $k === 'message' ? 'lines of dialogue' : $k]; }
++    $GLOBALS['structuredOutputTemplate'] = ['type' => 'json_schema', 'json_schema' => ['name' => 'response', 'strict' => true,
++        'schema' => ['type' => 'object', 'properties' => $props, 'required' => $keys, 'additionalProperties' => false]]];
++    $GLOBALS['responseTemplate'] = ['character' => 'x', 'listener' => 'x', 'message' => 'lines of dialogue', 'mood' => 'x', 'action' => 'x', 'target' => 'x', 'item' => 'x', 'amount' => 0];
++};
++$GLOBALS['LRG_DLG_TURN'] = $ft(['cid' => 'j1']);   // the Aldis shape: a speech turn, module on, no list, no business at all
++$schemaJ();
++lrgDlgJsonTemplate();
++$pj = (array) $GLOBALS['structuredOutputTemplate']['json_schema']['schema']['properties'];
++chk('(j) on a reordered speech turn the message description ends with the never-empty clause',
++    str_ends_with((string) ($pj['message']['description'] ?? ''), 'Never empty: at least one short spoken sentence, even when the action says it all.'), (string) ($pj['message']['description'] ?? ''));
++chk('(j) ...action / target / item still come first (D3 unchanged by default: reorder_json_scope=always)', array_slice(array_keys($pj), 0, 3) === ['action', 'target', 'item'], json_encode(array_keys($pj)));
++chk('(j) ...and nothing but type + description on message: no minLength, no keyword a strict mode would 400 on', array_keys((array) $pj['message']) === ['type', 'description'], json_encode($pj['message']));
++chk('(j) ...the text template carries the clause too', str_contains((string) $GLOBALS['responseTemplate']['message'], 'Never empty'), (string) $GLOBALS['responseTemplate']['message']);
++chk('(j) ...and no example line in it (section 0)', !str_contains(lrgDlgNeverEmptyClause(), '"'));
++chk('(j) the Aldis turn carries no business for the action-first order (list=none, only a carried ask)', !lrgDlgTurnHasBusiness($ft(['faction' => ['asked' => 'legion', 'join' => 1, 'role' => 'redirect', 'carried' => 1]])));
++chk('(j) ...a fresh enlistment ask, a list, a service, a follower verb or an arrest does',
++    lrgDlgTurnHasBusiness($ft(['faction' => ['asked' => 'legion', 'join' => 1, 'role' => 'redirect', 'carried' => 0]])) && lrgDlgTurnHasBusiness($ft(['entries' => [$ajo]]))
++    && lrgDlgTurnHasBusiness($ft(['svc' => ['kind' => 'barter', 'direct' => 1]])) && lrgDlgTurnHasBusiness($ft(['fol' => ['asked' => 'recruit']])) && lrgDlgTurnHasBusiness($ft(['arrest' => 'lethal'])));
++chk('(j) reorder_json_scope defaults to always (D3 as decided)', (string) lrgDlgCfg('reorder_json_scope') === 'always');
++$tJ = $ft(['entries' => [$ajo], 'n' => 1, 'sent' => 1]);
++$bJ = lrgDlgBusinessBlock($tJ);
++chk('(j) the <business> block no longer asks for an empty message (request 706: a parked [commits] pick lost her question)',
++    !str_contains($bJ, 'With the action leave message empty') && str_contains($bJ, 'never leave message empty') && str_contains($bJ, 'not played'), fx_cut($bJ));
++// the next-turn rule rides Phase 2's volatile guidance, once, within note_seconds. This file runs with no database;
++// lrg_memory gets a tiny in-memory stand-in for these three checks only (the same shape test_gates' FakeDb has).
++$GLOBALS['gameRequest'] = ['inputtext', 1700000000, 100000, 'well?'];
++$GLOBALS['db'] = new class {
++    public array $t = [];
++    public function upsertRowOnConflict($table, $data, $key) { $this->t[$table][$data[$key]] = $data; return true; }
++    public function escapeLiteral($s) { return "'" . str_replace("'", "''", (string) $s) . "'"; }
++    public function execQuery($q) { return true; }
++    public function fetchOne($q) {
++        if (!preg_match('/FROM (\w+)/', (string) $q, $m) || !preg_match("/npc_name='((?:[^']|'')*)'/", (string) $q, $n)) { return []; }
++        return $this->t[$m[1]][str_replace("''", "'", $n[1])] ?? [];
++    }
++    public function fetchAll($q) { return []; }
++    public function __call($name, $args) { return []; }
++};
++lrgMemSet('Captain Aldis', ['empty_reply' => ['at' => 1700000000 - 30, 'cid' => 'x', 'n' => 1, 'why' => 'empty message', 'line' => 'x', 'i' => 0, 'kind' => 'statement', 'told' => false]]);
++$vJ = lrgDlgVolatileGuidance($ft(['cid' => 'j2']));
++chk('(j) 30 s after an empty reply the volatile guidance carries the rule once', str_contains($vJ, "Captain Aldis's last reply carried no words at all") && str_contains($vJ, 'answers in words'), fx_cut($vJ));
++chk('(j) ...and not a second time', !str_contains(lrgDlgVolatileGuidance($ft(['cid' => 'j3'])), 'carried no words'));
++lrgMemSet('Captain Aldis', ['empty_reply' => ['at' => 1700000000 - 500, 'cid' => 'x', 'n' => 1, 'told' => false]]);
++chk('(j) ...nor after note_seconds', !str_contains(lrgDlgVolatileGuidance($ft(['cid' => 'j4'])), 'carried no words'));
++unset($GLOBALS['db'], $GLOBALS['LRG_DLG_TURN'], $GLOBALS['structuredOutputTemplate'], $GLOBALS['responseTemplate']);
++$GLOBALS['LRG_DLG_STATE'] = [];
+ $GLOBALS['LRG_TEST_NOW'] = 1700000000;
+ 
+ /**
+diff -ruN -x data -x log -x __pycache__ -x .index_lock -x '*.orig' glue_src/tools/test_gates.php glue_verify/tools/test_gates.php
+--- glue_src/tools/test_gates.php	2026-09-23 22:08:56.561780700 -0400
++++ glue_verify/tools/test_gates.php	2026-09-23 22:07:08.610794400 -0400
+@@ -1797,6 +1797,286 @@
+ check('the escort\'s late failure (game log line) is remembered for her next turn',
+     is_array($ms) && str_contains((string) ($ms['what'] ?? ''), 'come along') && str_contains((string) ($ms['why'] ?? ''), 'keeps being pulled back'), json_encode($ms));
+ 
++/**
++ * ------------------------------------------------------------------ 36. [pt17-replies] NEVER EMPTY
++ * Captain Aldis, 2026-09-23 20:10:31: "it says it's locked" got a schema-valid JSON with message "" and nothing was
++ * spoken (audit request 850; 17 of 322 replies since the log began). lib/lrg_replies.php: the validator rejects a
++ * COMPLETE empty reply on one of our turns, the retry re-asks once and then speaks one floor line through CHIM's own
++ * returnLines() (the LRG_TEST_SAY seam here), the hook floors what the validator lets through on purpose, and the
++ * next turn carries one rule. Every line below that reaches the player is a CONFIG line, never a prompt line.
++ */
++echo "36. [pt17-replies] never empty: the validator, the re-ask, the floor line, the hook, the note\n";
++require_once __DIR__ . '/../server/lorerim_glue/lib/lrg_replies.php';
++$neLogFile = dirname(LRG_DIR, 2) . '/log/lorerim_glue.log';
++$neLogAt = static function () use ($neLogFile): int { clearstatcache(); return is_file($neLogFile) ? (int) filesize($neLogFile) : 0; };
++$neLogSince = static function (int $at) use ($neLogFile): string { clearstatcache(); return is_file($neLogFile) ? (string) substr((string) file_get_contents($neLogFile), $at) : ''; };
++$neReset = static function (): void {
++    unset($GLOBALS['LRG_NE_REJECT'], $GLOBALS['LRG_NE_DONE'], $GLOBALS['LRG_NE_REASKED'], $GLOBALS['LRG_NE_SEEN'], $GLOBALS['LRG_TEST_SAY'],
++        $GLOBALS['LRG_TEST_REASK'], $GLOBALS['LAST_LLM_RESPONSE'], $GLOBALS['LRG_NE_TEST_OVERRIDE'], $GLOBALS['LRG_DLG_TURN'], $GLOBALS['contextData'],
++        $GLOBALS['IN_FALLBACK_MODE'], $GLOBALS['LRG_VOICED']);
++    $GLOBALS['talkedSoFar'] = [];
++    lrgNeCfg();
++};
++$neSchema = static function (bool $actionFirst = true): void {
++    $keys = $actionFirst ? ['action', 'target', 'item', 'character', 'listener', 'message', 'mood', 'amount', 'lang', 'emotion', 'emotion_intensity']
++        : ['character', 'listener', 'message', 'mood', 'action', 'target', 'item', 'amount'];
++    $props = [];
++    foreach ($keys as $k) { $props[$k] = ['type' => $k === 'amount' ? 'integer' : 'string', 'description' => $k]; }
++    $GLOBALS['structuredOutputTemplate'] = ['type' => 'json_schema', 'json_schema' => ['name' => 'response', 'strict' => true,
++        'schema' => ['type' => 'object', 'properties' => $props, 'required' => $keys, 'additionalProperties' => false]]];
++};
++$neReply = static function (string $message, string $action = 'Talk', string $item = '', array $drop = [], bool $messageLast = false): array {
++    $r = ['action' => $action, 'target' => 'Testplayer', 'item' => $item, 'character' => 'Hulda', 'listener' => 'Testplayer', 'message' => $message,
++        'mood' => 'assertive', 'amount' => 0, 'lang' => 'en', 'emotion' => 'calm', 'emotion_intensity' => 'moderate'];
++    foreach ($drop as $d) { unset($r[$d]); }
++    if ($messageLast) { $m = $r['message']; unset($r['message']); $r['message'] = $m; }
++    return $r;
++};
++$neMem = static fn(): array => (array) (lrgMemGet('Hulda')['empty_reply'] ?? []);
++$neResetMem = static function (): void { lrgMemSet('Hulda', ['empty_reply' => null]); };
++// --- (a) registration: the three seams, chained, and the hook LAST
++$neReset();
++unset($GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'], $GLOBALS['LLM_RETRY_FNCT'], $GLOBALS['LRG_NE_PREV_VALIDATOR'], $GLOBALS['LRG_NE_PREV_RETRY']);
++$g1 = static fn($a) => $a; $g2 = static fn($a) => $a;
++$GLOBALS['action_post_process_fnct_ex'] = [$g1, $g2];
++lrgNeRegister(); lrgNeRegister();
++check('(a) VALIDATE_LLM_OUTPUT_FNCT and LLM_RETRY_FNCT are set (main.php:2825 had nobody using the retry seam)',
++    is_callable($GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'] ?? null) && is_callable($GLOBALS['LLM_RETRY_FNCT'] ?? null));
++check('(a) the hook is appended once and LAST, after the two post-gates', count($GLOBALS['action_post_process_fnct_ex']) === 3
++    && $GLOBALS['action_post_process_fnct_ex'][2] === $GLOBALS['LRG_NE_HOOK'] && $GLOBALS['action_post_process_fnct_ex'][0] === $g1);
++$prevV = static fn($c) => false;
++$GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'] = $prevV;
++lrgNeRegister();
++check('(a) another plugin\'s validator is CHAINED, not replaced (a false from it still rejects)', $GLOBALS['VALIDATE_LLM_OUTPUT_FNCT'] === $GLOBALS['LRG_NE_VALIDATOR']
++    && ($GLOBALS['LRG_NE_PREV_VALIDATOR'] ?? null) === $prevV && $GLOBALS['LRG_NE_VALIDATOR']('x') === false);
++unset($GLOBALS['LRG_NE_PREV_VALIDATOR']);
++check('(a) config defaults: on, re-ask on, scene off, 120 s note, three line lists, every line under max_chars',
++    !empty(lrgNeCfg('enabled')) && !empty(lrgNeCfg('reask')) && empty(lrgNeCfg('in_scene')) && (int) lrgNeCfg('note_seconds') === 120
++    && count((array) lrgNeCfg('lines.question')) >= 2 && count((array) lrgNeCfg('lines.statement')) >= 2 && count((array) lrgNeCfg('lines.trouble')) >= 1
++    && max(array_map('strlen', array_merge((array) lrgNeCfg('lines.question'), (array) lrgNeCfg('lines.statement'), (array) lrgNeCfg('lines.trouble')))) <= (int) lrgNeCfg('max_chars'));
++check('(a) the shipped config carries the never_empty block (lrg_config.default.json)', is_array(lrgConfig()['never_empty'] ?? null) && isset(lrgConfig()['never_empty']['lines']['trouble']));
++// --- (b) the validator: only a COMPLETE empty reply on one of our turns
++$neReset(); $neResetMem();
++turn('Hulda', snap(), 'inputtext', 'is the door locked?');
++$neSchema(true);
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++$at = $neLogAt();
++$v = $GLOBALS['LRG_NE_VALIDATOR']('');
++check('(b) a COMPLETE reply with message "" on a player speech turn is REJECTED', $v === false && (($GLOBALS['LRG_NE_REJECT']['why'] ?? '') === 'empty message'), json_encode($GLOBALS['LRG_NE_REJECT'] ?? null));
++check('(b) ...and logged as never-empty ... verdict=rejected', str_contains($neLogSince($at), 'never-empty npc=Hulda action=Talk item="" verdict=rejected'), fx_cut($neLogSince($at)));
++$neReset();
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('', 'Talk', '', ['emotion_intensity']);
++check('(b) the same object WITHOUT the schema\'s last key is mid-stream: no verdict (true, no reject)', $GLOBALS['LRG_NE_VALIDATOR']('') === true && !isset($GLOBALS['LRG_NE_REJECT']));
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('', 'Talk', '', ['mood']);
++check('(b) ...a required key missing: no verdict either', $GLOBALS['LRG_NE_VALIDATOR']('') === true && !isset($GLOBALS['LRG_NE_REJECT']));
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('', 'Talk', '', [], true);
++check('(b) ...message written LAST by the model: no verdict (the hook judges it when the stream has ended)', $GLOBALS['LRG_NE_VALIDATOR']('') === true && !isset($GLOBALS['LRG_NE_REJECT']));
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('Aye, it is.');
++check('(b) a reply with words passes', $GLOBALS['LRG_NE_VALIDATOR']('Aye') === true && !isset($GLOBALS['LRG_NE_REJECT']));
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('   ');
++check('(b) whitespace-only is empty', $GLOBALS['LRG_NE_VALIDATOR']('') === false);
++$neReset();
++$neSchema(false);
++$GLOBALS['LAST_LLM_RESPONSE'] = ['character' => 'Hulda', 'listener' => 'Testplayer', 'message' => '', 'mood' => 'calm', 'action' => 'Talk', 'target' => '', 'item' => '', 'amount' => 0];
++check('(b) the character-first order (no reorder) is judged the same way', $GLOBALS['LRG_NE_VALIDATOR']('') === false);
++$neReset();
++unset($GLOBALS['structuredOutputTemplate']);
++$GLOBALS['responseTemplate'] = ['character' => 'x', 'listener' => 'x', 'message' => 'lines of dialogue', 'mood' => 'x', 'action' => 'x', 'target' => 'x', 'item' => 'x', 'amount' => 0];
++$GLOBALS['LAST_LLM_RESPONSE'] = ['character' => 'Hulda', 'listener' => 'Testplayer', 'message' => '', 'mood' => 'calm', 'action' => 'Talk', 'target' => '', 'item' => '', 'amount' => 0];
++check('(b) json_object mode (no schema): the text template\'s keys decide completeness', $GLOBALS['LRG_NE_VALIDATOR']('') === false);
++$neReset();
++unset($GLOBALS['structuredOutputTemplate'], $GLOBALS['responseTemplate']);
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++check('(b) no schema and no template at all: never a verdict', $GLOBALS['LRG_NE_VALIDATOR']('') === true);
++$neSchema(true);
++// --- (c) the retry: the re-ask speaks in her own words - no floor line
++$neReset(); $neResetMem();
++turn('Hulda', snap(), 'inputtext', 'is the door locked?');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++$GLOBALS['LRG_NE_VALIDATOR']('');
++$GLOBALS['contextData'] = [['role' => 'system', 'content' => 'sys'], ['role' => 'user', 'content' => "Write Hulda's next dialogue line."]];
++$seenCtx = ''; $seenFallback = null;
++$GLOBALS['LRG_TEST_REASK'] = static function (string $nudge) use (&$seenCtx, &$seenFallback): bool {
++    $seenCtx = (string) $GLOBALS['contextData'][1]['content']; $seenFallback = $GLOBALS['IN_FALLBACK_MODE'] ?? null;
++    $GLOBALS['talkedSoFar'][] = 'Locked since the fire, aye.';
++    return true;
++};
++$at = $neLogAt();
++$GLOBALS['LRG_NE_RETRY']();
++check('(c) the re-ask ran with the words rule appended to the LAST USER message, under IN_FALLBACK_MODE (no second player TTS)',
++    str_contains($seenCtx, "Write Hulda's next dialogue line.\n(Rule for this reply: Hulda answers in words") && $seenFallback === true, $seenCtx);
++check('(c) ...the rule is a rule, not an example line, and it is restored afterwards',
++    !str_contains($seenCtx, '"') && (string) $GLOBALS['contextData'][1]['content'] === "Write Hulda's next dialogue line." && !isset($GLOBALS['IN_FALLBACK_MODE']));
++check('(c) her own words won: NO floor line', ($GLOBALS['LRG_TEST_SAY'] ?? []) === [] && lrgSpokenThisTurn() === 'Locked since the fire, aye.');
++check('(c) ...logged as reask=spoke and counted', str_contains($neLogSince($at), 'why=empty message reask=spoke chars=') && (int) ($neMem()['n'] ?? 0) === 1 && ($neMem()['kind'] ?? '') === 'reask', fx_cut($neLogSince($at)));
++// --- (d) the re-ask comes back empty too: exactly ONE floor line, a question line for a question
++$neReset(); $neResetMem();
++turn('Hulda', snap(), 'inputtext', 'is the door locked?');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++$GLOBALS['LRG_NE_VALIDATOR']('');
++$calls = 0;
++$GLOBALS['LRG_TEST_REASK'] = static function (string $nudge) use (&$calls): bool { $calls++; $GLOBALS['LRG_NE_REJECT'] = ['why' => 'empty message', 'action' => 'Talk', 'item' => '']; return false; };
++$at = $neLogAt();
++$GLOBALS['LRG_NE_RETRY']();
++$said = $GLOBALS['LRG_TEST_SAY'] ?? [];
++check('(d) exactly one floor line, and it is one of the configured QUESTION lines (his words ended in ?)',
++    count($said) === 1 && in_array($said[0], (array) lrgNeCfg('lines.question'), true), json_encode($said));
++check('(d) ...she asked once, not twice', $calls === 1);
++check('(d) ...talkedSoFar carries it (lrgSpokenThisTurn sees a spoken turn)', lrgSpokenThisTurn() === $said[0]);
++check('(d) ...logged: why=empty message twice said="<line>"', str_contains($neLogSince($at), 'why=empty message twice said="' . $said[0] . '"'), fx_cut($neLogSince($at)));
++check('(d) ...remembered: lrg_memory.empty_reply {at, cid, n=1, line, told=false}', (int) ($neMem()['n'] ?? 0) === 1 && ($neMem()['line'] ?? '') === $said[0] && ($neMem()['told'] ?? null) === false, json_encode($neMem()));
++$first = $said[0];
++// --- (e) a statement gets a statement line; two consecutive empties get two different lines
++$neReset();
++turn('Hulda', snap(), 'inputtext', 'it says it is locked');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++$GLOBALS['LRG_NE_VALIDATOR']('');
++$GLOBALS['LRG_TEST_REASK'] = static function (string $nudge): bool { $GLOBALS['LRG_NE_REJECT'] = ['why' => 'empty message', 'action' => 'Talk', 'item' => '']; return false; };
++$GLOBALS['LRG_NE_RETRY']();
++$s2 = $GLOBALS['LRG_TEST_SAY'][0] ?? '';
++check('(e) a statement gets one of the STATEMENT lines', in_array($s2, (array) lrgNeCfg('lines.statement'), true), $s2);
++$neReset();
++turn('Hulda', snap(), 'inputtext', 'still locked');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++$GLOBALS['LRG_NE_VALIDATOR']('');
++$GLOBALS['LRG_TEST_REASK'] = static function (string $nudge): bool { $GLOBALS['LRG_NE_REJECT'] = ['why' => 'empty message', 'action' => 'Talk', 'item' => '']; return false; };
++$GLOBALS['LRG_NE_RETRY']();
++$s3 = $GLOBALS['LRG_TEST_SAY'][0] ?? '';
++check('(e) the next empty reply gets a DIFFERENT line (rotated per NPC)', $s3 !== '' && $s3 !== $s2 && (int) ($neMem()['n'] ?? 0) === 3, "$s2 | $s3");
++// --- (f) re-ask OFF: an actionless empty reply is floored straight away; an action-bearing one keeps its action
++$neReset(); $neResetMem();
++$GLOBALS['LRG_NE_TEST_OVERRIDE'] = ['reask' => false];
++turn('Hulda', snap(), 'inputtext', 'follow me');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++$GLOBALS['LRG_NE_VALIDATOR']('');
++$calls = 0;
++$GLOBALS['LRG_TEST_REASK'] = static function (string $nudge) use (&$calls): bool { $calls++; return true; };
++$GLOBALS['LRG_NE_RETRY']();
++check('(f) reask=false: Talk + "" is rejected and floored at once - no second call', $calls === 0 && count($GLOBALS['LRG_TEST_SAY'] ?? []) === 1, json_encode($GLOBALS['LRG_TEST_SAY'] ?? []));
++$neReset();
++$GLOBALS['LRG_NE_TEST_OVERRIDE'] = ['reask' => false];
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('', 'Follow_Testplayer');
++$at = $neLogAt();
++check('(f) reask=false: Follow + "" is LET THROUGH by the validator (a rejection would throw the action away)', $GLOBALS['LRG_NE_VALIDATOR']('') === true && !isset($GLOBALS['LRG_NE_REJECT'])
++    && str_contains($neLogSince($at), 'verdict=let-through (an action to keep'), fx_cut($neLogSince($at)));
++$out = $GLOBALS['LRG_NE_HOOK'](["Hulda|command|Follow_Testplayer@\r\n"]);
++check('(f) ...and the hook floors it: the action goes out UNCHANGED and one line is spoken before it', $out === ["Hulda|command|Follow_Testplayer@\r\n"] && count($GLOBALS['LRG_TEST_SAY'] ?? []) === 1
++    && str_contains($neLogSince($at), 'action=Follow_Testplayer why=empty message said="'), json_encode([$out, $GLOBALS['LRG_TEST_SAY'] ?? []]));
++$neReset();
++// --- (g) a business pick the game answers itself: the mute would drop any line - the rail stays out
++$neReset(); $neResetMem();
++turn('Hulda', snap(), 'inputtext', 'I need work');
++$GLOBALS['LRG_DLG_TURN'] = ['on' => true, 'npc' => 'Hulda', 'cid' => 'd1', 'crit' => 0, 'offer' => ['keys' => ['T1' => ['crit' => 0, 'class' => 'plain', 'commit' => false, 'cost' => 0, 'norm' => 'i need work']]]];
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('', 'Take_Up_Business', 'T1');
++$at = $neLogAt();
++check('(g) an EMITTED pick with message "": the validator lets it through (the real dialogue line plays)', $GLOBALS['LRG_NE_VALIDATOR']('') === true && !isset($GLOBALS['LRG_NE_REJECT'])
++    && str_contains($neLogSince($at), 'verdict=let-through (a business pick the game answers itself)'), fx_cut($neLogSince($at)));
++$out = $GLOBALS['LRG_NE_HOOK'](["Hulda|command|ExtCmdLRG_SelectTopic@ok=1;cid=d1;npc=Hulda;do=pick;i=100\r\n"]);
++check('(g) ...and the hook is idle: no floor line, the pick untouched', count($out) === 1 && ($GLOBALS['LRG_TEST_SAY'] ?? []) === [] && lrgSpokenThisTurn() === '');
++$GLOBALS['LRG_DLG_TURN']['offer']['keys']['T1']['commit'] = true;   // a [commits] key the first time: PARKED - her question IS the message
++$neReset2 = $GLOBALS['LRG_DLG_TURN']; $neReset(); $GLOBALS['LRG_DLG_TURN'] = $neReset2;
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('', 'Take_Up_Business', 'T1');
++check('(g) a PARKED [commits] pick with message "" (request 706\'s shape) IS rejected: her confirming question is the message', $GLOBALS['LRG_NE_VALIDATOR']('') === false);
++$neReset();
++turn('Hulda', snap(), 'inputtext', 'I need work');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('I have a room to let.', 'Take_Up_Business', 'T1');
++$GLOBALS['talkedSoFar'] = [];   // the muted shape: words in the raw reply, none spoken
++$out = $GLOBALS['LRG_NE_HOOK'](["Hulda|command|ExtCmdLRG_SelectTopic@ok=1;cid=d1;npc=Hulda;do=pick;i=100\r\n"]);
++check('(g) words in the raw reply but nothing in talkedSoFar (the mute): the hook is idle - it keys on the RAW text', ($GLOBALS['LRG_TEST_SAY'] ?? []) === []);
++// --- (h) not our turns: rechat, a scene tick, an initiative tick, a plain funcret, the narrator, nobody
++$neReset();
++foreach ([['rechat', 'Hulda'], ['lrg_scenetalk', 'Hulda'], ['lrg_initiative', 'Hulda'], ['diary', 'Hulda'], ['inputtext', 'The Narrator'], ['inputtext', '']] as [$ty, $who]) {
++    $neReset();
++    $GLOBALS['HERIKA_NAME'] = $who; $GLOBALS['gameRequest'] = [$ty, lrgNow(), 100, 'x'];
++    $GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++    $ok = $GLOBALS['LRG_NE_VALIDATOR']('') === true && !isset($GLOBALS['LRG_NE_REJECT']);
++    $GLOBALS['LRG_NE_HOOK']([]);
++    $GLOBALS['LRG_NE_RETRY']();
++    check("(h) $ty / '" . ($who !== '' ? $who : 'nobody') . "': not ours - no verdict, no line", $ok && ($GLOBALS['LRG_TEST_SAY'] ?? []) === []);
++}
++$neReset();
++turn('Hulda', snap(), 'funcret', 'command@ExtCmdLRG_Escort@follow@Error: x');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++check('(h) a funcret that is NOT the voiced turn: not ours', $GLOBALS['LRG_NE_VALIDATOR']('') === true && (($GLOBALS['LRG_TURN']['mode'] ?? '') !== 'voiced'));
++// --- (i) the VOICED funcret turn (functions off: no post-process hook ever runs) - the validator + retry still speak
++$neReset(); $neResetMem();
++$GLOBALS['LRG_VOICED'] = ['npc' => 'Hulda', 'code' => 'ExtCmdLRG_Escort', 'cid' => 'v1', 'what' => 'could not come along', 'why' => 'busy', 'kv' => ['do' => 'follow'], 'reason' => 'x', 'result' => 'Error: x', 'at' => lrgNow()];
++turn('Hulda', snap(), 'funcret', 'command@ExtCmdLRG_Escort@follow@Error: Hulda could not come along');
++$GLOBALS['FUNCTIONS_ARE_ENABLED'] = false;
++check('(i) set-up: the funcret is the voiced turn', ($GLOBALS['LRG_TURN']['mode'] ?? '') === 'voiced', (string) ($GLOBALS['LRG_TURN']['mode'] ?? ''));
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++check('(i) an empty reply on the voiced turn is rejected by the validator', $GLOBALS['LRG_NE_VALIDATOR']('') === false);
++$GLOBALS['LRG_TEST_REASK'] = static function (string $nudge): bool { $GLOBALS['LRG_NE_REJECT'] = ['why' => 'empty message', 'action' => 'Talk', 'item' => '']; return false; };
++$GLOBALS['LRG_NE_RETRY']();
++check('(i) ...and she still says exactly one line (a statement line - a funcret asks nothing)', count($GLOBALS['LRG_TEST_SAY'] ?? []) === 1
++    && in_array($GLOBALS['LRG_TEST_SAY'][0], (array) lrgNeCfg('lines.statement'), true), json_encode($GLOBALS['LRG_TEST_SAY'] ?? []));
++unset($GLOBALS['LRG_VOICED']);
++// --- (j) no reply at all / invalid output: the TROUBLE line (she did not catch it), never the empty-message lines
++$neReset(); $neResetMem();
++turn('Hulda', snap(), 'inputtext', 'is the door locked?');
++unset($GLOBALS['LAST_LLM_RESPONSE']);
++$at = $neLogAt();
++$GLOBALS['LRG_NE_RETRY']();
++check('(j) no decoded reply (connector error, timeout, non-JSON): one TROUBLE line, why=no reply', count($GLOBALS['LRG_TEST_SAY'] ?? []) === 1
++    && in_array($GLOBALS['LRG_TEST_SAY'][0], (array) lrgNeCfg('lines.trouble'), true) && str_contains($neLogSince($at), 'why=no reply said="'), fx_cut($neLogSince($at)));
++$neReset();
++turn('Hulda', snap(), 'inputtext', 'is the door locked?');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('half a sentence that CHIM then rejected');
++$GLOBALS['talkedSoFar'] = ['Aye, it has been'];
++$at = $neLogAt();
++$GLOBALS['LRG_NE_RETRY']();
++check('(j) invalid output after sentences were already spoken mid-stream: nothing is added', ($GLOBALS['LRG_TEST_SAY'] ?? []) === [] && str_contains($neLogSince($at), 'why=invalid output said=(she already spoke'), fx_cut($neLogSince($at)));
++// --- (k) a scene / outro turn: log only, unless never_empty.in_scene
++$neReset(); $neResetMem();
++$GLOBALS['HERIKA_NAME'] = 'Hulda'; $GLOBALS['gameRequest'] = ['inputtext', lrgNow(), 100, 'harder'];
++$GLOBALS['LRG_TURN'] = ['npc' => 'Hulda', 'cid' => 'sc1', 'mode' => 'scene', 'type' => 'inputtext'];
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('', 'Change_Intimacy', 'faster');
++$at = $neLogAt();
++check('(k) in a scene the validator does not reject (a rejection would lose the scene action) and logs once', $GLOBALS['LRG_NE_VALIDATOR']('') === true && !isset($GLOBALS['LRG_NE_REJECT'])
++    && substr_count($neLogSince($at), 'verdict=log-only') === 1 && $GLOBALS['LRG_NE_VALIDATOR']('') === true && substr_count($neLogSince($at), 'verdict=log-only') === 1, fx_cut($neLogSince($at)));
++$out = $GLOBALS['LRG_NE_HOOK'](["Hulda|command|Change_Intimacy@faster\r\n"]);
++check('(k) ...the hook logs only: the action goes out, no line', count($out) === 1 && ($GLOBALS['LRG_TEST_SAY'] ?? []) === [] && substr_count($neLogSince($at), 'verdict=log-only') === 2);
++$neReset();
++$GLOBALS['LRG_NE_TEST_OVERRIDE'] = ['in_scene' => true];
++$GLOBALS['LRG_TURN'] = ['npc' => 'Hulda', 'cid' => 'sc1', 'mode' => 'scene', 'type' => 'inputtext'];
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('', 'Change_Intimacy', 'faster');
++$out = $GLOBALS['LRG_NE_HOOK'](["Hulda|command|Change_Intimacy@faster\r\n"]);
++check('(k) never_empty.in_scene=true: the hook speaks the line and keeps the action', count($out) === 1 && count($GLOBALS['LRG_TEST_SAY'] ?? []) === 1);
++$neReset();
++// --- (l) enabled=false: silent as before, everywhere
++$neReset(); $neResetMem();
++$GLOBALS['LRG_NE_TEST_OVERRIDE'] = ['enabled' => false];
++turn('Hulda', snap(), 'inputtext', 'is the door locked?');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++$v = $GLOBALS['LRG_NE_VALIDATOR']('');
++$GLOBALS['LRG_NE_HOOK']([]);
++$GLOBALS['LRG_NE_RETRY']();
++check('(l) never_empty.enabled=false: no verdict, no line, nothing remembered', $v === true && ($GLOBALS['LRG_TEST_SAY'] ?? []) === [] && $neMem() === []);
++$neReset();
++// --- (m) the next turn: one rule, once, within note_seconds - and only on a speech / dlgtalk turn
++$neReset(); $neResetMem();
++turn('Hulda', snap(), 'inputtext', 'is the door locked?');
++$GLOBALS['LAST_LLM_RESPONSE'] = $neReply('');
++$GLOBALS['LRG_NE_VALIDATOR']('');
++$GLOBALS['LRG_TEST_REASK'] = static function (string $nudge): bool { $GLOBALS['LRG_NE_REJECT'] = ['why' => 'empty message', 'action' => 'Talk', 'item' => '']; return false; };
++$GLOBALS['LRG_NE_RETRY']();
++$neReset();
++$GLOBALS['LRG_TEST_NOW'] = lrgNow() + 30;
++$GLOBALS['HERIKA_NAME'] = 'Hulda'; $GLOBALS['gameRequest'] = ['rechat', lrgNow(), 100, ''];
++check('(m) a rechat 30 s later carries no note (not a turn where the player spoke)', lrgNeNote('Hulda') === '');
++$GLOBALS['gameRequest'] = ['inputtext', lrgNow(), 100, 'well?'];
++$note = lrgNeNote('Hulda');
++check('(m) his next line 30 s later: the rule, once - "answers in words: one or two short spoken sentences, then the action if any"',
++    str_starts_with($note, "Hulda's last reply carried no words at all.") && str_contains($note, 'answers in words') && str_contains($note, 'then the action if any') && !str_contains($note, '"'), $note);
++check('(m) ...told once: the second read is empty', lrgNeNote('Hulda') === '' && ($neMem()['told'] ?? null) === true);
++$neResetMem();
++lrgMemSet('Hulda', ['empty_reply' => ['at' => lrgNow() - 500, 'cid' => 'x', 'n' => 1, 'told' => false]]);
++check('(m) ...and not after note_seconds', lrgNeNote('Hulda') === '');
++unset($GLOBALS['LRG_TEST_NOW']);
++$neReset(); $neResetMem();
++$GLOBALS['talkedSoFar'] = ['one short spoken line'];
++unset($GLOBALS['structuredOutputTemplate'], $GLOBALS['action_post_process_fnct_ex']);
++
+ echo "10. kill switch\n";
+ file_put_contents(LRG_DIR . '/config/lrg_config.json', json_encode(['kill_switch' => true]));
+ $out = shell_exec('php -r ' . escapeshellarg('require "' . LRG_DIR . '/lib/lrg_core.php"; echo lrgEnabled() ? "on" : "off";'));

@@ -1,0 +1,2 @@
+# byte-exact: no line-ending conversion (config.json must stay LF, the CBPC overrides CRLF)
+* -text

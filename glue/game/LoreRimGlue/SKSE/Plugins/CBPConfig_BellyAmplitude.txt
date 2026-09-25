@@ -1,0 +1,12 @@
+# LoreRim Glue override of  CBBE 3BA (3BBB)\SKSE\Plugins\CBPConfig_BellyAmplitude.txt
+#
+# WHY: 3BA's copy set Belly to 0.5; CBPC's own default is 1.0. The owner explicitly does not
+# want belly emphasised, so this goes DOWN to 0.4 rather than up - belly motion stays subtle
+# while breast and butt are restored.
+# "Belly" is the alias both CBPC (node "HDT Belly") and 3BA (node "NPC Belly") use; HDTBelly is
+# 3BA's second alias for "HDT Belly" and is defined nowhere else in the merged config, so it is
+# given the same value here. This body is skinned to "NPC Belly", not "HDT Belly".
+
+Belly.amplitude 0.4 0.4
+
+HDTBelly.amplitude 0.4 0.4

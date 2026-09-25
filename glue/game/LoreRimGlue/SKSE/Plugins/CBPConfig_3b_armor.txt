@@ -1,0 +1,106 @@
+# LoreRim Glue override of  CBBE 3BA (3BBB)\SKSE\Plugins\CBPConfig_3b_armor.txt   (pt16, 2026-09-23)
+#
+# WHAT THESE KEYS ARE
+# CBPC (cbp.dll 1.7.2) looks at the body-slot item an actor wears and classifies it naked / clothing /
+# light armour / heavy armour ("the above parameters effect the physics by the material of the
+# armour" - CBPC's own description). For a DRESSED actor the breast bounce is then governed by the
+# per-material keys in this file, on top of the plain "amplitude" that CBPConfig_BreastAmplitude.txt
+# sets:
+#   breastClothedAmplitude      - body slot is clothing     (dresses, tavern clothes, robes, ...)
+#   breastLightArmoredAmplitude - body slot is light armour (guards, leather, hide, ...)
+#   breastHeavyArmoredAmplitude - body slot is heavy armour (plate, steel, ...)
+#   breast*Pushup               - CBPC's own automatic push-up for the same three materials
+# A nude body ignores every key in this file and moves at "amplitude" alone. No plugin in this load
+# order carries a CBPCAsNaked / AsClothing / AsLight / AsHeavy / NoPushUp keyword (all 3679 plugins
+# swept), so the material comes solely from the worn body item's armour type.
+# The ExtraBreast1L..3R aliases are 3BA's names for the L/R Breast01-03 bones this body and its
+# built outfits are skinned to (CBPCMasterConfig_3BA.txt). The same keys for the older single
+# NPC L/R Breast bone are in CBPConfig_BBP_armor.txt next to this file.
+#
+# HISTORY
+#   3BA as LoreRim installed it : every *Amplitude 1.0, every *Pushup 0.0. That is 3BA's FOMOD
+#                                 option "Don't add auto push up effect when wearing clothes and
+#                                 armor" (byte-identical to the installer's "97 CBPC NoPushUp"
+#                                 file). Stock LoreRim: amplitude 0.1 with material 1.0.
+#   pt8  (2026-09-21)           : amplitude 1.0, this file untouched.
+#   pt15 (2026-09-23)           : amplitude 0.55, this file untouched.
+#   pt16 (2026-09-23)           : Clothed 0.70 / Light 0.50 / Heavy 0.30, push-up still 0.0.
+#                                 Owner, walking through Solitude: "the boob physics were a little
+#                                 too high in terms of bounciness when NPCs were just walking
+#                                 around" - i.e. DRESSED townsfolk. The nude / scene volume
+#                                 (amplitude 0.55) is deliberately NOT changed by this file.
+#
+# TWO POSSIBLE READINGS OF THE KEY - not settled from the DLL; one look in game settles it
+#   multiply (every shipped 3BA data point says so: its "94 CBPC PushUp" variant ships 0.9/0.8/0.7
+#   unchanged across the strength ladders A=0.1 .. D=1.0, and CBPC's CBPCAsNaked keyword "regards
+#   the breast as naked" = plain amplitude): dressed = 0.55 x 0.70 = 0.385 (about 3.9x stock),
+#   leather 0.275, plate 0.165, nude 0.55. Tonight's dressed volume was 0.55 - this is 30 % less.
+#   replace (the material value is used alone): dressed = 0.70, leather 0.50, plate 0.30, nude
+#   0.55. Tonight's dressed volume was then 1.0 (pt15's cut never reached a dressed NPC) - still
+#   30 % less, but dressed would now be LIVELIER than nude. So: if a dressed woman walking looks
+#   as lively as, or livelier than, the nude body in a scene, that is the replace reading - set the
+#   six Clothed lines to 0.50 or less (Light 0.35, Heavy 0.20) so dressed sits below nude.
+#
+# DIAL: change the six breastClothedAmplitude numbers together - 0.60 calmer, 0.80 livelier - and
+# the six Light / six Heavy lines the same way if wanted. Keep every *Pushup at 0.0: OBody NG's
+# ORefit already applies a push-up MORPH under clothes, so a CBPC push-up on top would double it.
+# "cbpc reload" in the console re-reads this file without restarting.
+# If the NUDE body in scenes also feels too lively, that is the other dial:
+# CBPConfig_BreastAmplitude.txt, all twelve numbers 0.55 -> 0.45 (it changes the scene body too).
+#
+# FORMAT: "alias.key <value at weight 100> <value at weight 0>" (CBPC's documented order; the two
+# are equal in every line here), "#" comments at line start, LF line
+# endings and no BOM like the glue's other CBPConfig_* files (3BA's own copy is CRLF; CBPC reads
+# both - the glue's LF amplitude file has been the live one since pt8). This file REPLACES 3BA's
+# whole file, so it carries all 36 of 3BA's keys, the 18 push-up lines included.
+
+# START ExtraBreast
+
+# Clothes
+ExtraBreast1L.breastClothedPushup 0.0 0.0
+ExtraBreast2L.breastClothedPushup 0.0 0.0
+ExtraBreast3L.breastClothedPushup 0.0 0.0
+
+ExtraBreast1L.breastLightArmoredPushup 0.0 0.0
+ExtraBreast2L.breastLightArmoredPushup 0.0 0.0
+ExtraBreast3L.breastLightArmoredPushup 0.0 0.0
+
+ExtraBreast1L.breastHeavyArmoredPushup 0.0 0.0
+ExtraBreast2L.breastHeavyArmoredPushup 0.0 0.0
+ExtraBreast3L.breastHeavyArmoredPushup 0.0 0.0
+
+ExtraBreast1L.breastClothedAmplitude 0.70 0.70
+ExtraBreast2L.breastClothedAmplitude 0.70 0.70
+ExtraBreast3L.breastClothedAmplitude 0.70 0.70
+
+ExtraBreast1L.breastLightArmoredAmplitude 0.50 0.50
+ExtraBreast2L.breastLightArmoredAmplitude 0.50 0.50
+ExtraBreast3L.breastLightArmoredAmplitude 0.50 0.50
+
+ExtraBreast1L.breastHeavyArmoredAmplitude 0.30 0.30
+ExtraBreast2L.breastHeavyArmoredAmplitude 0.30 0.30
+ExtraBreast3L.breastHeavyArmoredAmplitude 0.30 0.30
+
+ExtraBreast1R.breastClothedPushup 0.0 0.0
+ExtraBreast2R.breastClothedPushup 0.0 0.0
+ExtraBreast3R.breastClothedPushup 0.0 0.0
+
+ExtraBreast1R.breastLightArmoredPushup 0.0 0.0
+ExtraBreast2R.breastLightArmoredPushup 0.0 0.0
+ExtraBreast3R.breastLightArmoredPushup 0.0 0.0
+
+ExtraBreast1R.breastHeavyArmoredPushup 0.0 0.0
+ExtraBreast2R.breastHeavyArmoredPushup 0.0 0.0
+ExtraBreast3R.breastHeavyArmoredPushup 0.0 0.0
+
+ExtraBreast1R.breastClothedAmplitude 0.70 0.70
+ExtraBreast2R.breastClothedAmplitude 0.70 0.70
+ExtraBreast3R.breastClothedAmplitude 0.70 0.70
+
+ExtraBreast1R.breastLightArmoredAmplitude 0.50 0.50
+ExtraBreast2R.breastLightArmoredAmplitude 0.50 0.50
+ExtraBreast3R.breastLightArmoredAmplitude 0.50 0.50
+
+ExtraBreast1R.breastHeavyArmoredAmplitude 0.30 0.30
+ExtraBreast2R.breastHeavyArmoredAmplitude 0.30 0.30
+ExtraBreast3R.breastHeavyArmoredAmplitude 0.30 0.30

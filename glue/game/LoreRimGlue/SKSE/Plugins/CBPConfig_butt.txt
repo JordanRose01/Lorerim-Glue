@@ -1,0 +1,294 @@
+# LoreRim Glue override of  CBBE 3BA (3BBB)\SKSE\Plugins\CBPConfig_butt.txt   (pt19, 2026-09-24)
+#
+# WHAT THIS FILE IS
+# The spring, damping, force and clamp values CBPC (cbp.dll 1.7.2) applies to the two butt bones
+# "NPC L Butt" / "NPC R Butt". 3BA's master config (CBPCMasterConfig_3BA.txt) binds those nodes to
+# its aliases LButt / RButt; CBPC's own master config (CBPCMasterConfig.txt) binds the same two
+# nodes to its alias "Butt". CBPC keeps ONE alias per node (cbp.pdb: configMap is a node-name ->
+# alias map) and which of the two duplicate claims survives cannot be read from the public-only
+# pdb nor from any log line, so this file defines ALL THREE aliases with the same values: the
+# result is the same whichever claim CBPC keeps.
+# Body: 3BA's own "Very Soft (Big jiggle)" butt preset, verbatim - the 3BA installer's file
+#   10 Physics Patch\76 CBPC S - BBL\SKSE\Plugins\CBPConfig_butt.txt
+#   sha256 7a636a7696cee2d6e45982a6f2d4a58fb0ac67b2755477e0ea545cf9e3ecdbc5, read from
+#   F:\Modlists\LoreRim\downloads\CBBE 3BA (3BBB)-30174-2-48-1740765899.zip; 100 LButt/RButt keys,
+#   followed by the same 50 keys under Butt. Butt.rotationalZ is 0.0: 3BA mirrors that key
+#   -0.3 (L) / +0.3 (R), one alias serves both sides so the sign cannot be mirrored, and 0.0 is
+#   also CBPC's own default for it. Nothing else differs between the three aliases.
+# The master volume (".amplitude") is NOT in this file: CBPConfig_ButtAmplitude.txt next to it.
+#
+# WHY (the arithmetic behind "there really isnt any ass physics ... even during the sex")
+# LoreRim installed 3BA with its STIFFEST butt preset, "Elastic (Small jiggle)" = the installer's
+# 77 CBPC M - BBL file (sha256 3b751f808012dacdd7855187cbab574288ef67e2ba5fd21f44cb207474c06e4f,
+# byte-identical to 3BA's shipped CBPConfig_butt.txt) at amplitude 0.5. On a 3BA body the butt
+# bones carry very light skin weights: NPC L/R Butt peak at 0.204 over about 510 of the 18,436
+# body vertices (mean about 0.10 over the 509 vertices above 0.01) - identical on 3BA's own
+# reference body CBBE 3BA Ref.nif, so it is the body's design, not a LoreRim build defect - and
+# the combined weight of all six CBPC-driven butt/thigh bones never exceeds 0.255 at any cheek
+# vertex; the rest of the cheek is rigid pelvis / thigh. Skin travel = bone travel x skin weight
+# x amplitude. With the Elastic spring the bone barely reaches its clamps on a walk (roughly
+# 0.1-0.3 units at the best vertex = millimetres) and even pinned at the -4.5 clamp at amplitude
+# 0.6 the best vertex moves 0.55 units (0.8 cm): sub-visible. Nude or dressed, in or out of a
+# scene, it is the same: CBPC has no clothed / armoured volume key for the butt (its only
+# per-material keys are breast*Amplitude / breast*Pushup), so a dressed butt runs at the same
+# plain amplitude as a nude one, and the dress meshes carry the same <= 0.22 butt weights.
+#
+# WHAT THE VERY SOFT PRESET CHANGES versus the installed Elastic file - exactly nine value groups:
+#   stiffnessX/Y/Z(+Rot)    0.03   -> 0.015       stiffness2X/Y/Z(+Rot)  0.0082 -> 0.0041
+#   dampingX/Y/Z(+Rot)      0.035  -> 0.0175      timetick / timetickRot 1.5    -> 2.5
+#   linearX / Y / Z         0.875 / 0.5 / 0.75 -> 1.225 / 0.7 / 1.05
+#   timeStep / timeStepRot  1.2    -> 0.9         collisionMultipler 1.0 -> 2.0, ...Rot 0.0 -> 0.2
+#   Zmax/ZminoffsetRot      +1.5 / -4.5 -> +3.0 / -3.0   (the ROTATIONAL Z clamps only)
+# NOT changed: the LINEAR clamps (X/Y +-3.0, Z +1.5 / -4.5, and the collision*offset clamps),
+# rotationalX 0.15, rotationalY 0.3, rotationalZ -+0.3, collisionFriction 0.1, collisionElastic
+# 1.0. So this file does NOT raise the translation ceiling: it lets the bone actually reach the
+# existing clamps on a step and ring for about a second (damping halved). The ceiling rises only
+# through the amplitude file (0.6 -> 1.0): best vertex 0.55 -> 0.92 units (1.3 cm) down, 0.61
+# sideways.
+#
+# WHAT TO EXPECT (honest numbers, from the skin weights - no config can change those)
+# Peak-weighted vertex at most 0.92 units (1.3 cm) down; the average weighted cheek vertex about
+# 0.45 units (0.6 cm) - roughly half the breast travel the owner already judged slightly much.
+# It should be perceptible on a fuller preset (nude in a scene, seen from behind or the side; or a
+# dress walking away), not a guaranteed cartoon wobble. The only lever left after this is the LEG
+# config (NPC L/R RearThigh, weight 0.162 on the lower cheek, still Elastic + 0.5): worth at most
+# about a quarter more (combined physics-bone weight per cheek vertex 0.255 vs 0.204 for the butt
+# bone alone); beyond that only reweighting the body mesh (BodySlide / Outfit Studio, out of
+# bounds by rule). 310 of the 365 built armour meshes and 112 of the 151 built clothes meshes
+# carry no butt bone at all - judge on a dress or a nude scene, never on a cuirass.
+#
+# HISTORY
+#   3BA as LoreRim installed it : Elastic (77 M-BBL) springs + amplitude 0.5 ("Elastic (Small
+#                                 jiggle)") under LButt/RButt; under CBPC's alias Butt only the
+#                                 .amplitude line (3BA's own amplitude file carries Butt too) and
+#                                 NO spring/clamp keys, 3BA's 13-byte CBPConfig.txt having
+#                                 replaced CBPC's defaults.
+#   pt8  (2026-09-21)           : amplitude 0.8; Butt.* gap-filled with CBPC's defaults in
+#                                 CBPConfig_zzGlueDefaults.txt (+-2.44 clamps, timetick 13.33) -
+#                                 the same sub-visible class (2.44 x 0.204 = 0.50 units).
+#   pt15 (2026-09-23)           : amplitude 0.6 (blanket tone-down after the BREAST complaint).
+#   pt19 (2026-09-24)           : THIS FILE (Very Soft springs under all three aliases) +
+#                                 amplitude 1.0 = 3BA's "Normal"; the Butt.* block left
+#                                 zzGlueDefaults so no key of one alias is defined in two files.
+#
+# DIAL (always all three aliases together; "cbpc reload" in the console re-reads the configs
+# without a restart - if an edit seems ignored, restart the game)
+#   volume     : CBPConfig_ButtAmplitude.txt - 0.8 calmer, 1.0 (shipped) = 3BA's "Normal". Not
+#                above 1.0: a conservative rule taken from 3BA's own ladders (its amplitude files
+#                stop at 1.0, and so does CBPC's own installer ladder, "amplitude1" = 1.0 down to
+#                "amplitude5" = 0.3); what CBPC does with a value above 1.0 is undocumented.
+#   shoved     : if in OStim scenes the cheeks look pushed rather than wobbling, change
+#                *.collisionMultipler 2.0 -> 1.0 (Elastic's value) below. This key only acts on
+#                colliders the node does not exclude: 3BA's CBPCollisionConfig_Female.txt excludes
+#                NPC L/R Butt's own butt, thigh, genital and breast colliders ("@" = self node in
+#                CBPC's syntax), so a walking actor's own body never pushes the cheeks; the doubled
+#                multiplier shows against another actor (or the actor's own hands).
+#   still weak : bone travel - *.linearX/Y/Z and the twelve *max/minoffset(Rot) clamps plus the
+#                collision*offset clamps, e.g. x1.5 together - because the skin weight is fixed
+#                and the volume is capped. Lower cheek / hamstring glued on = the LEG config
+#                (the installer's 76 file CBPConfig_leg.txt + LegAmplitude 0.8), a separate change.
+#
+# FORMAT: LF line endings, no BOM, ASCII, like the six sibling glue CBPConfig files (3BA's own copy
+# is CRLF; CBPC parses both - the glue's LF CBPConfig files have changed the in-game result three
+# times, pt8 / pt15 / pt16). Two values per key = CBPC's weight-100 / weight-0 pair, in that order:
+# CBPC's Nexus description (cached in its meta.ini) gives "Breast.stiffness 0.05 0.08" as "both 100
+# (first one) and 0 (second one) weight bounce settings", one value serving both weights, and
+# CBPC's own installer ladder writes e.g. "amplitude 1.0 0.3" (full at weight 100, less on flat
+# actors). The two are identical here, so the order changes nothing. No "Conditions" line: CBPC's
+# CBPConfig.txt header says a conditioned bounce file must carry ALL settings itself, i.e. it
+# stops merging. Everything from "# START Butt" to "#Tuning.rate 60" is 3BA's 76 file byte for
+# byte after CR removal; the "Butt alias" block after it is the glue's.
+
+# START Butt
+
+LButt.stiffnessX 0.015 0.015
+LButt.stiffnessY 0.015 0.015
+LButt.stiffnessZ 0.015 0.015
+RButt.stiffnessX 0.015 0.015
+RButt.stiffnessY 0.015 0.015
+RButt.stiffnessZ 0.015 0.015
+
+LButt.stiffnessXRot 0.015 0.015
+LButt.stiffnessYRot 0.015 0.015
+LButt.stiffnessZRot 0.015 0.015
+RButt.stiffnessXRot 0.015 0.015
+RButt.stiffnessYRot 0.015 0.015
+RButt.stiffnessZRot 0.015 0.015
+
+LButt.stiffness2X 0.0041 0.0041
+LButt.stiffness2Y 0.0041 0.0041
+LButt.stiffness2Z 0.0041 0.0041
+RButt.stiffness2X 0.0041 0.0041
+RButt.stiffness2Y 0.0041 0.0041
+RButt.stiffness2Z 0.0041 0.0041
+
+LButt.stiffness2XRot 0.0041 0.0041
+LButt.stiffness2YRot 0.0041 0.0041
+LButt.stiffness2ZRot 0.0041 0.0041
+RButt.stiffness2XRot 0.0041 0.0041
+RButt.stiffness2YRot 0.0041 0.0041
+RButt.stiffness2ZRot 0.0041 0.0041
+
+LButt.dampingX 0.0175 0.0175
+LButt.dampingY 0.0175 0.0175
+LButt.dampingZ 0.0175 0.0175
+RButt.dampingX 0.0175 0.0175
+RButt.dampingY 0.0175 0.0175
+RButt.dampingZ 0.0175 0.0175
+
+LButt.dampingXRot 0.0175 0.0175
+LButt.dampingYRot 0.0175 0.0175
+LButt.dampingZRot 0.0175 0.0175
+RButt.dampingXRot 0.0175 0.0175
+RButt.dampingYRot 0.0175 0.0175
+RButt.dampingZRot 0.0175 0.0175
+
+LButt.Xmaxoffset 3.0 3.0
+LButt.Xminoffset -3.0 -3.0
+LButt.Ymaxoffset 3.0 3.0
+LButt.Yminoffset -3.0 -3.0
+LButt.Zmaxoffset 1.5 1.5
+LButt.Zminoffset -4.5 -4.5
+RButt.Xmaxoffset 3.0 3.0
+RButt.Xminoffset -3.0 -3.0
+RButt.Ymaxoffset 3.0 3.0
+RButt.Yminoffset -3.0 -3.0
+RButt.Zmaxoffset 1.5 1.5
+RButt.Zminoffset -4.5 -4.5
+
+LButt.XmaxoffsetRot 3.0 3.0
+LButt.XminoffsetRot -3.0 -3.0
+LButt.YmaxoffsetRot 3.0 3.0
+LButt.YminoffsetRot -3.0 -3.0
+LButt.ZmaxoffsetRot 3.0 3.0
+LButt.ZminoffsetRot -3.0 -3.0
+RButt.XmaxoffsetRot 3.0 3.0
+RButt.XminoffsetRot -3.0 -3.0
+RButt.YmaxoffsetRot 3.0 3.0
+RButt.YminoffsetRot -3.0 -3.0
+RButt.ZmaxoffsetRot 3.0 3.0
+RButt.ZminoffsetRot -3.0 -3.0
+
+LButt.timetick 2.5 2.5
+RButt.timetick 2.5 2.5
+
+LButt.timetickRot 2.5 2.5
+RButt.timetickRot 2.5 2.5
+
+LButt.linearX 1.225 1.225
+LButt.linearY 0.7 0.7
+LButt.linearZ 1.05 1.05
+RButt.linearX 1.225 1.225
+RButt.linearY 0.7 0.7
+RButt.linearZ 1.05 1.05
+
+LButt.rotationalX 0.15 0.15
+LButt.rotationalY 0.3 0.3
+LButt.rotationalZ -0.3 -0.3
+RButt.rotationalX 0.15 0.15
+RButt.rotationalY 0.3 0.3
+RButt.rotationalZ 0.3 0.3
+
+LButt.timeStep 0.9 0.9
+RButt.timeStep 0.9 0.9
+
+LButt.timeStepRot 0.9 0.9
+RButt.timeStepRot 0.9 0.9
+
+LButt.collisionXmaxoffset 3.0 3.0
+LButt.collisionXminoffset -3.0 -3.0
+LButt.collisionYmaxoffset 3.0 3.0
+LButt.collisionYminoffset -3.0 -3.0
+LButt.collisionZmaxoffset 1.5 1.5
+LButt.collisionZminoffset -4.5 -4.5
+
+RButt.collisionXmaxoffset 3.0 3.0
+RButt.collisionXminoffset -3.0 -3.0
+RButt.collisionYmaxoffset 3.0 3.0
+RButt.collisionYminoffset -3.0 -3.0
+RButt.collisionZmaxoffset 1.5 1.5
+RButt.collisionZminoffset -4.5 -4.5
+
+LButt.collisionFriction 0.1 0.1
+LButt.collisionElastic 1.0 1.0
+LButt.collisionMultipler 2.0 2.0
+LButt.collisionMultiplerRot 0.2 0.2
+
+RButt.collisionFriction 0.1 0.1
+RButt.collisionElastic 1.0 1.0
+RButt.collisionMultipler 2.0 2.0
+RButt.collisionMultiplerRot 0.2 0.2
+
+# END
+
+#Tuning.rate 60
+
+##############################################################################
+# Butt alias - CBPC's own CBPCMasterConfig.txt binds NPC L Butt=Butt and NPC R Butt=Butt.
+# The same 50 keys as LButt above at the same values; Butt.rotationalZ 0.0 (see the header).
+##############################################################################
+Butt.stiffnessX 0.015 0.015
+Butt.stiffnessY 0.015 0.015
+Butt.stiffnessZ 0.015 0.015
+
+Butt.stiffnessXRot 0.015 0.015
+Butt.stiffnessYRot 0.015 0.015
+Butt.stiffnessZRot 0.015 0.015
+
+Butt.stiffness2X 0.0041 0.0041
+Butt.stiffness2Y 0.0041 0.0041
+Butt.stiffness2Z 0.0041 0.0041
+
+Butt.stiffness2XRot 0.0041 0.0041
+Butt.stiffness2YRot 0.0041 0.0041
+Butt.stiffness2ZRot 0.0041 0.0041
+
+Butt.dampingX 0.0175 0.0175
+Butt.dampingY 0.0175 0.0175
+Butt.dampingZ 0.0175 0.0175
+
+Butt.dampingXRot 0.0175 0.0175
+Butt.dampingYRot 0.0175 0.0175
+Butt.dampingZRot 0.0175 0.0175
+
+Butt.Xmaxoffset 3.0 3.0
+Butt.Xminoffset -3.0 -3.0
+Butt.Ymaxoffset 3.0 3.0
+Butt.Yminoffset -3.0 -3.0
+Butt.Zmaxoffset 1.5 1.5
+Butt.Zminoffset -4.5 -4.5
+
+Butt.XmaxoffsetRot 3.0 3.0
+Butt.XminoffsetRot -3.0 -3.0
+Butt.YmaxoffsetRot 3.0 3.0
+Butt.YminoffsetRot -3.0 -3.0
+Butt.ZmaxoffsetRot 3.0 3.0
+Butt.ZminoffsetRot -3.0 -3.0
+
+Butt.timetick 2.5 2.5
+
+Butt.timetickRot 2.5 2.5
+
+Butt.linearX 1.225 1.225
+Butt.linearY 0.7 0.7
+Butt.linearZ 1.05 1.05
+
+Butt.rotationalX 0.15 0.15
+Butt.rotationalY 0.3 0.3
+Butt.rotationalZ 0.0 0.0
+
+Butt.timeStep 0.9 0.9
+
+Butt.timeStepRot 0.9 0.9
+
+Butt.collisionXmaxoffset 3.0 3.0
+Butt.collisionXminoffset -3.0 -3.0
+Butt.collisionYmaxoffset 3.0 3.0
+Butt.collisionYminoffset -3.0 -3.0
+Butt.collisionZmaxoffset 1.5 1.5
+Butt.collisionZminoffset -4.5 -4.5
+
+Butt.collisionFriction 0.1 0.1
+Butt.collisionElastic 1.0 1.0
+Butt.collisionMultipler 2.0 2.0
+Butt.collisionMultiplerRot 0.2 0.2

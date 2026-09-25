@@ -1,0 +1,113 @@
+{
+  "npcFormID": {
+    "Skyrim.esm": {
+      "0A2C8E": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "0A2C8F": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "0A2C91": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "0918E2": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "01A696": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "01A6D9": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "01336B": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "013BB8": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "0132A1": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "013478": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "019959": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "013BAB": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "013B99": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "01335F": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "013BA2": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "0135E6": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "01326A": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "01327A": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "0B8827": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "01347B": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "01336A": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "0658D2": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "01347C": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "013476": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "013BA5": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "013352": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "01406B": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "013B9B": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "0C3A3F": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"]
+    },
+    "Dawnguard.esm": {
+      "002B6C": ["LoreRim - Curvy Hourglass", "CBBE Curvy", "LoreRim - Curvy Soft"],
+      "003B8B": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"],
+      "01541B": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "003363": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"]
+    },
+    "Dragonborn.esm": {
+      "017934": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "01A511": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong"],
+      "018FC5": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE SevenBase"]
+    }
+  },
+  "npc": {},
+  "factionFemale": {
+    "MarkarthTempleofDibellaFaction": ["LoreRim - Curvy Hourglass", "LoreRim - Curvy Soft", "CBBE Curvy", "CBBE SevenBase"],
+    "JobInnkeeperFaction": ["LoreRim - Curvy Soft", "LoreRim - Curvy Hourglass", "CBBE Curvy", "CBBE Vanilla", "CBBE SevenBase", "CBBE Petite"]
+  },
+  "factionMale": {},
+  "npcPluginFemale": {},
+  "npcPluginMale": {},
+  "raceFemale": {
+    "OrcRace": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong", "CBBE Athletic", "CBBE Vanilla", "CBBE SevenBase"],
+    "OrcRaceVampire": ["LoreRim - Curvy Statuesque", "LoreRim - Curvy Soft", "CBBE Strong", "CBBE Athletic", "CBBE Vanilla", "CBBE SevenBase"]
+  },
+  "raceMale": {},
+  "blacklistedNpcs": [],
+  "blacklistedNpcsFormID": {},
+  "blacklistedNpcsPluginFemale": [],
+  "blacklistedNpcsPluginMale": [],
+  "blacklistedRacesFemale": [
+    "ElderRace",
+    "ElderRaceVampire",
+    "NordRaceChild",
+    "BretonRaceChild",
+    "ImperialRaceChild",
+    "RedguardRaceChild",
+    "urshug_OrcRaceChild",
+    "urshug_DarkelfRaceChild",
+    "urshug_HighelfRaceChild",
+    "urshug_WoodelfRaceChild"
+  ],
+  "blacklistedRacesMale": [
+    "ElderRace",
+    "ElderRaceVampire",
+    "NordRaceChild",
+    "BretonRaceChild",
+    "ImperialRaceChild",
+    "RedguardRaceChild",
+    "urshug_OrcRaceChild",
+    "urshug_DarkelfRaceChild",
+    "urshug_HighelfRaceChild",
+    "urshug_WoodelfRaceChild"
+  ],
+  "blacklistedOutfitsFromORefitFormID": {},
+  "blacklistedOutfitsFromORefit": [
+    "LS Force Naked",
+    "OBody Nude 32"
+  ],
+  "blacklistedOutfitsFromORefitPlugin": [],
+  "outfitsForceRefitFormID": {},
+  "outfitsForceRefit": [],
+  "blacklistedPresetsFromRandomDistribution": [
+    "- Zeroed Sliders -",
+    "-Zeroed Sliders-",
+    "Zeroed Sliders",
+    "HIMBO Zero for OBody",
+    "TNG Default",
+    "CBBE Chubby",
+    "CBBE Curvy",
+    "CBBE Oppai",
+    "CBBE Fetish",
+    "CBBE Fetish v2",
+    "Warmaiden - Adrianne Avenicci SHWB's Body 3BA",
+    "State of mind - Psyche's Body [By WeelBones]",
+    "[Dint999] SSE First CBBE Body Physics",
+    "LoreRim - Curvy Hourglass",
+    "LoreRim - Curvy Statuesque"
+  ],
+  "blacklistedPresetsShowInOBodyMenu": true
+}

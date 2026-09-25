@@ -1,0 +1,39 @@
+# LoreRim Glue override of  CBBE 3BA (3BBB)\SKSE\Plugins\CBPConfig_BreastAmplitude.txt
+#
+# amplitude is CBPC's 0..1 master volume on a bounce alias (CBPC's own default is 1.0; CBPC fades
+# motion out by writing "<alias>.amplitude 0.0", see CBPCBounceinterpolationconfig_Test.txt).
+#
+# HISTORY
+#   3BA as LoreRim installed it : 0.1  (3BA FOMOD "Very Softness" + strength "A - a bit or no
+#                                        jiggle") - the owner saw no jiggle at all.
+#   pt8  (2026-09-21)           : 1.0  (CBPC default) - jiggle restored.
+#   pt15 (2026-09-23)           : 0.55 - owner: "a little too extra / too much, unrealistic".
+#   All twelve aliases scaled by the same factor (x0.55), so the ratios between them are unchanged.
+#   pt16 (2026-09-23)           : unchanged at 0.55 = the NUDE / scene volume. The DRESSED volume is a separate dial since pt16: CBPConfig_3b_armor.txt (CBPC's per-material breast*Amplitude keys; 3BA shipped all three at 1.0, i.e. dressed = nude volume).
+#
+# The spring values are NOT touched: 3BA's CBPConfig_3b.txt still supplies the tuned
+# stiffness / damping / offsets / timeStep for the ExtraBreast chain. Only the volume moved.
+#
+# This body (meshes\actors\character\character assets\femalebody_0/1.nif in this same mod) is
+# skinned to L/R Breast01-03, which 3BA's CBPCMasterConfig_3BA.txt maps to ExtraBreast1L..3R -
+# so the six ExtraBreast*L/R lines are the ones that actually drive the nude body. The other six
+# only move outfits weighted to the older NPC L/R Breast bone.
+#
+# DIAL: change all twelve numbers together. 0.45 = calmer, 0.65 = livelier. In game,
+# "cbpc reload" in the console re-reads this file without restarting.
+
+ExtraBreast1L.amplitude 0.55 0.55
+ExtraBreast2L.amplitude 0.55 0.55
+ExtraBreast3L.amplitude 0.55 0.55
+ExtraBreast1R.amplitude 0.55 0.55
+ExtraBreast2R.amplitude 0.55 0.55
+ExtraBreast3R.amplitude 0.55 0.55
+
+ExtraBreast1.amplitude 0.55 0.55
+ExtraBreast2.amplitude 0.55 0.55
+ExtraBreast3.amplitude 0.55 0.55
+
+RBreast.amplitude 0.55 0.55
+LBreast.amplitude 0.55 0.55
+
+Breast.amplitude 0.55 0.55

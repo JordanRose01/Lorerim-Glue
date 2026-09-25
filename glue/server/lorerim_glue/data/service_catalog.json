@@ -1,0 +1,2391 @@
+{
+ "_": "service_catalog",
+ "v": 1,
+ "built_at": 1790276458,
+ "hash": "e756e311aefaeab54a1184d609adb77b",
+ "destinations": [
+  "Alchemy",
+  "Alchemy laboratory",
+  "Armory",
+  "Baan Malur",
+  "Bard",
+  "Bedroom",
+  "Bedroom furnishings",
+  "Brittleshin Pass",
+  "Bujold's Retreat",
+  "Carriage",
+  "Chicken",
+  "Children's bedroom",
+  "Cormaris",
+  "Cow",
+  "Dark Brotherhood saddle",
+  "Darkwater Crossing",
+  "Dawnstar",
+  "Dining room decorations",
+  "Dragon Bridge",
+  "Eastmarch",
+  "Enchanter's Tower",
+  "Enchanting laboratory",
+  "Entrance hall",
+  "Entry Room",
+  "Falkreath",
+  "Ferry",
+  "Frostflow Lighthouse",
+  "Garden",
+  "Goat",
+  "Greenhouse",
+  "Guardian Stones",
+  "Haafingar",
+  "Half-Moon Mill",
+  "Heartwood Mill",
+  "Heljarchen Hall",
+  "Hjaalmarch",
+  "Honeyside",
+  "Horse",
+  "Icewater Jetty",
+  "Ilinata's Deep",
+  "Imperial saddle",
+  "Ivarstead",
+  "Karthwasten",
+  "Kitchen",
+  "Kitchen furnishings",
+  "Kynesgrove",
+  "Lakeview Manor",
+  "Library",
+  "Living room",
+  "Living room furnishings",
+  "Llethrin Fel",
+  "Loft decorations",
+  "Main Hall",
+  "Markarth",
+  "Master bedroom",
+  "Mixwater Mill",
+  "Morthal",
+  "New banners",
+  "Nightgate Inn",
+  "Northshore Landing",
+  "Old Hroldan",
+  "Old Silgrad",
+  "Patio decorations",
+  "Poisoner's nook",
+  "Porch",
+  "Pryai",
+  "Raven Rock",
+  "Riften",
+  "Riverwood",
+  "Rorikstead",
+  "Secret entrance",
+  "Servant",
+  "Seyda Neen",
+  "Shor's Stone",
+  "Skaal Village",
+  "Small House",
+  "Solitude",
+  "Solitude Lighthouse",
+  "Soljund's Sinkhole",
+  "Standard saddle",
+  "Stonehills",
+  "Storage Room",
+  "Stormcloak saddle",
+  "Sunmul",
+  "Tel Mithryn",
+  "Thalmor Embassy",
+  "The Pale",
+  "The Reach",
+  "The Rift",
+  "Torture chamber",
+  "Trophy Room",
+  "Vivec",
+  "White saddle",
+  "Whiterun",
+  "Windhelm",
+  "Windstad Manor",
+  "Winterhold"
+ ],
+ "destinations_travel": [
+  "Baan Malur",
+  "Brittleshin Pass",
+  "Bujold's Retreat",
+  "Carriage",
+  "Cormaris",
+  "Darkwater Crossing",
+  "Dawnstar",
+  "Dragon Bridge",
+  "Eastmarch",
+  "Falkreath",
+  "Ferry",
+  "Frostflow Lighthouse",
+  "Guardian Stones",
+  "Haafingar",
+  "Half-Moon Mill",
+  "Heartwood Mill",
+  "Heljarchen Hall",
+  "Hjaalmarch",
+  "Honeyside",
+  "Icewater Jetty",
+  "Ilinata's Deep",
+  "Ivarstead",
+  "Karthwasten",
+  "Kynesgrove",
+  "Lakeview Manor",
+  "Llethrin Fel",
+  "Markarth",
+  "Mixwater Mill",
+  "Morthal",
+  "Nightgate Inn",
+  "Northshore Landing",
+  "Old Hroldan",
+  "Old Silgrad",
+  "Pryai",
+  "Raven Rock",
+  "Riften",
+  "Riverwood",
+  "Rorikstead",
+  "Seyda Neen",
+  "Shor's Stone",
+  "Skaal Village",
+  "Solitude",
+  "Solitude Lighthouse",
+  "Soljund's Sinkhole",
+  "Stonehills",
+  "Sunmul",
+  "Tel Mithryn",
+  "Thalmor Embassy",
+  "The Pale",
+  "The Reach",
+  "The Rift",
+  "Vivec",
+  "Whiterun",
+  "Windhelm",
+  "Windstad Manor",
+  "Winterhold"
+ ],
+ "destination_rows": [
+  {
+   "name": "Alchemy",
+   "topics": [
+    "BYOHHouseStewardFurnishAlchemy"
+   ],
+   "plugins": [
+    "HearthFires.esm"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Alchemy laboratory",
+   "topics": [
+    "DecorateMarkarthAlchemyLab",
+    "DecorateRiftenAlchemyLabTopic",
+    "DecorateSolitudeAlchemyLab",
+    "DecorateWhiterunAlchemy",
+    "DecorateWindhelmAlchemy"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 10
+  },
+  {
+   "name": "Armory",
+   "topics": [
+    "BYOHHouseStewardFurnishArmory",
+    "DecorateWindhelmArmory"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 8
+  },
+  {
+   "name": "Baan Malur",
+   "topics": [
+    "SOMRFerryToBaanMalur"
+   ],
+   "plugins": [
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Bard",
+   "topics": [
+    "BYOHHouseStewardUpgradeBard",
+    "HendraheimTnE_StewardUpgradeBard"
+   ],
+   "plugins": [
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 8
+  },
+  {
+   "name": "Bedroom",
+   "topics": [
+    "BYOHHouseStewardFurnishBedroom",
+    "DecorateSolitudeBedroom"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 8
+  },
+  {
+   "name": "Bedroom furnishings",
+   "topics": [
+    "DecorateMarkarthBedroom",
+    "DecorateRiftenBedroomTopic",
+    "DecorateWhiterunBedroom",
+    "DecorateWindhelmBedroom"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 8
+  },
+  {
+   "name": "Brittleshin Pass",
+   "topics": [
+    "KmodFastTravelFerryBrittleshin",
+    "KmodFastTravelFerryFreeBrittleshin"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Bujold's Retreat",
+   "topics": [
+    "KmodFastTravelFerryBujold"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Carriage",
+   "topics": [
+    "HendraheimTnE_StewardUpgradeCarriage",
+    "KmodHouseStewardUpgradeCarriage"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "Hendraheim - Tweaks and Enhancements.esp"
+   ],
+   "priced": 8
+  },
+  {
+   "name": "Chicken",
+   "topics": [
+    "BYOHHouseStewardUpgradeChicken",
+    "HendraheimTnE_StewardUpgradeChicken"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 12
+  },
+  {
+   "name": "Children's bedroom",
+   "topics": [
+    "DecorateMarkarthChildBedroom",
+    "DecorateRiftenChildBedroom",
+    "DecorateSolitudeChildBedroom",
+    "DecorateWhiterunChildBedroom",
+    "DecorateWindhelmChildBedroom"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 10
+  },
+  {
+   "name": "Cormaris",
+   "topics": [
+    "SOMRFerryToCormaris"
+   ],
+   "plugins": [
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Cow",
+   "topics": [
+    "BYOHHouseStewardUpgradeCow",
+    "HendraheimTnE_StewardUpgradeCow"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp"
+   ],
+   "priced": 12
+  },
+  {
+   "name": "Dark Brotherhood saddle",
+   "topics": [
+    "ccBGSSSE034_HorseSaddleQuestSaddleDarkBrotherhood"
+   ],
+   "plugins": [
+    "Wild Horses - Dialogues.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Darkwater Crossing",
+   "topics": [
+    "BYOHHouse1CarriageDarkwaterCrossing",
+    "KmodFastTravelCarriageLocalDarkwater",
+    "WCIQuestBranchAskDriverDarkwaterCrossing"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Dawnstar",
+   "topics": [
+    "BYOHHouse1CarriageDawnstar",
+    "DLC1DialogueFerryDawnstarALL",
+    "DialogueCarriageDawnstarAll",
+    "KmodFastTravelCarriageFreeLocalDawnstar",
+    "KmodFastTravelFerryDawnstar",
+    "KmodFastTravelFerryFreeDawnstar"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 13
+  },
+  {
+   "name": "Dining room decorations",
+   "topics": [
+    "DecorateWhiterunWalls"
+   ],
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Dragon Bridge",
+   "topics": [
+    "BYOHHouse1CarriageDragonBridge",
+    "KmodFastTravelCarriageLocalDragonBridge",
+    "KmodFastTravelFerryDragonBridge",
+    "KmodFastTravelFerryFreeDragonBridge",
+    "WCIQuestBranchAskDriverDragonBridge"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 7
+  },
+  {
+   "name": "Eastmarch",
+   "topics": [
+    "KmodFastTravelCarriageEastmarch",
+    "KmodFastTravelCarriageFreeEastmarch"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 0
+  },
+  {
+   "name": "Enchanter's Tower",
+   "topics": [
+    "BYOHHouseStewardFurnishEnchanting"
+   ],
+   "plugins": [
+    "HearthFires.esm"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Enchanting laboratory",
+   "topics": [
+    "DecorateMarkarthEnchantingLab",
+    "DecorateRiftenEnchantingTopic",
+    "DecorateSolitudeEnchantingLab",
+    "DecorateWindhelmEnchanting"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 8
+  },
+  {
+   "name": "Entrance hall",
+   "topics": [
+    "DecorateMarkarthGarden"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Entry Room",
+   "topics": [
+    "BYOHHouseStewardFurnishEntryRoom"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Falkreath",
+   "topics": [
+    "BYOHHouse1CarriageFalkreath",
+    "DialogueCarriageFalkreathAll",
+    "KmodFastTravelCarriageFalkreathHold",
+    "KmodFastTravelCarriageFreeFalkreathHold",
+    "KmodFastTravelCarriageFreeLocalFalkreath",
+    "WCIQuestBranchAskDriverFalkreath"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Ferry",
+   "topics": [
+    "KmodHouseStewardUpgradeFerryman"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Frostflow Lighthouse",
+   "topics": [
+    "KmodFastTravelFerryFreeFrostflow",
+    "KmodFastTravelFerryFrostflow"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Garden",
+   "topics": [
+    "DecorateRiftenGardenTopic"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Goat",
+   "topics": [
+    "HendraheimTnE_StewardUpgradeGoat"
+   ],
+   "plugins": [
+    "Hendraheim - Tweaks and Enhancements.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Greenhouse",
+   "topics": [
+    "BYOHHouseStewardFurnishGreenhouse"
+   ],
+   "plugins": [
+    "HearthFires.esm"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Guardian Stones",
+   "topics": [
+    "KmodFastTravelFerryFreeGuardian",
+    "KmodFastTravelFerryGuardian"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Haafingar",
+   "topics": [
+    "KmodFastTravelCarriageFreeHaafingar",
+    "KmodFastTravelCarriageHaafingar"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 0
+  },
+  {
+   "name": "Half-Moon Mill",
+   "topics": [
+    "KmodFastTravelCarriageFreeLocalHalfMoon",
+    "KmodFastTravelCarriageLocalHalfMoon",
+    "KmodFastTravelFerryFreeHalfMoon",
+    "KmodFastTravelFerryHalfMoon"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 5
+  },
+  {
+   "name": "Heartwood Mill",
+   "topics": [
+    "KmodFastTravelCarriageLocalHeartwood",
+    "KmodFastTravelFerryFreeHeartwood",
+    "KmodFastTravelFerryHeartwood"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 5
+  },
+  {
+   "name": "Heljarchen Hall",
+   "topics": [
+    "KmodFastTravelCarriageLocalHeljarchen",
+    "WCIQuestBranchAskDriverHeljarchenHall"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Hjaalmarch",
+   "topics": [
+    "KmodFastTravelCarriageFreeHjaalmarch",
+    "KmodFastTravelCarriageHjaalmarch"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 0
+  },
+  {
+   "name": "Honeyside",
+   "topics": [
+    "KmodFastTravelFerryHoneyside"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Horse",
+   "topics": [
+    "BYOHHouseStewardUpgradeHorse",
+    "HendraheimTnE_StewardUpgradeHorse"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp"
+   ],
+   "priced": 11
+  },
+  {
+   "name": "Icewater Jetty",
+   "topics": [
+    "KmodFastTravelFerryFreeIcewater",
+    "KmodFastTravelFerryIcewater"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Ilinata's Deep",
+   "topics": [
+    "KmodFastTravelFerryFreeIlinata",
+    "KmodFastTravelFerryIlinata"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Imperial saddle",
+   "topics": [
+    "ccBGSSSE034_HorseSaddleQuestSaddleImperial"
+   ],
+   "plugins": [
+    "Wild Horses - Dialogues.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Ivarstead",
+   "topics": [
+    "BYOHHouse1CarriageIvarstead",
+    "KmodFastTravelCarriageLocalIvarstead",
+    "KmodFastTravelFerryFreeIvarstead",
+    "KmodFastTravelFerryIvarstead",
+    "WCIQuestBranchAskDriverIvarstead"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 7
+  },
+  {
+   "name": "Karthwasten",
+   "topics": [
+    "BYOHHouse1CarriageKarthwasten",
+    "KmodFastTravelCarriageLocalKarthwasten",
+    "WCIQuestBranchAskDriverKarthwasten"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Kitchen",
+   "topics": [
+    "BYOHHouseStewardFurnishKitchen",
+    "DecorateSolitudeGarden"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 8
+  },
+  {
+   "name": "Kitchen furnishings",
+   "topics": [
+    "DecorateRiftenLivingRoomTopic",
+    "DecorateWhiterunKitchen",
+    "DecorateWindhelmKitchen"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Kynesgrove",
+   "topics": [
+    "BYOHHouse1CarriageKynesgrove",
+    "KmodFastTravelCarriageLocalKynesgrove",
+    "WCIQuestBranchAskDriverKynesgrove"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Lakeview Manor",
+   "topics": [
+    "KmodFastTravelCarriageLocalLakeview",
+    "KmodFastTravelFerryLakeview",
+    "WCIQuestBranchAskDriverLakeviewManor"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 7
+  },
+  {
+   "name": "Library",
+   "topics": [
+    "BYOHHouseStewardFurnishLibrary"
+   ],
+   "plugins": [
+    "HearthFires.esm"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Living room",
+   "topics": [
+    "DecorateSolitudeLivingRoom",
+    "DecorateWindhelmLivingRoom"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Living room furnishings",
+   "topics": [
+    "DecorateMarkarthLivingRoom",
+    "DecorateWhiterunLivingRoom"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Llethrin Fel",
+   "topics": [
+    "SOMRFerryToLlethrinFel"
+   ],
+   "plugins": [
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Loft decorations",
+   "topics": [
+    "DecorateWhiterunFloors"
+   ],
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Main Hall",
+   "topics": [
+    "BYOHHouseStewardFurnishMainHall"
+   ],
+   "plugins": [
+    "HearthFires.esm"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Markarth",
+   "topics": [
+    "BYOHHouse1CarriageMarkarth",
+    "DialogueCarriageMarkarthAll",
+    "WCIQuestBranchAskDriverMarkarth"
+   ],
+   "plugins": [
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Master bedroom",
+   "topics": [
+    "DBSancMalloryRefitChoice5"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Mixwater Mill",
+   "topics": [
+    "KmodFastTravelCarriageLocalMixwater"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Morthal",
+   "topics": [
+    "BYOHHouse1CarriageMorthal",
+    "DialogueCarriageMorthal",
+    "DialogueCarriageMorthalAll",
+    "KmodFastTravelCarriageFreeLocalMorthal",
+    "KmodFastTravelFerryFreeMorthal",
+    "KmodFastTravelFerryMorthal"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 9
+  },
+  {
+   "name": "New banners",
+   "topics": [
+    "DBSancMalloryRefitChoice1"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Nightgate Inn",
+   "topics": [
+    "KmodFastTravelCarriageFreeLocalNightgate",
+    "KmodFastTravelCarriageLocalNightgate"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Northshore Landing",
+   "topics": [
+    "KmodFastTravelFerryNorthshore"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Old Hroldan",
+   "topics": [
+    "BYOHHouse1CarriageOldHroldan",
+    "KmodFastTravelCarriageLocalOldHroldan"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Old Silgrad",
+   "topics": [
+    "SOMRFerryToOldSilgrad"
+   ],
+   "plugins": [
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Patio decorations",
+   "topics": [
+    "DecorateSolitudePorch"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Poisoner's nook",
+   "topics": [
+    "DBSancMalloryRefitChoice2"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Porch",
+   "topics": [
+    "DecorateRiftenPorchTopic"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Pryai",
+   "topics": [
+    "SOMRFerryToPryai"
+   ],
+   "plugins": [
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Raven Rock",
+   "topics": [
+    "KmodFastTravelFerryRavenRock",
+    "SOMRFerryToRavenRock"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Riften",
+   "topics": [
+    "BYOHHouse1CarriageRiften",
+    "DialogueCarriageRiftenAll",
+    "KmodFastTravelFerryRiften",
+    "WCIQuestBranchAskDriverRiften"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 9
+  },
+  {
+   "name": "Riverwood",
+   "topics": [
+    "BYOHHouse1CarriageRiverwood",
+    "KmodFastTravelCarriageFreeLocalRiverwood",
+    "KmodFastTravelCarriageLocalRiverwood",
+    "WCIQuestBranchAskDriverRiverwood"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Rorikstead",
+   "topics": [
+    "BYOHHouse1CarriageRorikstead",
+    "KmodFastTravelCarriageLocalRorikstead",
+    "WCIQuestBranchAskDriverRorikstead"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Secret entrance",
+   "topics": [
+    "DBSancMalloryRefitChoice4"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Servant",
+   "topics": [
+    "HendraheimTnE_StewardUpgradeServant"
+   ],
+   "plugins": [
+    "Hendraheim - Tweaks and Enhancements.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Seyda Neen",
+   "topics": [
+    "SOMRFerryToSeydaNeen"
+   ],
+   "plugins": [
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Shor's Stone",
+   "topics": [
+    "BYOHHouse1CarriageShorsStone",
+    "KmodFastTravelCarriageLocalShorsStone",
+    "WCIQuestBranchAskDriverShorsStone"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Skaal Village",
+   "topics": [
+    "KmodFastTravelFerrySkaal"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Small House",
+   "topics": [
+    "BYOHHouseStewardFurnishEntryRoom"
+   ],
+   "plugins": [
+    "HearthFires.esm"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Solitude",
+   "topics": [
+    "BYOHHouse1CarriageSolitude",
+    "DLC1DialogueFerrySolitudeALL",
+    "DialogueCarriageSolitudeAll",
+    "KmodFastTravelFerryFreeSolitude",
+    "KmodFastTravelFerrySolitude",
+    "WCIQuestBranchAskDriverSolitude"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 13
+  },
+  {
+   "name": "Solitude Lighthouse",
+   "topics": [
+    "KmodFastTravelFerryFreeLighthouse",
+    "KmodFastTravelFerryLighthouse"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Soljund's Sinkhole",
+   "topics": [
+    "KmodFastTravelCarriageLocalSoljund"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Standard saddle",
+   "topics": [
+    "ccBGSSSE034_HorseSaddleQuestSaddleStandard"
+   ],
+   "plugins": [
+    "Wild Horses - Dialogues.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Stonehills",
+   "topics": [
+    "BYOHHouse1CarriageStonehills",
+    "KmodFastTravelCarriageFreeLocalStonehills",
+    "KmodFastTravelCarriageLocalStonehills",
+    "WCIQuestBranchAskDriverStonehills"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 4
+  },
+  {
+   "name": "Storage Room",
+   "topics": [
+    "BYOHHouseStewardFurnishStorageRoom"
+   ],
+   "plugins": [
+    "HearthFires.esm"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Stormcloak saddle",
+   "topics": [
+    "ccBGSSSE034_HorseSaddleQuestSaddleStormcloak"
+   ],
+   "plugins": [
+    "Wild Horses - Dialogues.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Sunmul",
+   "topics": [
+    "SOMRFerryToSunmul"
+   ],
+   "plugins": [
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Tel Mithryn",
+   "topics": [
+    "KmodFastTravelFerryTelMithryn"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 3
+  },
+  {
+   "name": "Thalmor Embassy",
+   "topics": [
+    "KmodFastTravelCarriageLocalEmbassy"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "The Pale",
+   "topics": [
+    "KmodFastTravelCarriageFreePale",
+    "KmodFastTravelCarriagePale"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 0
+  },
+  {
+   "name": "The Reach",
+   "topics": [
+    "KmodFastTravelCarriageFreeReach",
+    "KmodFastTravelCarriageReach"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 0
+  },
+  {
+   "name": "The Rift",
+   "topics": [
+    "KmodFastTravelCarriageFreeRift",
+    "KmodFastTravelCarriageRift"
+   ],
+   "plugins": [
+    "CFTO.esp"
+   ],
+   "priced": 0
+  },
+  {
+   "name": "Torture chamber",
+   "topics": [
+    "DBSancMalloryRefitChoice3"
+   ],
+   "plugins": [
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 2
+  },
+  {
+   "name": "Trophy Room",
+   "topics": [
+    "BYOHHouseStewardFurnishTrophyRoom"
+   ],
+   "plugins": [
+    "HearthFires.esm"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Vivec",
+   "topics": [
+    "SOMRFerryToVivec"
+   ],
+   "plugins": [
+    "Journey to Baan Malur.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "White saddle",
+   "topics": [
+    "ccBGSSSE034_HorseSaddleQuestSaddleLight"
+   ],
+   "plugins": [
+    "Wild Horses - Dialogues.esp"
+   ],
+   "priced": 1
+  },
+  {
+   "name": "Whiterun",
+   "topics": [
+    "BYOHHouse1CarriageWhiterun",
+    "DialogueCarriageWhiterunAll",
+    "KmodFastTravelCarriageFreeWhiterunHold",
+    "KmodFastTravelCarriageWhiterunHold",
+    "WCIQuestBranchAskDriverWhiterun"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 6
+  },
+  {
+   "name": "Windhelm",
+   "topics": [
+    "BYOHHouse1CarriageWindhelm",
+    "DLC1DialogueFerryWindhelmALL",
+    "DialogueCarriageWindhelmAll",
+    "KmodFastTravelFerryFreeWindhelm",
+    "KmodFastTravelFerryWindhelm",
+    "WCIQuestBranchAskDriverWindhelm"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "Dawnguard.esm",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ],
+   "priced": 13
+  },
+  {
+   "name": "Windstad Manor",
+   "topics": [
+    "KmodFastTravelCarriageLocalWindstad",
+    "KmodFastTravelFerryWindstad",
+    "WCIQuestBranchAskDriverWindstadManor"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 7
+  },
+  {
+   "name": "Winterhold",
+   "topics": [
+    "BYOHHouse1CarriageWinterhold",
+    "DialogueCarriageWinterholdAll",
+    "KmodFastTravelCarriageFreeWinterhold",
+    "KmodFastTravelCarriageWinterhold",
+    "KmodFastTravelFerryFreeWinterhold",
+    "KmodFastTravelFerryWinterhold"
+   ],
+   "plugins": [
+    "CFTO.esp",
+    "HearthFires.esm",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp",
+    "WaitCarriageInns.esp"
+   ],
+   "priced": 11
+  }
+ ],
+ "skills": [
+  "Alchemy",
+  "Alteration",
+  "Archery",
+  "Block",
+  "Conjuration",
+  "Destruction Magic",
+  "Dragonrend Shout",
+  "Enchanting",
+  "Evasion",
+  "Heavy Armor",
+  "Illusion",
+  "Light Armor",
+  "Lockpicking",
+  "One-Handed",
+  "Pickpocket",
+  "Restoration",
+  "Smithing",
+  "Sneak",
+  "Speech",
+  "Speechcraft",
+  "Two-Handed",
+  "Voice"
+ ],
+ "skill_rows": [
+  {
+   "skill": "Alchemy",
+   "n": 12,
+   "plugins": [
+    "CC Farming - Tweaks and Enhancements.esp",
+    "Hendraheim - Tweaks and Enhancements.esp",
+    "Skyrim.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Smithing",
+   "n": 12,
+   "plugins": [
+    "Alternate Perspective - Gate to Sovngarde Edition.esp",
+    "AlternatePerspective.esp",
+    "Dawnguard.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Heavy Armor",
+   "n": 10,
+   "plugins": [
+    "Dawnguard.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Speech",
+   "n": 10,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Illusion",
+   "n": 9,
+   "plugins": [
+    "College Of Winterhold - Quest Expansion.esp",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Restoration",
+   "n": 9,
+   "plugins": [
+    "Dawnguard.esm",
+    "Stendarr Rising.esp",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Sneak",
+   "n": 9,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Lockpicking",
+   "n": 8,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Pickpocket",
+   "n": 8,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Enchanting",
+   "n": 7,
+   "plugins": [
+    "Dragonborn.esm",
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Block",
+   "n": 6,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Alteration",
+   "n": 5,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Two-Handed",
+   "n": 5,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Destruction Magic",
+   "n": 4,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "Conjuration",
+   "n": 4,
+   "plugins": [
+    "Dragonborn.esm",
+    "Lucien.esp",
+    "Unofficial Skyrim Special Edition Patch.esp",
+    "moretosaywinterhold.esp"
+   ]
+  },
+  {
+   "skill": "Evasion",
+   "n": 3,
+   "plugins": [
+    "Requiem.esp"
+   ]
+  },
+  {
+   "skill": "Light Armor",
+   "n": 3,
+   "plugins": [
+    "Unofficial Skyrim Special Edition Patch.esp"
+   ]
+  },
+  {
+   "skill": "One-Handed",
+   "n": 2,
+   "plugins": [
+    "LoreRim - Dialogue Patch.esp"
+   ]
+  },
+  {
+   "skill": "Archery",
+   "n": 2,
+   "plugins": [
+    "moretodo.esp"
+   ]
+  },
+  {
+   "skill": "Dragonrend Shout",
+   "n": 1,
+   "plugins": [
+    "Skyrim.esm"
+   ]
+  },
+  {
+   "skill": "Speechcraft",
+   "n": 1,
+   "plugins": [
+    "ForgottenCity.esp"
+   ]
+  },
+  {
+   "skill": "Voice",
+   "n": 1,
+   "plugins": [
+    "moretosayriverwood.esp"
+   ]
+  }
+ ],
+ "price_globals": [
+  {
+   "token": "<Global=InvestAmount>",
+   "plugin": "Skyrim.esm",
+   "n": 58
+  },
+  {
+   "token": "<Global=CarriageCost>",
+   "plugin": "Skyrim.esm",
+   "n": 50
+  },
+  {
+   "token": "<Global=KmodFerryCost>",
+   "plugin": "CFTO.esp",
+   "n": 47
+  },
+  {
+   "token": "<Global=CarriageCostSmall>",
+   "plugin": "Skyrim.esm",
+   "n": 42
+  },
+  {
+   "token": "<Global=KmodCarriageCostExtra>",
+   "plugin": "CFTO.esp",
+   "n": 40
+  },
+  {
+   "token": "<Global=KmodCarriageCostLocal>",
+   "plugin": "CFTO.esp",
+   "n": 38
+  },
+  {
+   "token": "<Global=KmodFerryCostLocal>",
+   "plugin": "CFTO.esp",
+   "n": 24
+  },
+  {
+   "token": "<Global=Sho_M>",
+   "plugin": "Simple Hunting Overhaul.esp",
+   "n": 23
+  },
+  {
+   "token": "<Global=Horsecost>",
+   "plugin": "Skyrim.esm",
+   "n": 20
+  },
+  {
+   "token": "<Global=DLC1FerryCostSmall>",
+   "plugin": "Dawnguard.esm",
+   "n": 18
+  },
+  {
+   "token": "<Global=KmodCarriageCost>",
+   "plugin": "CFTO.esp",
+   "n": 16
+  },
+  {
+   "token": "<Global=RoomCost>",
+   "plugin": "Skyrim.esm",
+   "n": 15
+  },
+  {
+   "token": "<Global=HorseCost>",
+   "plugin": "HearthFires.esm",
+   "n": 13
+  },
+  {
+   "token": "<Global=BYOHHPCostCow>",
+   "plugin": "HearthFires.esm",
+   "n": 12
+  },
+  {
+   "token": "<Global=BYOHHPCostChicken>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 12
+  },
+  {
+   "token": "<Global=hirelinggold>",
+   "plugin": "DynamicMercenaryFees.esp",
+   "n": 11
+  },
+  {
+   "token": "<Global=Sho_XL>",
+   "plugin": "Simple Hunting Overhaul.esp",
+   "n": 11
+  },
+  {
+   "token": "<Global=BYOHHPCost>",
+   "plugin": "HearthFires.esm",
+   "n": 10
+  },
+  {
+   "token": "<Global=GuildCost>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 9
+  },
+  {
+   "token": "<Global=BYOHHPCostEntryRoom>",
+   "plugin": "HearthFires.esm",
+   "n": 9
+  },
+  {
+   "token": "<Global=VSVGLO_FH>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 9
+  },
+  {
+   "token": "<Global=BYOHHPCostCarriage>",
+   "plugin": "HearthFires.esm",
+   "n": 8
+  },
+  {
+   "token": "<Global=BYOHHPCostBard>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 8
+  },
+  {
+   "token": "<Global=Sho_L>",
+   "plugin": "Simple Hunting Overhaul.esp",
+   "n": 8
+  },
+  {
+   "token": "<Global=VSVGLO_GuardPrice>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 8
+  },
+  {
+   "token": "<Global=DLC2CostToSail>",
+   "plugin": "Dragonborn.esm",
+   "n": 7
+  },
+  {
+   "token": "<Global=AE_AmuletCost>",
+   "plugin": "AmuletEvangelism.esp",
+   "n": 7
+  },
+  {
+   "token": "<Global=BYOHHPCostTrophyRm>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostStorageRm>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostLibrary>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostKitchen>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostGreenhouse>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostEnchanting>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostArmory>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostAlchemy>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostBedroom>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPCostMainHall>",
+   "plugin": "HearthFires.esm",
+   "n": 6
+  },
+  {
+   "token": "<Global=VSVGLO_Horse>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 6
+  },
+  {
+   "token": "<Global=VSVGLO_KidRoom>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 6
+  },
+  {
+   "token": "<Global=Sho_S>",
+   "plugin": "Simple Hunting Overhaul.esp",
+   "n": 6
+  },
+  {
+   "token": "<Global=WCICarriageCostHouse>",
+   "plugin": "WaitCarriageInns.esp",
+   "n": 6
+  },
+  {
+   "token": "<Global=BYOHHPAmountLogs>",
+   "plugin": "Requiem.esp",
+   "n": 5
+  },
+  {
+   "token": "<Global=BYOHHPCostLogs>",
+   "plugin": "Requiem.esp",
+   "n": 5
+  },
+  {
+   "token": "<Global=VSVGLO_Kitchen>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_Dining>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_Lab>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_Loft>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_Bedroom>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_KidRoomAlt>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_AnimCow>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_AnimGoat>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_AnimChick>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=GoldenClawPrice>",
+   "plugin": "BuyableGoldenClaw.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=GoldenhillsPlantationPriceGlobal>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=VSVGLO_CarriagePrice>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=KmodFerryCostExtra>",
+   "plugin": "CFTO.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=cceejsse004_HousePrice>",
+   "plugin": "Hendraheim - Tweaks and Enhancements.esp",
+   "n": 4
+  },
+  {
+   "token": "<Global=animalgold>",
+   "plugin": "Skyrim.esm",
+   "n": 3
+  },
+  {
+   "token": "<Global=HPWindhelm>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 3
+  },
+  {
+   "token": "<Global=HDWhiterunChildRoom>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 3
+  },
+  {
+   "token": "<Global=HDRiftenChildRoom>",
+   "plugin": "HearthFires.esm",
+   "n": 3
+  },
+  {
+   "token": "<Global=HDRiftenEnchanting>",
+   "plugin": "Skyrim.esm",
+   "n": 3
+  },
+  {
+   "token": "<Global=HDMarkarthAlchemy>",
+   "plugin": "Skyrim.esm",
+   "n": 3
+  },
+  {
+   "token": "<Global=HDMarkarthChildRoom>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 3
+  },
+  {
+   "token": "<Global=HDWhiterunAlchemy>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 3
+  },
+  {
+   "token": "<Global=DLC1FerryCostLarge>",
+   "plugin": "Dawnguard.esm",
+   "n": 3
+  },
+  {
+   "token": "<Global=Sho_XXL>",
+   "plugin": "Simple Hunting Overhaul.esp",
+   "n": 3
+  },
+  {
+   "token": "<Global=HendraheimTnECostGoat>",
+   "plugin": "Hendraheim - Tweaks and Enhancements.esp",
+   "n": 3
+  },
+  {
+   "token": "<Global=DH_DragonPartsCostUncommon>",
+   "plugin": "DragonHunting.esp",
+   "n": 3
+  },
+  {
+   "token": "<Global=DH_DragonPartsCostRare>",
+   "plugin": "DragonHunting.esp",
+   "n": 3
+  },
+  {
+   "token": "<Global=WE17GoldAmount>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HPMarkarth>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HPRiften>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HPWhiterun>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HPSolitude>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWhiterunKitchen>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWhiterunLiving>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWhiterunDining>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWhiterunLoft>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDRiftenKitchen>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDRiftenAlchemy>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDRiftenPorch>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDRiftenGarden>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDSolitudeKitchen>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDSolitudePatio>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDSolitudeEnchanting>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDSolitudeAlchemy>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDSolitudeLiving>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDSolitudeChildRoom>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDMarkarthHall>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDMarkarthEnchanting>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDMarkarthLiving>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDMarkarthBedroom>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWindhelmBedroom>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWindhelmEnchanting>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWindhelmAlchemy>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWindhelmLiving>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWindhelmChildRoom>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWindhelmKitchen>",
+   "plugin": "Skyrim.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWindhelmKiller>",
+   "plugin": "Update.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=CCHorseArmorCostSwapOnly>",
+   "plugin": "CarriageAndStableDialogues.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=CCHorseArmorCost>",
+   "plugin": "CarriageAndStableDialogues.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=DLC1TrollCost>",
+   "plugin": "Dawnguard.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWhiterunBedroom>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDRiftenBedroom>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDSolitudeBedroom>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=HDWindhelmArmory>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=BYOHHBA2Ransom>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=BYOHHPAmountClay>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=BYOHHPCostClay>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=BYOHHPAmountStone>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=BYOHHPCostStone>",
+   "plugin": "HearthFires.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=DLC2CostToSailx2>",
+   "plugin": "Dragonborn.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=ccBGSSSE001_HDSolitudeFishTank>",
+   "plugin": "ccBGSSSE001-Fish.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=ccBGSSSE001_HDSolitudeFishPlaques>",
+   "plugin": "ccBGSSSE001-Fish.esm",
+   "n": 2
+  },
+  {
+   "token": "<Global=ccEEJ001HP>",
+   "plugin": "CC Tundra Homestead - Tweaks and Enhancements.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=ccEEJSSE002_HousePrice>",
+   "plugin": "Myrwatch - Tweaks and Enhancements.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=ANDR_SeverinManorPrice>",
+   "plugin": "Severin Manor Has A Price.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=RoomRentDaysLeft>",
+   "plugin": "Xtended Stay.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=RoomCost2Days>",
+   "plugin": "Xtended Stay.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=RoomCost3Days>",
+   "plugin": "Xtended Stay.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=RoomCost4Days>",
+   "plugin": "Xtended Stay.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=RoomCost5Days>",
+   "plugin": "Xtended Stay.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=RoomCost6Days>",
+   "plugin": "Xtended Stay.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=RoomCost7Days>",
+   "plugin": "Xtended Stay.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=HendraheimTnECostServant>",
+   "plugin": "Hendraheim - Tweaks and Enhancements.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=DH_DragonPartsCostCommon>",
+   "plugin": "DragonHunting.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=RespecCost>",
+   "plugin": "LoreRim Respec.esp",
+   "n": 2
+  },
+  {
+   "token": "<Global=WIAddItem07PayB>",
+   "plugin": "Skyrim.esm",
+   "n": 1
+  },
+  {
+   "token": "<Global=WIAddItem07PayA>",
+   "plugin": "Skyrim.esm",
+   "n": 1
+  },
+  {
+   "token": "<Global=WEBountyCollectorCrimeGold>",
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=DLC1SurgeryCost>",
+   "plugin": "Face Sculptor Expanded - Growl Patch.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=ccVSVSSE002_GoatPrice>",
+   "plugin": "ccvsvsse002-pets.esl",
+   "n": 1
+  },
+  {
+   "token": "<Global=VSVGLO_OutfitFarmhandPrice>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=VSVGLO_PlotUpgradeCost01>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=VSVGLO_PlotUpgradeCost02>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=VSVGLO_PlotUpgradeCost03>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=VSVGLO_PlotUpgradeCost04>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=VSVGLO_PlotUpgradeCost05>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=VSVGLO_PlotUpgradeCost06>",
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=FaceSculptor_Reduced>",
+   "plugin": "FaceSculptorExpanded.esp",
+   "n": 1
+  },
+  {
+   "token": "<Global=HMADg>",
+   "plugin": "Hunters Mark Animal Den on Map.esp",
+   "n": 1
+  }
+ ],
+ "crime_topics": [
+  "DGCrimeBribe",
+  "DGCrimeForcegreetTopic",
+  "DGCrimeGoToJail",
+  "DGCrimeNeverMind",
+  "DGCrimeOrcPayFine",
+  "DGCrimeOrcResistArrest",
+  "DGCrimeOrcsBlockingTopic",
+  "DGCrimePayFine",
+  "DGCrimePersuade",
+  "DGCrimeResistArrest",
+  "DGCrimeTGBribeNo",
+  "DGCrimeTGBribeYes",
+  "DGCrimeTGPayoff",
+  "DGCrimeUseInfluence",
+  "DGCrimeWantedTopic"
+ ],
+ "service_plugins": [
+  {
+   "plugin": "CFTO.esp",
+   "n": 296
+  },
+  {
+   "plugin": "Skyrim.esm",
+   "n": 157
+  },
+  {
+   "plugin": "Unofficial Skyrim Special Edition Patch.esp",
+   "n": 154
+  },
+  {
+   "plugin": "Andrealphus Jobs Overhaul - MASTER.esp",
+   "n": 64
+  },
+  {
+   "plugin": "HearthFires.esm",
+   "n": 25
+  },
+  {
+   "plugin": "Hendraheim - Tweaks and Enhancements.esp",
+   "n": 25
+  },
+  {
+   "plugin": "Dawnguard.esm",
+   "n": 24
+  },
+  {
+   "plugin": "Journey to Baan Malur.esp",
+   "n": 21
+  },
+  {
+   "plugin": "LoreRim - Dialogue Patch.esp",
+   "n": 16
+  },
+  {
+   "plugin": "moretosaywhiterun.esp",
+   "n": 7
+  },
+  {
+   "plugin": "SurWR.esp",
+   "n": 7
+  },
+  {
+   "plugin": "CC Farming - Tweaks and Enhancements.esp",
+   "n": 5
+  },
+  {
+   "plugin": "Requiem.esp",
+   "n": 3
+  },
+  {
+   "plugin": "Dragonborn.esm",
+   "n": 3
+  },
+  {
+   "plugin": "AlternatePerspective.esp",
+   "n": 3
+  },
+  {
+   "plugin": "moretodo.esp",
+   "n": 2
+  },
+  {
+   "plugin": "Update.esm",
+   "n": 1
+  },
+  {
+   "plugin": "LoreRim - Better Carriages Patch.esp",
+   "n": 1
+  },
+  {
+   "plugin": "ForgottenCity.esp",
+   "n": 1
+  },
+  {
+   "plugin": "moretosayriverwood.esp",
+   "n": 1
+  },
+  {
+   "plugin": "moretosaywinterhold.esp",
+   "n": 1
+  },
+  {
+   "plugin": "College Of Winterhold - Quest Expansion.esp",
+   "n": 1
+  },
+  {
+   "plugin": "WindhelmSSE.esp",
+   "n": 1
+  },
+  {
+   "plugin": "Alternate Perspective - Gate to Sovngarde Edition.esp",
+   "n": 1
+  },
+  {
+   "plugin": "Stendarr Rising.esp",
+   "n": 1
+  },
+  {
+   "plugin": "Better Carriage Destinations.esp",
+   "n": 1
+  },
+  {
+   "plugin": "Better Carriage Destinations - CFTO.esp",
+   "n": 1
+  },
+  {
+   "plugin": "Lucien.esp",
+   "n": 1
+  }
+ ]
+}

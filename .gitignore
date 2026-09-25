@@ -1,0 +1,11 @@
+# rollback copies and per-lane backups (rebuildable, large)
+snapshots/
+glue/.backup/
+# runtime / scratch
+glue/log/
+__pycache__/
+*.pyc
+*.bak
+*.tmp
+# third-party body meshes copied from other mods (installed locally only; never redistributed)
+glue/game/LoreRimGlue/meshes/

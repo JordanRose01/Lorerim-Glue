@@ -1,0 +1,14 @@
+{
+	"PhysicsManage" :
+	{
+		"SMP" :
+		{
+			"Breast" : 0,
+			"Belly" : 0,
+			"Butt" : 0,
+			"Thigh" : 0,
+			"Vagina" : 0,
+			"VaginaCollision" : 0
+		}
+	}
+}

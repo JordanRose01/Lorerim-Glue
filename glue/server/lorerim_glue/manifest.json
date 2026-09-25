@@ -1,0 +1,6 @@
+{
+  "name": "lorerim_glue",
+  "display_name": "LoreRim Glue",
+  "description": "Integration layer between LoreRim, CHIM, OStim Standalone and OARE: per-NPC boundaries, interest-driven and hard-gated consent, NPC initiative and invitations, live OStim scene awareness and full verbal control, plus menuless questing - real quest dialogue by voice, with the engine running the real hidden session and real persuade / intimidate / bribe checks.",
+  "version": "0.5.6"
+}

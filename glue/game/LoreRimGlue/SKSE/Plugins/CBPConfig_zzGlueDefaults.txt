@@ -1,0 +1,136 @@
+# LoreRim Glue - gap filler. This is a NEW file; it overrides nothing.
+#
+# WHY IT EXISTS
+# CBPC merges every Data\SKSE\Plugins\CBPConfig*.txt in the VFS. 3BA's winning CBPConfig.txt is
+# 13 bytes long ("Tuning.rate 0") and replaces CBPC's 6272-byte default, which was the only file
+# that defined the aliases "Breast", "Butt" and "Belly". After the merge:
+#   Breast  -> only .amplitude existed  (CBPConfig_BreastAmplitude.txt)
+#   Butt    -> only .amplitude existed  (CBPConfig_ButtAmplitude.txt) - filled here pt8..pt18,
+#              since pt19 fully defined in CBPConfig_butt.txt instead (see below)
+#   HDTBelly-> nothing at all
+# while the two ConfigMaps still both claim the same four nodes:
+#   CBPC   CBPCMasterConfig.txt      NPC L/R Breast=Breast   NPC L/R Butt=Butt   HDT Belly=Belly
+#   3BA    CBPCMasterConfig_3BA.txt  NPC L/R Breast=LBreast  NPC L/R Butt=LButt  HDT Belly=HDTBelly
+# Whichever duplicate CBPC keeps, one of those bone/alias pairs ends up with no stiffness, no
+# damping and no offsets. This file fills only the gaps, so the result is the same either way.
+#
+# It defines ONLY aliases that nothing else in the merged config defines:
+#   Breast.*   - copied verbatim from CBPC's own CBPConfig.txt
+#   HDTBelly.* - copied from 3BA's CBPConfig_belly.txt Belly.* values
+# Butt.* is NOT here any more (pt19, 2026-09-24). From pt8 to pt18 this file carried CBPC's default
+# Butt block (stiffness 0.03, damping 0.05, +-2.44, timetick 13.33, timeStep 0.40), which - under
+# the alias CBPC's own master config binds - kept the butt in the same stiff, sub-visible class as
+# 3BA's Elastic preset (ceiling 2.44 x the 0.204 skin weight = 0.50 units at the best vertex). All
+# three butt aliases (LButt, RButt, Butt) now live together in CBPConfig_butt.txt at 3BA's "Very
+# Soft" values, so no key of the Butt alias is defined in two files: cbp.dll recognises both the
+# legacy "stiffness" and the per-axis "stiffnessX" spellings, and which file wins when two define
+# one alias is undocumented.
+# It deliberately does NOT define LBreast/RBreast/LButt/RButt/ExtraBreast*/Belly/leg aliases -
+# those are fully tuned by 3BA (or, for the butt, by CBPConfig_butt.txt) and must keep those values.
+# It deliberately does NOT define any .amplitude - those live in the three amplitude files next
+# to this one, so there is exactly one place per alias where the master volume is set.
+# The "zz" in the filename makes it sort last, so it can never shadow a tuned 3BA value.
+
+##############################################################################
+# Breast - CBPC default parameters (CBPC\SKSE\Plugins\CBPConfig.txt)
+##############################################################################
+Breast.stiffness 0.039
+Breast.stiffness2 0.01
+Breast.damping 0.174
+Breast.Xmaxoffset 3.889
+Breast.Xminoffset -3.889
+Breast.Ymaxoffset 3.889
+Breast.Yminoffset -3.889
+Breast.Zmaxoffset 3.889
+Breast.Zminoffset -3.889
+Breast.timetick 13.33
+Breast.linearX 1.82
+Breast.linearY 0.3
+Breast.linearZ 1.28
+Breast.linearXspreadforceY 0.0
+Breast.linearXspreadforceZ 0.0
+Breast.linearYspreadforceX 0.0
+Breast.linearYspreadforceZ 0.0
+Breast.linearZspreadforceX 0.0
+Breast.linearZspreadforceY 0.0
+Breast.rotationalX 0.074
+Breast.rotationalY 0.0
+Breast.rotationalZ 0.0
+Breast.linearXrotationX 0.0
+Breast.linearXrotationY 1.0
+Breast.linearXrotationZ 0.0
+Breast.linearYrotationX 0.0
+Breast.linearYrotationY 0.0
+Breast.linearYrotationZ 1.0
+Breast.linearZrotationX 1.0
+Breast.linearZrotationY 0.0
+Breast.linearZrotationZ 0.0
+Breast.timeStep 0.40
+Breast.collisionFriction 0.8
+Breast.collisionPenetration 0.0
+Breast.collisionMultipler 1.0
+Breast.collisionMultiplerRot 1.0
+Breast.collisionElastic 1
+Breast.collisionXmaxOffset 100
+Breast.collisionXminOffset -100
+Breast.collisionYmaxOffset 100
+Breast.collisionYminOffset -100
+Breast.collisionZmaxOffset 100
+Breast.collisionZminOffset -100
+
+##############################################################################
+# HDTBelly - 3BA's own Belly values (CBBE 3BA\SKSE\Plugins\CBPConfig_belly.txt),
+# re-declared under the alias 3BA's CBPCMasterConfig_3BA.txt binds to the "HDT Belly" node.
+# Defined nowhere else in the merged config. This body is skinned to "NPC Belly" (alias Belly),
+# so this block is insurance for whichever ConfigMap entry CBPC keeps, not a change of feel.
+##############################################################################
+HDTBelly.stiffnessX 0.05 0.05
+HDTBelly.stiffnessY 0.05 0.05
+HDTBelly.stiffnessZ 0.05 0.05
+HDTBelly.stiffnessXRot 0.05 0.05
+HDTBelly.stiffnessYRot 0.05 0.05
+HDTBelly.stiffnessZRot 0.05 0.05
+HDTBelly.stiffness2X 0.0136 0.0136
+HDTBelly.stiffness2Y 0.0136 0.0136
+HDTBelly.stiffness2Z 0.0136 0.0136
+HDTBelly.stiffness2XRot 0.0136 0.0136
+HDTBelly.stiffness2YRot 0.0136 0.0136
+HDTBelly.stiffness2ZRot 0.0136 0.0136
+HDTBelly.dampingX 0.075 0.075
+HDTBelly.dampingY 0.075 0.075
+HDTBelly.dampingZ 0.075 0.075
+HDTBelly.dampingXRot 0.075 0.075
+HDTBelly.dampingYRot 0.075 0.075
+HDTBelly.dampingZRot 0.075 0.075
+HDTBelly.Xmaxoffset 3.0 3.0
+HDTBelly.Xminoffset -3.0 -3.0
+HDTBelly.Ymaxoffset 1.0 1.0
+HDTBelly.Yminoffset -1.0 -1.0
+HDTBelly.Zmaxoffset 3.0 3.0
+HDTBelly.Zminoffset -3.0 -3.0
+HDTBelly.XmaxoffsetRot 3.0 3.0
+HDTBelly.XminoffsetRot -3.0 -3.0
+HDTBelly.YmaxoffsetRot 1.0 1.0
+HDTBelly.YminoffsetRot -1.0 -1.0
+HDTBelly.ZmaxoffsetRot 3.0 3.0
+HDTBelly.ZminoffsetRot -3.0 -3.0
+HDTBelly.timetick 1.0 1.0
+HDTBelly.timetickRot 1.0 1.0
+HDTBelly.linearX 2.0 2.0
+HDTBelly.linearY 1.0 1.0
+HDTBelly.linearZ 2.0 2.0
+HDTBelly.rotationalX 0.05 0.05
+HDTBelly.rotationalY 0.05 0.05
+HDTBelly.rotationalZ 0.05 0.05
+HDTBelly.timeStep 0.6 0.6
+HDTBelly.timeStepRot 0.6 0.6
+HDTBelly.collisionFriction 0.0 0.0
+HDTBelly.collisionElastic 0.0 0.0
+HDTBelly.collisionMultipler 3.0 3.0
+HDTBelly.collisionMultiplerRot 0.0 0.0
+HDTBelly.collisionXmaxoffset 0.5 0.5
+HDTBelly.collisionXminoffset -0.5 -0.5
+HDTBelly.collisionYmaxoffset 100 100
+HDTBelly.collisionYminoffset -0.5 -0.5
+HDTBelly.collisionZmaxoffset 1.0 1.0
+HDTBelly.collisionZminoffset -1.0 -1.0

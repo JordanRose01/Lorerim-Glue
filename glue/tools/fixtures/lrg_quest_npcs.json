@@ -1,0 +1,154 @@
+{
+  "_": "lrg_quest_npcs",
+  "v": 1,
+  "why": "Plan 10.3 / E5 + 23. Ten quest NPCs and four service NPCs from THIS load order, each with the exact claim the index must be able to make about it. Every assertion names the row it could not find, because a fixture that only says 'expected 10, got 9' is useless the moment the load order changes. Checked by tools/test_prompt_index.php --db.",
+  "npcs": [
+    {
+      "n": 1,
+      "npc": "Nelacar",
+      "why": "the byte-verified pair: an intimidate and a bribe on the same NPC, both from the base game",
+      "match": { "topic_in": ["DA01NelacarIntimidate", "DA01NelacarBribe"] },
+      "assert": { "min_rows": 2, "kinds_any": ["intimidate", "bribe"], "quest": "DA01" }
+    },
+    {
+      "n": 2,
+      "npc": "Borgakh the Steel Heart",
+      "why": "a Requiem/LoreRim-CHANGED check, not vanilla: the winning override is LoreRim - Dialogue Patch.esp and it is compound + amulet",
+      "match": { "topic_prefix": "DialogueMorKhazgurBorgakh" },
+      "assert": { "min_rows": 3, "kinds_any": ["persuade", "intimidate", "bribe"], "plugin_any": ["LoreRim - Dialogue Patch.esp", "Requiem - Minor Arcana - Roleplaying.esp"], "any_compound": true }
+    },
+    {
+      "n": 3,
+      "npc": "Ghorbash the Iron Hand",
+      "why": "the PNAM inversion pair (decision D8(b), report only): the success INFO sorts after an unconditional sibling",
+      "match": { "topic_prefix": "DialogueDushnikhYalGhorbash" },
+      "assert": { "min_rows": 3, "kinds_any": ["persuade", "intimidate", "bribe"], "plugin_any": ["LoreRim - Dialogue Patch.esp", "Skyrim.esm"] }
+    },
+    {
+      "n": 4,
+      "npc": "The Caller",
+      "why": "a third-party override of a vanilla check: Immersive Speech Dialogues.esp wins it, with the success/failure variants split",
+      "match": { "topic_in": ["MG03CallerBookPersuade"] },
+      "assert": { "min_rows": 2, "kinds_any": ["persuade"], "variants_any": ["success", "failure"], "plugin_any": ["Immersive Speech Dialogues.esp", "Skyrim.esm"] }
+    },
+    {
+      "n": 5,
+      "npc": "Brynjolf",
+      "why": "a ROOT list: several top-level prompts on a quest that shows objectives",
+      "match": { "quest_prefix": "TG00" },
+      "assert": { "min_rows": 8, "min_toplevel": 3, "any_journal": true }
+    },
+    {
+      "n": 6,
+      "npc": "a hold guard",
+      "why": "the crime family: a LETHAL row must survive the fail-safe merge",
+      "match": { "topic_prefix": "DGCrime" },
+      "assert": { "min_rows": 5, "any_crit2": true }
+    },
+    {
+      "n": 7,
+      "npc": "Adrianne Avenicci",
+      "why": "T4's simple live quest - the Whiterun freeform sword delivery",
+      "match": { "quest_prefix": "MS11" },
+      "assert": { "min_rows": 10, "any_scripted": true }
+    },
+    {
+      "n": 8,
+      "npc": "Inigo",
+      "why": "a follower with a command framework: the long-list / shared-prompt case (R12's tail)",
+      "match": { "plugin": "Inigo.esp" },
+      "assert": { "min_rows": 500, "any_shared_over_1": true }
+    },
+    {
+      "n": 9,
+      "npc": "an AJO job giver",
+      "why": "830 topics repeating generic prompts: prompt-alone identification fails and the LAYER tier has to carry it (verify report C4)",
+      "match": { "plugin": "Andrealphus Jobs Overhaul - MASTER.esp" },
+      "assert": { "min_rows": 500, "any_shared_over_1": true }
+    },
+    {
+      "n": 10,
+      "npc": "a Missives board giver",
+      "why": "CMP-M4: an entry beyond iMaxEntries is still in the tail and still rankable",
+      "match": { "plugin": "Missives.esp" },
+      "assert": { "min_rows": 100 }
+    },
+    {
+      "n": 11,
+      "npc": "a CFTO carriage driver",
+      "why": "SERVICE (E6): the carriage / ferry system really in use, with a multi-word destination CHIM's 19-item enum cannot name",
+      "match": { "plugin": "CFTO.esp" },
+      "assert": { "min_rows": 40, "any_cost": true, "text_contains_any": ["Solitude Lighthouse", "Lighthouse"] }
+    },
+    {
+      "n": 12,
+      "npc": "an innkeeper",
+      "why": "SERVICE (E6): the room price on THIS install is a <Global=RoomCost> token owned by Xtended Stay.esp and LoreRim - Dialogue Patch.esp, not CHIM's flat 10 gold - which is why a price may only ever come from a live entry",
+      "match": { "text_like": "rent a room" },
+      "assert": { "min_rows": 3, "any_cost": true, "plugin_any": ["Xtended Stay.esp", "LoreRim - Dialogue Patch.esp", "Skyrim.esm"], "text_contains_any": ["<Global=RoomCost>"] }
+    },
+    {
+      "n": 13,
+      "npc": "a Requiem trainer",
+      "why": "SERVICE (E6): the per-skill approach entries the training menu hangs off",
+      "match": { "text_like": "train me in" },
+      "assert": { "min_rows": 10 }
+    },
+    {
+      "n": 14,
+      "npc": "a carriage hub",
+      "why": "SERVICE (E6): the hub line three different plugins in this load order all provide",
+      "match": { "text_like": "hire your carriage" },
+      "assert": { "min_rows": 2, "plugin_any": ["CFTO.esp", "LoreRim - Dialogue Patch.esp", "Better Carriage Destinations.esp"] }
+    },
+    {
+      "n": 15,
+      "npc": "General Tullius / Legate Rikke",
+      "why": "[0.5.7 / pt16-legion] the REAL Legion entry path: the Alternate Perspective greet line on Tullius and Rikke's Fort Hraggstad test - what lib/lrg_factions.php hands an enlistment to",
+      "match": { "topic_in": ["CW00TulliusGreetTalkRikkateAP", "CW00RikkeBlockingTopic", "CW00TulliusForcegreetTopic"] },
+      "assert": { "min_rows": 3, "plugin_any": ["AlternatePerspective.esp", "Unofficial Skyrim Special Edition Patch.esp"], "text_contains_any": ["join the Legion", "About that test"] }
+    },
+    {
+      "n": 16,
+      "npc": "a Solitude guard",
+      "why": "[0.5.7 / pt16-legion] the guard's own real answer to 'How do I join the Imperial Legion?' (speak to Legate Rikke in Castle Dour) - the redirect topic picked on a guard's list",
+      "match": { "topic_in": ["SolitudeFreeformGuardSolitudeArmy"] },
+      "assert": { "min_rows": 1, "plugin_any": ["Unofficial Skyrim Special Edition Patch.esp", "Skyrim.esm"], "text_contains_any": ["join the Imperial Legion"] }
+    },
+    {
+      "n": 17,
+      "npc": "Galmar Stone-Fist",
+      "why": "[0.5.7 / pt16-legion] the Stormcloak sign-up line (scripted, walk-away CW00BGalmarClearIsland -> commit -> two-step confirmation)",
+      "match": { "topic_in": ["CW00BGalmarSignMeUp"] },
+      "assert": { "min_rows": 1, "any_scripted": true, "text_contains_any": ["I want to join"] }
+    },
+    {
+      "n": 18,
+      "npc": "Kodlak Whitemane",
+      "why": "[0.5.7 / pt16-legion] the Companions' one real join line, won by Companions at Mirmulnir.esp",
+      "match": { "topic_in": ["C00KodlakJoinUpStartTopic"] },
+      "assert": { "min_rows": 1, "plugin_any": ["Companions at Mirmulnir.esp", "Skyrim.esm"], "text_contains_any": ["join the Companions"] }
+    },
+    {
+      "n": 19,
+      "npc": "Isran / Durak",
+      "why": "[0.5.7 / pt16-legion] the Dawnguard join line and Durak's road recruit",
+      "match": { "topic_in": ["DLC1VQ01IntroA1", "DLC1VQ00IntroC"] },
+      "assert": { "min_rows": 2, "text_contains_any": ["join the Dawnguard", "Where do I sign up"] }
+    },
+    {
+      "n": 20,
+      "npc": "Viarmo",
+      "why": "[0.5.7 / pt16-legion] the Bards College application line, won by TheGiftofSaturalia.esp",
+      "match": { "topic_in": ["MS05ViarmoApplicationTopic"] },
+      "assert": { "min_rows": 1, "plugin_any": ["TheGiftofSaturalia.esp", "Skyrim.esm"], "text_contains_any": ["apply to the college"] }
+    },
+    {
+      "n": 21,
+      "npc": "the Penitus Oculatus and the Vigilants (mod-added; nameless in the table)",
+      "why": "[0.5.7 / pt16-legion] the two mod-added join lines whose speaker alias was NOT verified - the table hands them off by topic on whoever carries them",
+      "match": { "topic_in": ["zzzPO00JoinTopic", "zzAoMMq0B1Yes", "zzAoMMq0B1Tvigilant"] },
+      "assert": { "min_rows": 3, "plugin_any": ["Penitus_Oculatus.esp", "Vigilant.esm"] }
+    }
+  ]
+}
