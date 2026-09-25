@@ -187,4 +187,9 @@ Run 1 (the final tree, code as committed):
   a verbatim or first-evening line got worse: 0; `never_red` rows green on the baseline code and red now: 0.
 - Not runnable here: `test_scene_index.php` (the MO2 profile) - the owner's machine.
 
-Run 2 (the same tree, the rulings written): RUN2_PLACEHOLDER
+Run 2 (the same tree, the rulings written): identical verdicts on every suite and mode - test_gates 852 / 0, test_dialogue 1295 / 0,
+test_services 136 / 0, test_intent 470 / 0, test_phrases 47 / 0, test_prompt_index 107 / 0, test_mcm_wiring 49 / 0, questline plain
+1956 / 0, `--words` 2194 / 0, `--first-evening` 467 / 0, `--first-evening --words` 534 / 0, flows 87 of 89 (`[18]` MO2, `d68` pending),
+`--extended` 2808 / 0 with the same tallies (never click 0, not_target click 0, never_red still red 36, 1,298 worse / 1,368 better,
+a verbatim or first-evening line got worse 0, red again 0) and no unexcused must-resolve row left: the 18 rulings excuse exactly the
+rows listed above ("accepted in the baseline 18").
