@@ -2690,6 +2690,43 @@ foreach ([['what have you got?', 'kind'], ["I'd like a room", 'kind'], ['I need 
     $x = $p25('Hulda V1', $say);
     chk('v25 Hulda COLD "' . $say . '" -> ' . ($want !== '' ? 'marker=' . $want : 'NO open'), $x['clause'] === $want, $x['clause'] . ' ' . substr($x['log'], 0, 300));
 }
+// [v1.0.1 / owner 2026-09-25 - Helgen] the overrides file's own open words (open_on / open_when): Alternate Perspective's Helgen
+// innkeeper is no vendor on the snapshot and "Give me your best room. (<RoomCost> gold) (Start Intro)" is her line - "best room"
+// brings her list up while MQ101 is below 5 (the intro not started); the click stays never_auto (she asks first). Not once the
+// intro is under way; never on a refusal; the same words to Hulda after Helgen are the inn kind. And at clicks_ok 0 (the first NPC
+// of a new game) the override open still goes out: the list on screen is the point, the click stays under the rail.
+$GLOBALS['LRG_TEST_NOW'] += 5;
+lrgDlgPut('Matlara V1', ['facts' => ['mq101' => 0, 'at' => lrgNow()]]);
+$x = $p25('Matlara V1', "hey I'd like your best room", ['fac' => 'TownHelgenFaction', 'class' => '']);
+chk('v25 [Helgen] Matlara (no vendor faction) "hey I\'d like your best room" at MQ101 0 -> marker=override row=APStartIntroDiaTopic',
+    $x['clause'] === 'override' && $x['row'] === 'APStartIntroDiaTopic', $x['clause'] . ' ' . substr($x['log'], 0, 300));
+chk('v25 [Helgen] ...RentRoom is hidden on that turn (CHIM must not rent the room out from under the intro line)',
+    in_array('RentRoom', (array) ($GLOBALS['LRG_DLG_SVC_HIDDEN'] ?? []), true) || str_contains(json_encode($x['q']), 'RentRoom'), json_encode($GLOBALS['LRG_DLG_SVC_HIDDEN'] ?? []));
+foreach ([["I'd like the finest room you have", 'override'], ["how much is your best room", 'override'], ["I don't want your best room", ''],
+    ["I need a room", '']] as [$say, $want]) {
+    lrgDlgPut('Matlara V1', ['open_pending' => null]);
+    $GLOBALS['LRG_TEST_NOW'] += 5;
+    $x = $p25('Matlara V1', $say);
+    chk('v25 [Helgen] Matlara "' . $say . '" -> ' . ($want !== '' ? 'marker=' . $want : 'NO open (a refusal / the inn kind on no vendor)'), $x['clause'] === $want, $x['clause'] . ' ' . substr($x['log'], 0, 300));
+}
+lrgDlgPut('Matlara V1', ['open_pending' => null, 'facts' => ['mq101' => 10, 'at' => lrgNow()]]);
+$GLOBALS['LRG_TEST_NOW'] += 5;
+$x = $p25('Matlara V1', "I'd like your best room");
+chk('v25 [Helgen] Matlara at MQ101 10 (the intro under way) "I\'d like your best room" -> NO open', $x['clause'] === '', $x['clause'] . ' ' . substr($x['log'], 0, 300));
+$hf = (array) ((lrgDlgState('Hulda V1')['facts'] ?? []));
+lrgDlgPut('Hulda V1', ['open_pending' => null, 'facts' => ['mq101' => 250] + $hf]);
+$GLOBALS['LRG_TEST_NOW'] += 5;
+$x = $p25('Hulda V1', "I'd like your best room");
+chk('v25 Hulda (a vendor, after Helgen: MQ101 250) "I\'d like your best room" -> marker=kind (inn)', $x['clause'] === 'kind', $x['clause'] . ' ' . substr($x['log'], 0, 300));
+lrgDlgPut('Hulda V1', ['facts' => $hf]);
+v1Reset($rows25, 0);
+lrgDlgPut('Matlara V1', ['facts' => ['mq101' => 0, 'at' => lrgNow()]]);
+$GLOBALS['LRG_TEST_NOW'] += 5;
+$x = $p25('Matlara V1', "hey I'd like your best room", ['fac' => 'TownHelgenFaction', 'class' => '']);
+chk('v25 [Helgen] at clicks_ok 0 the override open still goes out (the list is the point; the click stays under the rail)',
+    $x['clause'] === 'override', $x['clause'] . ' ' . substr($x['log'], 0, 300));
+v1Reset($rows25, 1);
+lrgDlgPut('Hulda V1', ['facts' => ['sq' => 'DialogueWhiterunBanneredMareScene3', 'sq_at' => lrgNow(), 'sqj' => 0, 'at' => lrgNow()], 'q' => ['ACFWhiterunVampires', 'WITavern', 'BQ01', 'DialogueWhiterun']]);
 // "where can I get a drink" is a VERBATIM top-level prompt (Jon Battle-Born's, journal=0) with 2 strict words (get, drink). The
 // spec's test row (and FE.hulda.open) says NO row: [pt19c-A fix 1] clause 4 needs open.toplevel_min_words (3) strict words
 // and a line at most open.toplevel_max_topics (5) topics carry ([fix 2] and a row HER list can carry: Jon's row of the shared

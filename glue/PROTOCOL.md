@@ -2569,3 +2569,11 @@ Papyrus change, no floor moved. By rule:
   assent ("Very well - a hundred septims."). Flow d68 is no longer PENDING: 15/15, including both false-promise rejections.
 - `dialogue.market.align_rentroom_cost` ships true (it did since the pt19 ship; the readme text said off): CHIM's
   RentRoom Gold Cost follows the game's RoomCost global (25 here).
+- **[v1.0.1, 2026-09-25 - the Helgen start by voice]** An overrides entry may carry `open_on` (phrase runs) and `open_when`
+  ({facts key: {min, max}}): `lrgDlgOverrideOpen` runs as clause 1b of the narrow marker, before the kind guard (marker
+  `override`, `row=<topic>`), a refusal never opens, and the stage rail lets an override open through at `clicks_ok 0`
+  (the list on screen is the point; the click stays under the rail and the entry's class). Shipped for
+  `APStartIntroDiaTopic`: `best room` / `finest room` / `best bed` / `nicest room` while `mq101 <= 4` (the intro not
+  started; quiet mode's floor is 5). The inn kind gains `best room` / `finest room` / `best bed` for real innkeepers.
+  Tests: test_dialogue v25 "[Helgen]" rows; questline `W.ap.start` (park on "hey I'd like your best room", never on a
+  price question / refusal) and `F.open.ap.bestroom` (marker=override at clicks_ok 0, no vendor faction).

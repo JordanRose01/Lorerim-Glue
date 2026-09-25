@@ -537,7 +537,7 @@
     "services": {
       "kinds": {
         "inn": {
-          "phrases": ["a room for the night","rent a room","how much for a room","do you have a bed","somewhere to sleep","a bed for the night","room for the night","rent me a room","need a bed","need a room","like a room","want a room","get a room","a bed for","a room please","a room for me","any rooms","rooms available","a room available","a room for","room for one night","room for a night","room for tonight","bed for one night","room for the nite"],
+          "phrases": ["a room for the night","rent a room","how much for a room","do you have a bed","somewhere to sleep","a bed for the night","room for the night","rent me a room","need a bed","need a room","like a room","want a room","get a room","a bed for","a room please","a room for me","any rooms","rooms available","a room available","a room for","room for one night","room for a night","room for tonight","bed for one night","room for the nite","best room","finest room","best bed"],
           "not_after": ["for the wounded","the wounded","for the injured","the injured","for the sick","the sick","you two","to think"]
         },
         "barter": {

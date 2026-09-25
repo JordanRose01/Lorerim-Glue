@@ -122,6 +122,14 @@ the log line that proves it. Skip a step your game does not reach; only the firs
   `result npc=Vilod ... ok=1 ... clicks_ok=1`, `GAME CALIB set route src=live`.
 - If this does not pick, stop here and send the log. Everything after it depends on that first pick.
 
+**(1b) Helgen, the innkeeper: Matlara.** "I'd like your best room."
+- Her list comes up (even before any line has been picked for you: this one is allowed to show), she quotes "Give me
+  your best room" and asks; say "yes". On a brand-new install the line is still yours to click on that list until the
+  first simple line (Vilod's, step 1) has been picked for you - she says so. Then sleep in the room; the intro begins.
+- Log: `open marker=override row=APStartIntroDiaTopic npc=Matlara`, then `park` and, after your "yes", `clicked pos=`.
+- **Do not talk to anyone through CHIM during the intro** (the cart, the tower, the run to the keep): the glue is
+  quiet, but CHIM itself is not, and the intro is the most script-heavy minute of the game.
+
 **(2) When the dragon comes.** Nothing is opened or picked for you until Helgen is over; people answer in words.
 - Log: a line starting `GAME QUIET on: MQ101 stage`, and after Helgen one starting `GAME QUIET off: MQ101 stage`.
 
@@ -226,7 +234,9 @@ Also tell us, for the first list that came up, whether you heard her short word 
 
 ## 4. What it will not do, and says so
 
-- **Helgen.** There is nothing to pick there; the game plays it.
+- **Helgen (since v1.0.1).** "I'd like your best room" to the innkeeper brings her list up; she quotes "Give me your best
+  room" and asks once; "yes" picks it, and you go to bed as usual. Once the dragon attack has begun the glue stands aside
+  entirely (quiet mode) until you are out of Helgen: nothing is picked, held, followed or snapshotted in there.
 - **A guard arresting you.** The list is yours.
 - **Before the first line has been picked for you on this install,** an answer that would move a quest along, or one
   that costs septims, is left for you to click once. Or ask something simple first; she says which.
@@ -247,6 +257,18 @@ Also tell us, for the first list that came up, whether you heard her short word 
   If she ever claims to add septims the check did not grant, that line is stopped before she speaks it. The same words
   outside a reward window are no check at all (haggling with a merchant is never turned into one). To switch it off:
   `"dialogue": {"checks": {"reward": {"enabled": false}}}` in `config/lrg_config.json`, no rebuild.
+
+### If Alduin never breaks the tower wall (the known Unbound stall, not the glue)
+
+Symptom: you are up in the tower with Ralof (and Ulfric), the dragon never lands on it and the wall you should jump
+through into the burning inn stays whole. The glue is in quiet mode from the moment the intro starts, so it is not in
+that scene; it is the engine's own event, aggravated by mods. Two ways out:
+
+1. Reload the save from before the tower, follow Ralof at his pace, and let him and Ulfric finish speaking before you
+   climb; go up only when Ralof says to.
+2. Or, in the console (`~`): `tcl`, walk through the wall halfway up the stairs and across into the ruined inn's upper
+   floor (where the jump would land), then `tcl` again. The quest carries on from there. `getstage MQ101` shows where
+   the quest is if you want to note it for the log.
 
 ### If the Helgen keep locks you in (the known Unbound stall, not the glue)
 

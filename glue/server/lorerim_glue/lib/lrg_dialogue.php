@@ -2692,7 +2692,9 @@ function lrgDlgPreOpen(array $t, string $utter, array $st, ?string &$openKind = 
     if (lrgFacRefusesOpen($t, $cid, $utter)) { return ''; }
     if ($narrow && (int) ($t['clicks_ok'] ?? 0) < 1 && !empty(lrgDlgCfg('session.stage_rail', true))) {
         $pred = (array) ($hit['entry'] ?? []);
-        $passes = in_array($clause, ['root', 'toplevel', 'qrows'], true) && $pred
+        // [v1.0.1 / Helgen] an override open passes: there the list on screen IS the point (he can click it by hand, and the
+        // Helgen innkeeper is the first NPC of a new game); the click itself stays under the stage rail and never_auto
+        $passes = $clause === 'override' || in_array($clause, ['root', 'toplevel', 'qrows'], true) && $pred
             && (int) ($pred['scripted'] ?? 1) === 0 && (string) ($pred['kind'] ?? '') === '' && (int) ($pred['cost'] ?? 0) === 0
             && (int) ($pred['goodbye'] ?? 0) === 0 && (int) ($pred['crit'] ?? 0) === 0
             && ($clause !== 'root' || !lrgDlgStageRailBlocks($pred));
@@ -7476,6 +7478,36 @@ function lrgDlgMaybeOpen(array $t, string $item): ?string
  * hit wins and is returned by name - join | kind | root | toplevel | qrows; $hit gets ['row' => info_key, 'entry' => the
  * line it predicts]. NEVER "a quest this NPC is in" (Hulda's q fires it on "uh some beer"), never a whole-index hit.
  */
+/**
+ * [v1.0.1 / owner 2026-09-25 - Helgen] An overrides entry may name the WORDS that bring her list up for its line before the
+ * model runs (`open_on`: phrase runs, lrgDlgPhraseHit) and WHEN (`open_when`: {<facts key>: {min, max}} against the facts
+ * line; a key the facts do not carry is no bar). Shipped for Alternate Perspective's "Give me your best room. (<RoomCost>
+ * gold) (Start Intro)": "best room" to the Helgen innkeeper while MQ101 is below 5 (the intro not started - quiet mode's own
+ * floor). No vendor test: the window names the NPCs. It only opens the list - the click that follows keeps the entry's own
+ * class (never_auto: she quotes the line and asks; "yes" clicks it), and a refusal opens nothing.
+ */
+function lrgDlgOverrideOpen(array $t, string $utter, array &$hit): string
+{
+    if (trim($utter) === '' || lrgDlgRefuses($utter)) { return ''; }
+    $facts = (array) ($t['facts'] ?? []);
+    foreach ((array) (lrgDlgOverrides()['entries'] ?? []) as $rule) {
+        $on = (array) ($rule['open_on'] ?? []);
+        if (!$on || lrgDlgPhraseHit($utter, $on) === '') { continue; }
+        $ok = true;
+        foreach ((array) ($rule['open_when'] ?? []) as $key => $cond) {
+            $key = strtolower((string) $key);
+            if (!isset($facts[$key]) || !is_array($cond)) { continue; }
+            $v = (int) $facts[$key];
+            if ((isset($cond['max']) && $v > (int) $cond['max']) || (isset($cond['min']) && $v < (int) $cond['min'])) { $ok = false; break; }
+        }
+        if (!$ok) { continue; }
+        $topic = (string) (($rule['match'] ?? [])['topic'] ?? '');
+        $hit = ['row' => $topic, 'entry' => ['topic' => $topic, 'scripted' => 1, 'goodbye' => 1, 'kind' => '', 'cost' => 0, 'crit' => 0], 'override' => $topic];
+        return 'override';
+    }
+    return '';
+}
+
 function lrgDlgBusinessMarker(array $t, string $item, bool $narrow = false, ?array &$hit = null): string
 {
     $hit = ['row' => '', 'entry' => []];
@@ -7499,6 +7531,10 @@ function lrgDlgBusinessMarker(array $t, string $item, bool $narrow = false, ?arr
     $st = lrgDlgState($npc);
     // 1 an enlistment ask she is the recruiter for
     if (lrgFacMarker($t, $item) !== '') { return 'join'; }
+    // 1b [v1.0.1 / owner 2026-09-25, Helgen] an overrides entry's own open words (open_on / open_when) - BEFORE the kind
+    // guard, which refuses "best room" on an innkeeper the snapshot does not call a vendor (Alternate Perspective's Matlara)
+    $ovOpen = lrgDlgOverrideOpen($t, $item, $hit);
+    if ($ovOpen !== '') { return $ovOpen; }
     // 2 a service kind in his words (the PHRASE lists, never a bare service word), guarded (capability map U1, 1.4).
     // [pt19c-A fix 1 / game review 3] a kind the guard REFUSES ends the marker: the sentence is that service's (a follow
     // order to a stranger, a crime phrase, an unverified carriage), and a verbatim line elsewhere must not open for it

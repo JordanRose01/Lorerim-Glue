@@ -59,6 +59,10 @@ Items 1-5 above are done as far as the cloud can take them; the code is server-o
   from my own purse" when no bonus was granted (flow d68 15/15). PROTOCOL 10.29 addendum; owner page section 4.
 - Owner page: the Helgen keep rescue console steps (section 4). Room price: `align_rentroom_cost` was already ON (the
   readme said off) - CHIM's RentRoom charges the game's 25.
+- The Helgen start by voice (owner playtest 2026-09-25): "I'd like your best room" to the Helgen innkeeper now brings her
+  list up (overrides `open_on` / `open_when`, marker `override`, no vendor test, allowed at clicks_ok 0); the click stays
+  never_auto (she asks, "yes" clicks). Owner page 1b + the tower-wall / keep rescues in section 4. The tower wall not
+  breaking is the engine's (quiet mode is on from MQ101 stage 5): rescue = reload and follow Ralof, or `tcl` through it.
 - Directors' final sign-off: `research/pt19-oversight-final.md`.
 - Runs on a staged copy: every unit suite, every questline mode (incl. --extended 2808/0, --stage=B 39/0) and the flows
   88/89 (only [18], which needs the MO2 profile).

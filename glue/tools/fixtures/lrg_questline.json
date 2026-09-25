@@ -7819,6 +7819,40 @@
             "folded": "pt19h-harness 2026-09-25: Lane F extra run (research/pt19c-F.md appendix) folded into the standing first-evening check"
         },
         {
+            "id": "F.open.ap.bestroom",
+            "quest": "AP_DialogueHelgen",
+            "fe": 1,
+            "npc": "Matlara",
+            "origin": "glue",
+            "expect": "open",
+            "facts": {
+                "clicks_ok": 0,
+                "mq101": 0,
+                "fac": "TownHelgenFaction"
+            },
+            "passes": [
+                {
+                    "name": "@0",
+                    "say": [
+                        {
+                            "t": "hey I'd like your best room",
+                            "via": "open",
+                            "marker": "override"
+                        },
+                        {
+                            "t": "I'd like the finest room you have",
+                            "via": "open",
+                            "marker": "override"
+                        }
+                    ]
+                }
+            ],
+            "seam_rows": [
+                "alternateperspective.esp:075139"
+            ],
+            "ruling": "[v1.0.1, owner 2026-09-25] 'best room' to the Helgen innkeeper (no vendor faction on her snapshot, MQ101 below 5, even at clicks_ok 0) brings her list up through the overrides entry's open_on (marker=override); the click stays never_auto"
+        },
+        {
             "id": "F.corpulus.plain",
             "quest": "FE",
             "fe": 1,
@@ -9017,9 +9051,27 @@
                 {
                     "t": "your best room please",
                     "via": "park"
+                },
+                {
+                    "t": "hey I'd like your best room",
+                    "via": "park"
+                },
+                {
+                    "t": "I want the best room you have",
+                    "via": "park"
+                },
+                {
+                    "t": "the finest room you've got, please",
+                    "via": "park"
                 }
             ],
-            "folded": "pt19h-harness 2026-09-25: the pt19c walkthrough (walk_fixture.json) folded into the standing first-evening check"
+            "folded": "pt19h-harness 2026-09-25: the pt19c walkthrough (walk_fixture.json) folded into the standing first-evening check",
+            "never": [
+                "how much is your best room",
+                "is this really your best room?",
+                "I don't want a room, just a drink"
+            ],
+            "ruling": "[v1.0.1, owner 2026-09-25] the Helgen start by voice: never_auto = she quotes the line and asks; 'yes' clicks it. A price question or a refusal clicks nothing."
         },
         {
             "id": "W.carriage.chain",
