@@ -187,6 +187,7 @@ fx_scenario('d26', 'commit: his own plain sentence IS the confirmation (S4.3); o
 });
 
 fx_scenario('d26b', '[pt19 v1.0 / S3.3] the stage rail: before this install\'s first verified click only an indexed plain line is clicked; the prompt says so ONCE, in her words, and the corner note once per session; the first ok result lifts it', function (FxT $t) {
+    $GLOBALS['LRG_DLG_TEST_CFG'] = ['session.stage_rail' => true];   // [v1.0.1] the rail ships OFF; this scenario tests the rail itself
     $npc = 'Sigrun Flowtest';
     $spec = [
         'I will kill him for you.' => ['scripted' => 1, 'flags' => ['goodbye' => 1]],

@@ -2595,3 +2595,13 @@ Papyrus change, no floor moved. By rule:
   (`setDrivenByAI()`). The intimacy hold has precedence both ways (`LRG_OStim.HeldListener()`, new). Log: `listener forced
   to <npc> (her list is open)` / `listener released (the list closed)`. No wire change. `.psc` changed: LRG_Dialogue,
   LRG_OStim, LRG_Main (CurrentVersion 514) - compile and install on the owner's machine.
+- **[v1.0.1, 2026-09-26 - the stage rail ships OFF (`session.stage_rail` false, code default and JSON); script 514
+  `CanDriveScene()` = `bDriveSceneMenus` alone]** Owner at High Hrothgar on a Way-of-the-Voice start: Arngeir's summons
+  was the first list of the install and the driver stayed read-only (`scene-unproven`) - "no setup: it should go with the
+  quest from the first conversation". The confirm (a commit is quoted and asked) and the click's own verification
+  (`SelectAndVerify`) are the safety now; the route proof (`clicks_ok`, `CalRouteLive`) is still recorded and logged but
+  gates nothing. `scene-unproven` is returned only while `session.stage_rail` is true (the switch stays: one config line
+  brings probation back). Tests: the rail's own rows now set `session.stage_rail => true` (test_dialogue via `$RAIL_ON`,
+  test_gates 24/39, flows 31 / d26b / d55 / d66v; the questline harness at every clicks_ok 0 world unless the beat's cfg
+  says otherwise); the default is proved by test_dialogue v41 and the `first_contact` beat `MQ105.arngeir.summons`
+  (every pick holds at clicks_ok 0).

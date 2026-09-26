@@ -24,10 +24,9 @@ You can still click any line yourself at any moment, and nothing ever takes the 
 There is no new key to remember and nothing to set up. After your first conversation with anyone (even one you open
 with E), it has learned what it needs.
 
-The first line it ever picks for you must be a simple one - a question, a bit of small talk. Until one has been
-picked, a line that would move a quest along is left for you to click, and she tells you so: "I have not picked a line
-for you yet - ask me something simple first". From then on it picks anything you name. This is counted once for your
-whole install, not once per evening. It starts over only if you press "Forget everything it learned" (section 5).
+There is no warm-up any more (since script 514 / v1.0.1): a quest line works from the very first conversation on a
+fresh install, including one somebody else starts (Arngeir's summons). A line that cannot be undone is confirmed
+first - she quotes it and asks, "yes" picks it - and that confirmation is the safety, not a practice click.
 
 ---
 
@@ -126,9 +125,7 @@ the log line that proves it. Skip a step your game does not reach; only the firs
 - If this does not pick, stop here and send the log. Everything after it depends on that first pick.
 
 **(1b) Helgen, the innkeeper: Matlara.** "I'd like your best room."
-- Her list comes up (even before any line has been picked for you: this one is allowed to show), she quotes "Give me
-  your best room" and asks; say "yes". On a brand-new install the line is still yours to click on that list until the
-  first simple line (Vilod's, step 1) has been picked for you - she says so. Then sleep in the room; the intro begins.
+- Her list comes up, she quotes "Give me your best room" and asks; say "yes". Then sleep in the room; the intro begins.
 - Log: `open marker=override row=APStartIntroDiaTopic npc=Matlara`, then `park` and, after your "yes", `clicked pos=`.
 - **Do not talk to anyone through CHIM during the intro** (the cart, the tower, the run to the keep): the glue is
   quiet, but CHIM itself is not, and the intro is the most script-heavy minute of the game.
@@ -241,11 +238,8 @@ Also tell us, for the first list that came up, whether you heard her short word 
   room" and asks once; "yes" picks it, and you go to bed as usual. Once the dragon attack has begun the glue stands aside
   entirely (quiet mode) until you are out of Helgen: nothing is picked, held, followed or snapshotted in there.
 - **A guard arresting you.** The list is yours.
-- **Before the first line has been picked for you on this install,** an answer that would move a quest along, or one
-  that costs septims, is left for you to click once. Or ask something simple first; she says which.
-- **Conversations that begin inside a running quest scene** (a court in session, the sacrament ritual): the list shows.
-  As soon as the first line has been picked for you on this install, those are picked by voice too. Before that, she
-  tells you to choose on the list yourself.
+- **Conversations that begin inside a running quest scene** (a court in session, Arngeir's summons, the sacrament
+  ritual): picked by voice like any other, from the first conversation on.
 - **Windows that need the mouse.** Buying and selling inside a shop, choosing a lesson in the training window and a
   follower's gift or inventory window are done with the mouse, and she cannot hear you while one of them is open. A
   list with no way back out of it is yours to leave by hand; she tells you so. Food and drink need no window at all:

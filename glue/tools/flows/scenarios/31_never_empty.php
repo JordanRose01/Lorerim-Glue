@@ -16,6 +16,7 @@
 // prompt example line.
 
 fx_scenario('31', 'never empty: a schema-valid reply with no words is caught on the real hook files - rejected, re-asked once with the words rule, then one floor line through returnLines; words + an action and a business pick the game answers itself are left alone; the voiced funcret turn is covered although functions are off; the next turn carries one rule', function (FxT $t) {
+    $GLOBALS['LRG_DLG_TEST_CFG'] = ['session.stage_rail' => true];   // [v1.0.1] the rail ships OFF; this scenario tests the rail itself
     $c = fxCast('innkeeper'); $npc = $c['name'];
     $alone = fxSnap($c['snap']);
     fxSay($npc, $alone, 'Hello.');

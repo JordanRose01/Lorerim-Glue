@@ -17,6 +17,10 @@ ini_set('display_errors', 'stderr');
 
 $root = dirname(__DIR__);
 require_once $root . '/server/lorerim_glue/lib/lrg_dialogue.php';
+// [v1.0.1] session.stage_rail ships OFF (the owner: a quest line works at first contact). The sections below that test the
+// rail switch it on through the test config; the default is proved at the end (v41).
+$RAIL_ON = ['session.stage_rail' => true];
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON;
 
 $quiet = in_array('--quiet', $argv, true);
 $ok = 0;
@@ -237,7 +241,7 @@ chk('[pt19 v1.0 / S9] the new keys have a CODE default (never dependent on the J
     && lrgDlgCfg('match.scripted_needs_word') === true && lrgDlgCfg('match.service_kind_pick') === true
     && lrgDlgCfg('open.narrow_marker') === true && lrgDlgCfg('open.toplevel_marker') === true && lrgDlgCfg('open.qrows_marker') === true
     && (float) lrgDlgCfg('open.qrows_score') === 0.55 && (int) lrgDlgCfg('open.qrows_cap') === 300
-    && lrgDlgCfg('session.talk_again') === false && lrgDlgCfg('session.stage_rail') === true && lrgDlgCfg('session.drive_scene') === true,
+    && lrgDlgCfg('session.talk_again') === false && lrgDlgCfg('session.drive_scene') === true,
     json_encode(['aa' => lrgDlgCfg('auto_advance'), 'open' => lrgDlgCfg('open'), 'session' => lrgDlgCfg('session')]));
 chk('[pt19 v1.0 / section 4] every retired config key is gone from the code defaults',
     lrgDlgCfg('auto_advance.grace_seconds') === null && lrgDlgCfg('assist') === null && lrgDlgCfg('calib.auto') === null
@@ -2004,13 +2008,13 @@ v1Open('Irileth V1', ['origin' => 'engine', 'scene' => 1, 'sj' => 1, 'sq' => 'MQ
 v1Topics('Irileth V1', $L);
 $sess = (array) (lrgDlgGet('Irileth V1')['session'] ?? []);
 chk('v16 (d) sj=1, clicks_ok 1, drive_scene on (the shipped default) -> driven', lrgDlgReadOnlyWhy($sess, 'Irileth V1') === '' && lrgDlgCfg('session.drive_scene') === true);
-$GLOBALS['LRG_DLG_TEST_CFG'] = ['session.drive_scene' => false];
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON + ['session.drive_scene' => false];
 $q = v1Say('Irileth V1', 'I need work.');
 $r = v1Llm('Irileth V1', 'T1');
 $v1Twin('v16d drive_scene off', $r);
 chk('v16 (d) session.drive_scene=false -> read-only (why=drive_scene off), nothing emitted', (string) ($q['t']['ro'] ?? '') === 'drive_scene off' && $r['out'] === [] && !$r['will'],
     json_encode([$q['t']['ro'] ?? '', $r['out']]));
-unset($GLOBALS['LRG_DLG_TEST_CFG']);
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON;
 // (e) [rev2: game R1] sj on the server: the game's sj OR (scene=1 AND the INDEX knows sq as a journal quest); old ev=open
 v1Reset([v1Row('Some TG00 line.', ['quest' => 'TG00', 'journal' => 1]), v1Row('A MQ102 line.', ['quest' => 'MQ102', 'journal' => 1])], 0);
 v1Open('Hulda V1', ['origin' => 'engine', 'scene' => 1, 'sj' => 0, 'sq' => 'DialogueWhiterunBanneredMareScene3', 'sqj' => 0]);
@@ -2808,10 +2812,10 @@ foreach ([['Lisette V1', 'come with me', ['class' => '', 'fac' => 'TownWhiterunF
     $x = $p25($who, $say, $sn);
     chk('v25 [U1] ' . $who . ' + "' . $say . '" -> no open', $x['clause'] === '', $x['log']);
 }
-$GLOBALS['LRG_DLG_TEST_CFG'] = ['open.kind_factions.carriage' => ['CarriageDriverFaction']];
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON + ['open.kind_factions.carriage' => ['CarriageDriverFaction']];
 $x = $p25('Bjorlam V1', 'take me to Whiterun', ['fac' => 'CarriageDriverFaction', 'class' => '']);
 chk('v25 [U1] a driver whose job faction is verified + "take me to Whiterun" -> marker=kind', $x['clause'] === 'kind', $x['log']);
-unset($GLOBALS['LRG_DLG_TEST_CFG']);
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON;
 // [pt19c final fixer / U1] the SHIPPED kind_factions (verified in the plugins): a driver, a ferryman, a trainer open pre-LLM on their
 // kind; the same sentences to a guard, a farmer or a dog trainer do not
 foreach ([['Bjorlam V1', 'take me to Whiterun', 'CarriageSystemFaction,TownWhiterunFaction', 'kind'],
@@ -3561,7 +3565,7 @@ chk('v40e ...his next turn: <what_just_happened> says "Nothing came of it: ' . $
 // ------------------------------------------------------------------ v27. [Lane B / S6.2, gate B] the bounded bonus, switched on for this check only
 head('v27. [pt19 v1.0 / S6.2, gate B - OFF in v1.0] the reward bargain: inside the window only, a real check, the cap, the refusals');
 $GLOBALS['LRG_DLG_STATE'] = [];
-$GLOBALS['LRG_DLG_TEST_CFG'] = ['checks.reward.enabled' => true];
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON + ['checks.reward.enabled' => true];
 $rq = static function (string $npc, string $utter, int $gold = 200, int $sp = 100, bool $window = true, array $snapX = [], bool $fresh = true): array {
     lrgDlgPut($npc, ['utter' => ['text' => $utter, 'at' => lrgNow(), 'type' => 'inputtext', 'cid' => 'r27'], 'checks' => $fresh ? [] : (lrgDlgState($npc)['checks'] ?? []),
         'last_result' => $window ? ['ok' => true, 'at' => lrgNow() - 30, 'entry' => 'What about my reward?', 'told' => true] : null]);
@@ -3625,9 +3629,10 @@ $d1yes = ['I deserve more than this, a hundred septims', 'can you sweeten the de
 $d1miss = [];
 foreach ($d1yes as $s1) { if (lrgDlgCheckKind(['kind' => 'none', 'conf' => 'low'], '', $rq('Balgruuf R', $s1)) !== 'persuade') { $d1miss[] = $s1; } }
 chk('v27 [D1] ...while 8 bargains (proposal questions, "not enough", a decline in ANOTHER clause) are still the check', $d1miss === [], implode(' | ', $d1miss));
-$GLOBALS['LRG_DLG_TEST_CFG'] = ['checks.reward.enabled' => false];   // the kill switch still works now that it ships ON
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON + ['checks.reward.enabled' => false];   // the kill switch still works now that it ships ON
 chk('v27 gate A (the switch off): the same ask inside the window is no check', lrgDlgCheckKind(['kind' => 'none', 'conf' => 'low'], '', $rq('Balgruuf R', $askS[0])) === '');
-unset($GLOBALS['LRG_DLG_TEST_OVERRIDES'], $GLOBALS['LRG_DLG_TEST_CFG'], $GLOBALS['LRG_DLG_TURN']);
+unset($GLOBALS['LRG_DLG_TEST_OVERRIDES'], $GLOBALS['LRG_DLG_TURN']);
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON;
 $GLOBALS['LRG_DLG_STATE'] = [];
 $GLOBALS['LRG_TEST_NOW'] = 1700000000;
 
@@ -4558,6 +4563,23 @@ chk('r2 kind pick: ... while "what have you got for sale?" still opens the shop'
 
 unset($GLOBALS['LRG_DLG_TURN']);
 $GLOBALS['LRG_DLG_STATE'] = [];
+
+// ------------------------------------------------------------------ v41. [v1.0.1] the stage rail ships OFF: a quest line at first contact
+head('v41. [v1.0.1 / owner 2026-09-26] session.stage_rail ships OFF - Arngeir\'s summons works at first contact (clicks_ok 0, a journal scene)');
+unset($GLOBALS['LRG_DLG_TEST_CFG']);
+chk('v41 the code default and the shipped JSON both say stage_rail false', lrgDlgCfg('session.stage_rail') === false
+    && ((json_decode((string) @file_get_contents(LRG_DIR . '/config/lrg_config.default.json'), true)['dialogue']['session']['stage_rail'] ?? null) === false));
+$rows41 = [v1Row('I need work.', ['quest' => 'MQ102', 'journal' => 1]), v1Row('Goodbye.', ['goodbye' => 1])];
+v1Reset($rows41, 0);
+v1Open('Irileth V1', ['origin' => 'engine', 'scene' => 1, 'sj' => 1, 'sq' => 'MQ102', 'sqj' => 1, 'drv' => 1]);
+v1Topics('Irileth V1', ['I need work.', 'Goodbye.']);
+$q41 = v1Say('Irileth V1', 'I need work.');
+$r41 = v1Llm('Irileth V1', 'T1');
+chk('v41 sj=1 at clicks_ok 0: NOT read-only (no scene-unproven), no "choose it on the list yourself", and the plain quest line is picked',
+    (string) ($q41['t']['ro'] ?? '') === '' && !str_contains($q41['biz'], 'choose it on the list yourself') && $r41['out'] !== [],
+    json_encode([$q41['t']['ro'] ?? '', $r41['out']]));
+chk('v41 ...and no stage-rail corner note / "ask me something simple first" anywhere on the turn', !str_contains($q41['biz'], 'something simple first'), $q41['biz']);
+$GLOBALS['LRG_DLG_TEST_CFG'] = $RAIL_ON;
 
 printf("\n%d passed, %d failed\n", $ok, $fail);
 echo $fail === 0 ? "ALL CHECKS PASSED\n" : "RESULT: FAILED\n";

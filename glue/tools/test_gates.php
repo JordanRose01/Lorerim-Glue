@@ -2744,6 +2744,7 @@ $badC = [];
 foreach ($closed as $r) { $w = $vw($r); if (trim($w) === '' || preg_match($lrgMachine, $w)) { $badC[] = $r . ' -> ' . $w; } }
 check('... and every reason on it comes out of lrgVoicedWhy as plain words with no machinery word', $badC === [], implode(' | ', $badC));
 // the stage-rail line and the read-only clause: what she is told to SAY carries no machinery word
+$GLOBALS['LRG_DLG_TEST_CFG'] = ['session.stage_rail' => true];   // [v1.0.1] the rail ships OFF; these rows test the rail itself
 lrgDlgPut('*install*', ['clicks_ok' => 0]);
 $srE = [['indexed' => 1, 'class' => 'plain', 'scripted' => 1, 'cost' => 0, 'kind' => '', 'goodbye' => 0, 'text' => 'I need a job.'],
     ['indexed' => 1, 'class' => 'plain', 'scripted' => 0, 'cost' => 0, 'kind' => '', 'goodbye' => 0, 'text' => 'Tell me about Whiterun.']];
@@ -2758,6 +2759,7 @@ $srL7 = lrgDlgStageRailLine(['clicks_ok' => 0, 'entries' => $srE7, 'offer' => ['
 $srSay7 = trim((string) substr($srL7, (int) strpos($srL7, 'say:') + 4));
 check('[U7] no key passes: her sentence is "choose this one yourself, this once" - no condition that cannot come true, no machinery word',
     str_contains($srSay7, 'choose this one yourself, this once') && !str_contains($srSay7, 'ask me something simple') && !preg_match($lrgMachine, $srSay7), $srL7);
+unset($GLOBALS['LRG_DLG_TEST_CFG']);
 lrgDlgPut('*install*', ['clicks_ok' => 1]);
 $roB = lrgDlgBusinessBlock(['on' => true, 'npc' => 'Irileth', 'ro' => 'scene-unproven', 'entries' => [['text' => 'I need to speak to the Jarl.', 'label' => '']],
     'list' => 'pending', 'layer_kind' => 'open', 'single' => null, 'sent' => 1, 'n' => 1]);
@@ -3079,6 +3081,7 @@ check('the reward line itself: ~190 chars (the lane budget), septims, no invente
 unset($GLOBALS['LRG_DLG_TEST_QUESTLOG'], $GLOBALS['LAST_LLM_RESPONSE']);
 
 echo "39. [pt19 v1.0 / S2.3, spec test 39] the open refused -> the click-free quest entry; no refusal -> the open first\n";
+$GLOBALS['LRG_DLG_TEST_CFG'] = ['session.stage_rail' => true];   // [v1.0.1] the rail ships OFF; section 39 is the click-free entry BEHIND the rail (F19)
 $GLOBALS['LRG_DLG_STATE'] = [];
 $GLOBALS['LRG_DLG_TEST_STORE'] = [];   // a clean Phase 2 store: section 37 left its own exec_qst for Tullius in the stand-in table
 lrgDlgPut('*install*', ['clicks_ok' => 1]);
@@ -3146,6 +3149,7 @@ check('... with the road OPEN the rule stands aside (a plain question may open)'
 check('... and an NPC with no road cell is never touched by it', lrgFacSayOnceClosed(['npc' => 'Hulda', 'facts' => []]) === '');
 unset($GLOBALS['LRG_DLG_MCM']);
 
+unset($GLOBALS['LRG_DLG_TEST_CFG']);
 echo "40. [pt19 v1.0 / S7, spec test 40] refusals in plain words: each code -> one <what_just_happened> line, no closed-list word, no digit\n";
 $GLOBALS['LRG_DLG_STATE'] = [];
 foreach (['afford' => 'priced entry 25 septims, the player has 10 - never clicked', 'amount' => 'the player offered 50, the price is 200',
@@ -3412,6 +3416,7 @@ check('(f) gate B: "I\'ll add fifty septims on top." is FALSE when the check gav
 // The measurer's concrete examples (research/pt19h-measure.md, G17 / G18 / G1 rows) are asserted as must-resolve or
 // must-not-click rows.
 echo "43. [pt19h-quest] the click-free quest-entry TABLE (G17) and faction words that took quest lines (G18)\n";
+$GLOBALS['LRG_DLG_TEST_CFG'] = ['session.stage_rail' => true];   // [v1.0.1] the rail ships OFF; the click-free table rows below stand BEHIND the rail (no open before the first click)
 require_once __DIR__ . '/../server/lorerim_glue/lib/lrg_dialogue.php';
 $GLOBALS['PLAYER_NAME'] = 'Jordan';
 $resetMem();
@@ -3743,5 +3748,6 @@ $out = shell_exec('php -r ' . escapeshellarg('require "' . LRG_DIR . '/lib/lrg_c
 unlink(LRG_DIR . '/config/lrg_config.json');
 check('kill switch in the user config turns everything off', trim((string) $out) === 'off', trim((string) $out));
 
+unset($GLOBALS['LRG_DLG_TEST_CFG']);
 echo "\n$pass passed, $fail failed\n";
 exit($fail ? 1 : 0);

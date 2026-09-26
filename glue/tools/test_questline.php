@@ -378,6 +378,8 @@ function qlWorld(array $seam, int $clicks, array $cfg = []): void
     $GLOBALS['LRG_DLG_STATE'] = [];
     unset($GLOBALS['LRG_DLG_TEST_CFG'], $GLOBALS['LRG_FAC_QE_SENT']);
     if ($STAGE_B) { $cfg['checks.reward.enabled'] = true; }
+    // [v1.0.1] session.stage_rail ships OFF; a clicks_ok 0 world tests the RAIL unless the beat says otherwise (cfg / first_contact)
+    if ($clicks === 0 && !array_key_exists('session.stage_rail', $cfg)) { $cfg['session.stage_rail'] = true; }
     if ($cfg) { $GLOBALS['LRG_DLG_TEST_CFG'] = $cfg; }
     lrgDlgPut('*install*', ['clicks_ok' => $clicks]);
 }
@@ -1219,12 +1221,13 @@ function qlBeat(array $B, QlIndex $IX): void
         qlChk("$id: at least three paraphrases", false, count($says) . ' given');
     }
     $okN = 0; $tot = 0; $paths = [];
-    // the scene beats: clicks_ok 0 first - nothing is clicked and the read-only clause is present (spec 3.4 step 5)
-    if ($B['_sc']) {
+    // the scene beats: clicks_ok 0 first - nothing is clicked and the read-only clause is present (spec 3.4 step 5).
+    // [v1.0.1] this pass tests the RAIL (it ships OFF); a first_contact beat is judged at clicks_ok 0 by the main loop instead
+    if ($B['_sc'] && empty($B['first_contact'])) {
         foreach ($says as $s) {
             if ((string) $s['t'] === '') { continue; }
             $tot++;
-            qlWorld($seam, 0, (array) ($B['cfg'] ?? []));
+            qlWorld($seam, 0, ['session.stage_rail' => true] + (array) ($B['cfg'] ?? []));   // [v1.0.1] the rail ships OFF; this pass tests the rail itself
             qlFacts($B);
             fxAdvance(3);
             $f = qlFast($B, $L, (string) $s['t']);
@@ -1239,7 +1242,7 @@ function qlBeat(array $B, QlIndex $IX): void
         $paths['scene'] = 1;
     }
     $clickList = array_map('intval', (array) ($B['clicks'] ?? [(int) (($B['facts'] ?? [])['clicks_ok'] ?? 1)]));
-    if ($B['_sc']) { $clickList = [1]; }
+    if ($B['_sc']) { $clickList = !empty($B['first_contact']) ? [0, 1] : [1]; }   // [v1.0.1] first_contact: the same picks at clicks_ok 0 (the rail ships OFF)
     // each paraphrase is judged in a fresh world; the S4.3 NEW-utterance guard across sentences is qlGuards()' (one beat per quest)
     foreach ($clickList as $clicks) {
     $sfx = count($clickList) > 1 ? '@' . $clicks : '';
@@ -1284,7 +1287,7 @@ function qlBeat(array $B, QlIndex $IX): void
         foreach ($says as $s) {
             if ((string) $s['t'] === '') { continue; }
             $tot++;
-            qlWorld($seam, 0, (array) ($B['cfg'] ?? []));
+            qlWorld($seam, 0, ['session.stage_rail' => true] + (array) ($B['cfg'] ?? []));   // [v1.0.1] the rail ships OFF; this pass tests the rail itself
             qlFacts($B);
             fxAdvance(3);
             $f = qlFast($B, $L, (string) $s['t']);
@@ -1600,6 +1603,7 @@ function qlCross(array $fx, QlIndex $IX, array $beats): void
         $seam = qlSeam($B, $L, $IX);
         $s = (array) ($B['say'][0] ?? []);
         if ((string) ($s['t'] ?? '') === '') { continue; }
+        if (!empty($B['first_contact'])) { continue; }   // [v1.0.1] a first_contact beat opts out of the rail (its cfg switches the rail off)
         $row = $L['entries'][$L['ti']]['row'];
         qlOpenWorld($B, $L, $seam, 0);
         $sess = (array) (fxDlgStateOf((string) $B['npc'])['session'] ?? []);
@@ -1609,7 +1613,7 @@ function qlCross(array $fx, QlIndex $IX, array $beats): void
         $passes = $live !== null && qlR8Passes($live);
         $g = qlLlm($B, $L, (string) $s['t'], (string) $B['id'] . ' rail@0');
         [$sentOk, $sentWhy] = qlRailSentence((array) $g['turn'], (string) $g['volatile']);
-        qlWorld($seam, 0, (array) ($B['cfg'] ?? []));
+        qlWorld($seam, 0, ['session.stage_rail' => true] + (array) ($B['cfg'] ?? []));   // [v1.0.1] the rail ships OFF; this pass tests the rail itself
         qlFacts($B);
         $f = qlFast($B, $L, (string) $s['t']);
         $railTot++;

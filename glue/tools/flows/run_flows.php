@@ -98,7 +98,7 @@ if ($variant === 'main') {
 fxProbeCapabilities();
 echo 'contract capabilities: ' . implode('  ', array_map(fn($c) => $c . '=' . (Fx::$caps[$c] ? 'yes' : 'NO'), array_keys(Fx::$caps))) . "\n";
 
-$results = fx_run($variant, $only, fxKnownPending(), 'fxReset');
+$results = fx_run($variant, $only, fxKnownPending(), static function (): void { unset($GLOBALS['LRG_DLG_TEST_CFG']); fxReset(); });   // [v1.0.1] a scenario's test config never leaks into the next
 if ($restore) { $restore(); }
 
 if (!empty($args['json'])) { // child mode: hand the results to the parent

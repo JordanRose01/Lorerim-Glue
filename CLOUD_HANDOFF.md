@@ -72,6 +72,8 @@ Items 1-5 above are done as far as the cloud can take them; the code is server-o
   Second cut (still 514): setDrivenByAIA is CHIM's activation TOGGLE (an active agent would be removed), so the
   hold now activates only a speaker CHIM does not know yet (getAgentByName == None) and never calls
   setDrivenByAI() on close. Recompile + install_mo2 (no server change).
+- **2026-09-26, later - the stage rail OFF (server `session.stage_rail` false; `.psc` LRG_Dialogue `CanDriveScene` no
+  longer needs the route proof).** Quest lines work at first contact. compile + deploy_server + install_mo2.
 - Runs on a staged copy: every unit suite, every questline mode (incl. --extended 2808/0, --stage=B 39/0) and the flows
   88/89 (only [18], which needs the MO2 profile).
 

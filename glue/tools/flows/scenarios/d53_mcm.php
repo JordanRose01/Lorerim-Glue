@@ -162,6 +162,7 @@ fx_scenario('d54', '"what can I ask you" and "what should I do next" are answere
 });
 
 fx_scenario('d55', '[pt19 v1.0 / S1.3] the FORESEEN hand-back: a READ-ONLY session (the game does not drive it, a journal-quest scene before this install\'s first click, drive_scene off) shows the list as facts and her words say "choose it on the list yourself" the same turn; nothing is picked; the scene rail drives it once a click is proven', function (FxT $t) {
+    $GLOBALS['LRG_DLG_TEST_CFG'] = ['session.stage_rail' => true];   // [v1.0.1] the rail ships OFF; this scenario tests the rail itself
     $npc = 'Hroda Flowtest';
     $texts = ['Whiterun would be a fair trade.', 'The Rift, and nothing less.', 'I need more time.'];
     $spec = [];

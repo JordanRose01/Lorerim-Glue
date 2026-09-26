@@ -489,8 +489,10 @@ bool Function RouteLive()
 EndFunction
 
 bool Function CanDriveScene()
-	{S1.1: a menu inside a journal-quest scene is driven only with bDriveSceneMenus and the route proven live.}
-	return sDriveScene && RouteLive()
+	{S1.1 as amended [v1.0.1]: a menu inside a journal-quest scene is driven with bDriveSceneMenus alone.
+	 The route proof (RouteLive) no longer gates it: the owner wants Arngeir's summons to work at first
+	 contact, and the click's own verification (SelectAndVerify) is the safety.}
+	return sDriveScene
 EndFunction
 
 string Function DlgDryReason()

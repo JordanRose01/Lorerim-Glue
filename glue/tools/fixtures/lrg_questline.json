@@ -1683,6 +1683,9 @@
             "origin": "engine",
             "scene": "MQ105",
             "sc_expected": 1,
+            "first_contact": true,
+            "cfg": {"session.stage_rail": false},
+            "first_contact_ruling": "[v1.0.1, owner 2026-09-26] the summons is the owner's FIRST list on a fresh install (the Way of the Voice start): every pick above must hold at clicks_ok 0 too - session.stage_rail ships OFF",
             "expect": "scene",
             "stageB": "explicit",
             "layer": {

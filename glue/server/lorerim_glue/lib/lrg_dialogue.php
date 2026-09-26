@@ -123,7 +123,7 @@ function lrgDlgDefaults(): array
         // kill switch (S1.3), the proof itself is clicks_ok >= 1; open_seconds: an open session older than this is
         // treated as closed (the game's own 900 s cap, model F23)
         'session' => ['result_fresh_seconds' => 10, 'settle_seconds' => 1.5, 'talk_again' => false,
-            'stage_rail' => true, 'drive_scene' => true, 'open_seconds' => 900],
+            'stage_rail' => false, 'drive_scene' => true, 'open_seconds' => 900],   // [v1.0.1] stage_rail OFF: the owner wants a quest line to work from the first conversation (the confirm is the safety)
         'crit' => ['lethal_twat' => ['DGCrimeResistArrest']],
         'hide_chim' => ['RentRoom', 'HireCarriage', 'HireFerry', 'Brawl', 'Training', 'OpenInventory', 'OpenInventory2'],
         'hide_gold' => ['GiveGoldTo', 'TakeGoldFromPlayer'],
@@ -2241,7 +2241,8 @@ function lrgDlgReadOnlyWhy(array $sess, string $npc): string
     if ((int) ($sess['drv'] ?? 1) === 0) { return 'vis'; }
     if ((int) ($sess['sj'] ?? 0) === 1) {
         if (empty(lrgDlgCfg('session.drive_scene', true))) { return 'drive_scene off'; }
-        if (lrgDlgClicksOk() < 1) { return 'scene-unproven'; }
+        // [v1.0.1] scene-unproven only while the stage rail is on (it ships OFF: Arngeir's summons at first contact)
+        if (!empty(lrgDlgCfg('session.stage_rail', false)) && lrgDlgClicksOk() < 1) { return 'scene-unproven'; }
     }
     return '';
 }
@@ -2253,7 +2254,7 @@ function lrgDlgReadOnlyWhy(array $sess, string $npc): string
  */
 function lrgDlgStageRailBlocks(array $e): bool
 {
-    if (empty(lrgDlgCfg('session.stage_rail', true)) || lrgDlgClicksOk() >= 1) { return false; }
+    if (empty(lrgDlgCfg('session.stage_rail', false)) || lrgDlgClicksOk() >= 1) { return false; }
     return !((int) ($e['indexed'] ?? 0) === 1 && in_array((string) ($e['class'] ?? ''), ['plain', 'back'], true)
         && (int) ($e['scripted'] ?? 0) === 0 && (int) ($e['cost'] ?? 0) === 0 && (string) ($e['kind'] ?? '') === ''
         && (int) ($e['goodbye'] ?? 0) === 0);
@@ -2690,7 +2691,7 @@ function lrgDlgPreOpen(array $t, string $utter, array $st, ?string &$openKind = 
         return '';
     }
     if (lrgFacRefusesOpen($t, $cid, $utter)) { return ''; }
-    if ($narrow && (int) ($t['clicks_ok'] ?? 0) < 1 && !empty(lrgDlgCfg('session.stage_rail', true))) {
+    if ($narrow && (int) ($t['clicks_ok'] ?? 0) < 1 && !empty(lrgDlgCfg('session.stage_rail', false))) {
         $pred = (array) ($hit['entry'] ?? []);
         // [v1.0.1 / Helgen] an override open passes: there the list on screen IS the point (he can click it by hand, and the
         // Helgen innkeeper is the first NPC of a new game); the click itself stays under the stage rail and never_auto
@@ -3141,7 +3142,7 @@ function lrgDlgHandBackForeseen(array $t): bool
  */
 function lrgDlgStageRailLine(array $t): string
 {
-    if (empty(lrgDlgCfg('session.stage_rail', true)) || (int) ($t['clicks_ok'] ?? lrgDlgClicksOk()) >= 1) { return ''; }
+    if (empty(lrgDlgCfg('session.stage_rail', false)) || (int) ($t['clicks_ok'] ?? lrgDlgClicksOk()) >= 1) { return ''; }
     $ok = [];
     $blocked = 0;
     $i = 0;

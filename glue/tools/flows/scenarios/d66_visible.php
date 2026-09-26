@@ -26,6 +26,7 @@ function fxVisKey(array $q, string $text): string
 }
 
 fx_scenario('d66v', '[pt19 v1.0 / S1, S3, S8] the visible menu, voice-driven: the explicit Kodlak turn is MUTED (the click is her answer), the stage-rail turn is SPOKEN (nothing clicked), an ambient actor (sj=0) is driven, a journal scene (sj=1) is read-only at clicks_ok 0 and driven at 1, first-contact Kodlak with his sentence 6 s before the list is explicit, drv=0 stays read-only across lists (F1), ev=result auto=1 proves the route, "come with me" to a stranger opens no menu and the escort still goes', function (FxT $t) {
+    $GLOBALS['LRG_DLG_TEST_CFG'] = ['session.stage_rail' => true];   // [v1.0.1] the rail ships OFF; this scenario tests the rail itself
     $kodlak = 'Kodlak Flowtest';
     $join = 'I would like to join the Companions.';
     // C00KodlakJoinUpStartTopic (skyrim.esm:0A3E7A): TL, scripted, goodbye -> a commit; two of his More to Say lines beside it
