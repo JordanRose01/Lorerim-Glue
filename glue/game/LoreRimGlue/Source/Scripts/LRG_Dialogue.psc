@@ -4424,10 +4424,10 @@ EndFunction
 
 Function HoldListener()
 	{[v1.0.1] While her list is on screen the talk key must reach HER. CHIM routes the player's
-	 speech to the crosshair NPC, and an engine forcegreet leaves nobody there: at High Hrothgar the
-	 Narrator answered Arngeir's summons. This is CHIM's own lever, the one LRG_OStim.ForceListenerOn
-	 uses; the intimacy hold keeps precedence. Released by ClearSession.}
-	if speaker == None || dlgListenerHeld || quietArm
+	 speech to an AGENT (crosshair, else the closest); a forcegreet's speaker who is not yet an agent
+	 gets nobody, and the Narrator answered Arngeir's summons. setDrivenByAIA is a TOGGLE (an active
+	 agent would be REMOVED from CHIM), so it is called only for a speaker CHIM does not know yet.}
+	if speaker == None || dlgListenerHeld || quietArm || npcName == ""
 		return
 	endif
 	LRG_Main m = Main()
@@ -4440,30 +4440,27 @@ Function HoldListener()
 			return
 		endif
 	endif
+	if AIAgentFunctions.getAgentByName(npcName) != None
+		m.LogV(sessCid, "listener: " + npcName + " is already a CHIM agent - nothing to force", npcName)
+		return
+	endif
 	AIAgentFunctions.setDrivenByAIA(speaker, false)
 	dlgListenerHeld = true
-	m.LogC(sessCid, "listener forced to " + npcName + " (her list is open)", npcName)
+	m.LogC(sessCid, "listener forced to " + npcName + " (her list is open; she was no CHIM agent yet)", npcName)
 EndFunction
 
 Function ReleaseHeldListener(string asWhy)
-	{[v1.0.1] Give CHIM its own routing back when the list closes - unless the intimacy hold has
-	 taken the listener meanwhile (then it is hers to release).}
+	{[v1.0.1] The activation stays (she is an agent now, as any NPC the player talked to); only the
+	 session's own flag is cleared. setDrivenByAI() is NOT called: it would activate whoever is under
+	 the crosshair, which is nobody's wish at a list close.}
 	if !dlgListenerHeld
 		return
 	endif
 	dlgListenerHeld = false
 	LRG_Main m = Main()
-	if m == None
-		return
+	if m != None
+		m.LogV(sessCid, "listener hold cleared (" + asWhy + ")", npcName)
 	endif
-	LRG_OStim ost = m.GetOStim()
-	if ost != None
-		if ost.HeldListener() != None
-			return
-		endif
-	endif
-	AIAgentFunctions.setDrivenByAI()
-	m.LogC(sessCid, "listener released (" + asWhy + ")", npcName)
 EndFunction
 
 Function ClearSession()

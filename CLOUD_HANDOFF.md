@@ -69,6 +69,9 @@ Items 1-5 above are done as far as the cloud can take them; the code is server-o
   the Narrator). The local session must run `tools/compile.ps1`, then `deploy_server.ps1` and `install_mo2.ps1` (MO2 and
   Skyrim closed). Compile-clean by construction: no try/catch, docstrings under 500 chars, nested ifs (no call on a
   possibly-None object inside a compound condition).
+  Second cut (still 514): setDrivenByAIA is CHIM's activation TOGGLE (an active agent would be removed), so the
+  hold now activates only a speaker CHIM does not know yet (getAgentByName == None) and never calls
+  setDrivenByAI() on close. Recompile + install_mo2 (no server change).
 - Runs on a staged copy: every unit suite, every questline mode (incl. --extended 2808/0, --stage=B 39/0) and the flows
   88/89 (only [18], which needs the MO2 profile).
 
