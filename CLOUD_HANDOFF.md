@@ -69,9 +69,9 @@ Items 1-5 above are done as far as the cloud can take them; the code is server-o
   the Narrator). The local session must run `tools/compile.ps1`, then `deploy_server.ps1` and `install_mo2.ps1` (MO2 and
   Skyrim closed). Compile-clean by construction: no try/catch, docstrings under 500 chars, nested ifs (no call on a
   possibly-None object inside a compound condition).
-  Second cut (still 514): setDrivenByAIA is CHIM's activation TOGGLE (an active agent would be removed), so the
-  hold now activates only a speaker CHIM does not know yet (getAgentByName == None) and never calls
-  setDrivenByAI() on close. Recompile + install_mo2 (no server change).
+  Third cut (still 514): the agent-only guard of the second cut sent the owner back to the Narrator; the first cut
+  (setDrivenByAIA on the speaker, always) had routed him - pt8's evidence: re-asserting on an active agent is safe.
+  The hold calls it unconditionally again; the close still leaves CHIM's activation alone. Recompile + install_mo2.
 - **2026-09-26, later - the stage rail OFF (server `session.stage_rail` false; `.psc` LRG_Dialogue `CanDriveScene` no
   longer needs the route proof).** Quest lines work at first contact. compile + deploy_server + install_mo2.
 - Runs on a staged copy: every unit suite, every questline mode (incl. --extended 2808/0, --stage=B 39/0) and the flows

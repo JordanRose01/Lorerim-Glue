@@ -4426,9 +4426,10 @@ EndFunction
 
 Function HoldListener()
 	{[v1.0.1] While her list is on screen the talk key must reach HER. CHIM routes the player's
-	 speech to an AGENT (crosshair, else the closest); a forcegreet's speaker who is not yet an agent
-	 gets nobody, and the Narrator answered Arngeir's summons. setDrivenByAIA is a TOGGLE (an active
-	 agent would be REMOVED from CHIM), so it is called only for a speaker CHIM does not know yet.}
+	 speech to the crosshair NPC, and an engine forcegreet leaves nobody there: the Narrator
+	 answered Arngeir's summons. This is CHIM's own lever, the one LRG_OStim.ForceListenerOn uses
+	 on every scene partner (pt8: re-asserting it on an active agent was safe in play, and the
+	 owner's 514 first cut routed Arngeir with it; the agent-only cut did not). Released by ClearSession.}
 	if speaker == None || dlgListenerHeld || quietArm || npcName == ""
 		return
 	endif
@@ -4442,13 +4443,9 @@ Function HoldListener()
 			return
 		endif
 	endif
-	if AIAgentFunctions.getAgentByName(npcName) != None
-		m.LogV(sessCid, "listener: " + npcName + " is already a CHIM agent - nothing to force", npcName)
-		return
-	endif
 	AIAgentFunctions.setDrivenByAIA(speaker, false)
 	dlgListenerHeld = true
-	m.LogC(sessCid, "listener forced to " + npcName + " (her list is open; she was no CHIM agent yet)", npcName)
+	m.LogC(sessCid, "listener forced to " + npcName + " (her list is open)", npcName)
 EndFunction
 
 Function ReleaseHeldListener(string asWhy)
