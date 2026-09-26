@@ -42,7 +42,7 @@ Scriptname LRG_Main extends Quest
 ; Constants / state
 ; ---------------------------------------------------------------------------
 string Property ModName = "LoreRimGlue" AutoReadOnly
-int Property CurrentVersion = 513 AutoReadOnly
+int Property CurrentVersion = 514 AutoReadOnly
 ; [0.5.4] the boot queue runs steps 1..BOOT_LAST, one per OnUpdate, each on its own Papyrus stack.
 ; [0.5.5] eleven steps: the player-name cache is step 1, and steps 5-7 ASK the modules to boot.
 int Property BOOT_LAST = 11 AutoReadOnly

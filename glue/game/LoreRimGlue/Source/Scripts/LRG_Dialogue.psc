@@ -79,6 +79,7 @@ int gen = 0
 int layer = 0
 string origin = "engine"
 Actor speaker = None
+bool dlgListenerHeld = false ; [v1.0.1] CHIM's listener is forced to the speaker while her list is open (HoldListener)
 string npcName = ""
 string sessCid = ""
 int crit = 0
@@ -1752,6 +1753,7 @@ Function Arm()
 	forceVisible = false
 	bool drv = vis == ""
 	SendOpen(drv)
+	HoldListener() ; [v1.0.1] his talk key reaches her while the list is on screen (driven or read-only alike)
 	if m
 		string line = "arming sid=" + sid + " origin=" + origin + " fam=" + fam + " items=" + maxItems \
 			+ " plat=" + platform + " route=" + route + " crit=" + crit + " scene=" + I(inScene) \
@@ -4420,7 +4422,52 @@ Function ClearRequest(bool abHard)
 	endif
 EndFunction
 
+Function HoldListener()
+	{[v1.0.1] While her list is on screen the talk key must reach HER. CHIM routes the player's
+	 speech to the crosshair NPC, and an engine forcegreet leaves nobody there: at High Hrothgar the
+	 Narrator answered Arngeir's summons. This is CHIM's own lever, the one LRG_OStim.ForceListenerOn
+	 uses; the intimacy hold keeps precedence. Released by ClearSession.}
+	if speaker == None || dlgListenerHeld || quietArm
+		return
+	endif
+	LRG_Main m = Main()
+	if m == None
+		return
+	endif
+	LRG_OStim ost = m.GetOStim()
+	if ost != None
+		if ost.HeldListener() != None
+			return
+		endif
+	endif
+	AIAgentFunctions.setDrivenByAIA(speaker, false)
+	dlgListenerHeld = true
+	m.LogC(sessCid, "listener forced to " + npcName + " (her list is open)", npcName)
+EndFunction
+
+Function ReleaseHeldListener(string asWhy)
+	{[v1.0.1] Give CHIM its own routing back when the list closes - unless the intimacy hold has
+	 taken the listener meanwhile (then it is hers to release).}
+	if !dlgListenerHeld
+		return
+	endif
+	dlgListenerHeld = false
+	LRG_Main m = Main()
+	if m == None
+		return
+	endif
+	LRG_OStim ost = m.GetOStim()
+	if ost != None
+		if ost.HeldListener() != None
+			return
+		endif
+	endif
+	AIAgentFunctions.setDrivenByAI()
+	m.LogC(sessCid, "listener released (" + asWhy + ")", npcName)
+EndFunction
+
 Function ClearSession()
+	ReleaseHeldListener("the list closed")
 	sid = ""
 	gen = 0
 	layer = 0

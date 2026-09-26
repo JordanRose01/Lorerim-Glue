@@ -41,6 +41,9 @@ whole install, not once per evening. It starts over only if you press "Forget ev
   One honest exception: small talk in your own words, to someone whose list has not been on screen in the last half
   hour, can be answered twice - once by her, once by the real line. The sentences on this page are her real lines,
   so they are not.
+- **When someone starts the conversation** (Arngeir's summons, Irileth at the door, a forcegreet): from script 514 your
+  talk key goes to THAT person while their list is on screen, even if you are not looking at them. Before 514 CHIM could
+  send your words to the Narrator there. Log: `listener forced to <name> (her list is open)`.
 - **Trade.** "What have you got?" to an innkeeper or a merchant, even one you have never spoken to: her list appears,
   the trade line is picked in front of you, and the shop opens. "Show me your wares" works too.
   Buying and selling inside the shop is done with the mouse, as always. Close the shop (Tab) before you speak again:

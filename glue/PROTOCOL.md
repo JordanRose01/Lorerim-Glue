@@ -2587,3 +2587,11 @@ Papyrus change, no floor moved. By rule:
   reward pseudo-row (`lrgNfClassify`) reads any giving frame + money as a claim, with or without a bonus word ("I will give you
   200 septims", "Here are fifty septims", "Take these..."), never money she denies ("no more gold"), and `lrgNfVerdict` judges a
   LATER payment false whatever the sum ("you'll have your N septims tomorrow") - flow d68 "[D2]" rows.
+- **[v1.0.1, 2026-09-26 - game script 514 - the talk key reaches the speaker]** Owner at High Hrothgar: Arngeir's forcegreet
+  opened his list, the owner held the talk key and CHIM routed the words to the NARRATOR (CHIM targets the crosshair NPC;
+  a forcegreet leaves nobody there). `LRG_Dialogue.HoldListener()` (called by `Arm` right after `SendOpen`, driven or
+  read-only alike, never in quiet mode) forces CHIM's listener to the session speaker through CHIM's own lever
+  (`AIAgentFunctions.setDrivenByAIA(speaker, false)` - what `LRG_OStim.ForceListenerOn` uses); `ClearSession` releases it
+  (`setDrivenByAI()`). The intimacy hold has precedence both ways (`LRG_OStim.HeldListener()`, new). Log: `listener forced
+  to <npc> (her list is open)` / `listener released (the list closed)`. No wire change. `.psc` changed: LRG_Dialogue,
+  LRG_OStim, LRG_Main (CurrentVersion 514) - compile and install on the owner's machine.

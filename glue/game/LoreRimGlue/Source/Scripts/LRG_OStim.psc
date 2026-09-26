@@ -842,6 +842,15 @@ Function ReleaseListener(string asWhy)
 	Main().LogV(startCid, "listener released (" + asWhy + ")", nm)
 EndFunction
 
+Actor Function HeldListener()
+	{[v1.0.1] The actor the intimacy hold routes the player's speech to, or None. LRG_Dialogue
+	 asks before forcing the listener for an open list, so the two holds never fight.}
+	if !listenerForced
+		return None
+	endif
+	return listenerActor
+EndFunction
+
 float Function ListenerHoldSeconds()
 	{How long after a scene the player keeps talking to HER rather than to whoever is under the
 	 crosshair, 0..60. 0 = off, and a scene then ends exactly as it did in 0.3.1.}
