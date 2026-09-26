@@ -4427,11 +4427,12 @@ Function ClearRequest(bool abHard)
 EndFunction
 
 Function HoldListener()
-	{[v1.0.1] While her list is on screen the talk key must reach HER. CHIM routes the player's
-	 speech to the crosshair NPC, and an engine forcegreet leaves nobody there: the Narrator
-	 answered Arngeir's summons. This is CHIM's own lever, the one LRG_OStim.ForceListenerOn uses
-	 on every scene partner (pt8: re-asserting it on an active agent was safe in play, and the
-	 owner's 514 first cut routed Arngeir with it; the agent-only cut did not). Released by ClearSession.}
+	{[v1.0.1] While her list is on screen the talk key must reach HER. Read from CHIM's source
+	 (Plugin/PlayerConversationRouter.cpp, Papyrus.cpp): the router only ever considers CHIM AGENTS,
+	 so a speaker CHIM has not activated is invisible and the Narrator answers; with nobody under the
+	 crosshair it falls back to the nearest AUTO-eligible agent, and "in a Skyrim scene" removes that
+	 eligibility unless conf _restrict_onscene is 0. setDrivenByAIA is a TOGGLE for a manually
+	 activated agent (a second call REMOVES her), so it is called only for a speaker CHIM does not know.}
 	if speaker == None || dlgListenerHeld || quietArm || npcName == ""
 		return
 	endif
@@ -4445,19 +4446,22 @@ Function HoldListener()
 			return
 		endif
 	endif
-	;/[v1.0.1] CHIM's "NPC Scene Safety" (conf _restrict_onscene, ON by default) refuses any actor who is inside a
-	 Skyrim scene as the player's listener ("ACTOR IN SCENE (not allowed) by conf") and hands his words to the
-	 Narrator - Arngeir's summons, Irileth at the door, Balgruuf's court. The list is open on that actor, so the
-	 player IS talking to him: relax it once per game session, with the call CHIM's own MCM makes. The glue's scene
-	 rules still decide what is clicked; the setting only lets CHIM route his words./;
+	;/CHIM's "NPC Scene Safety" (Behavior page; conf _restrict_onscene, ON by default): an actor inside a Skyrim
+	 scene is never auto-eligible, so his words go to the Narrator - Arngeir's summons, Irileth at the door,
+	 Balgruuf's court. The list is open on that actor, so the player IS talking to him: relax it once per game
+	 session with the call CHIM's own MCM makes (f_Value 0 -> AllowActorsOnScene true)./;
 	if (inScene || sjScene) && !sceneSafetyRelaxed
 		AIAgentFunctions.setConf("_restrict_onscene", 0.0, 0, "")
 		sceneSafetyRelaxed = true
 		m.LogC(sessCid, "CHIM scene safety relaxed (_restrict_onscene 0): " + npcName + "'s list is open inside a scene", npcName)
 	endif
-	AIAgentFunctions.setDrivenByAIA(speaker, false)
 	dlgListenerHeld = true
-	m.LogC(sessCid, "listener forced to " + npcName + " (her list is open)", npcName)
+	if AIAgentFunctions.getAgentByName(npcName) != None
+		m.LogV(sessCid, "listener: " + npcName + " is already a CHIM agent (never toggled)", npcName)
+		return
+	endif
+	AIAgentFunctions.setDrivenByAIA(speaker, false)
+	m.LogC(sessCid, "listener: " + npcName + " activated as a CHIM agent (her list is open; she was none)", npcName)
 EndFunction
 
 Function ReleaseHeldListener(string asWhy)
