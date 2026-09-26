@@ -74,6 +74,11 @@ Items 1-5 above are done as far as the cloud can take them; the code is server-o
   The hold calls it unconditionally again; the close still leaves CHIM's activation alone. Recompile + install_mo2.
 - **2026-09-26, later - the stage rail OFF (server `session.stage_rail` false; `.psc` LRG_Dialogue `CanDriveScene` no
   longer needs the route proof).** Quest lines work at first contact. compile + deploy_server + install_mo2.
+- **2026-09-26, later still (script 514, LRG_Dialogue.psc): the Narrator at Arngeir was CHIM's "NPC Scene Safety"
+  (`_restrict_onscene`, on by default: an actor inside a Skyrim scene is refused as the listener). HoldListener now
+  calls `AIAgentFunctions.setConf("_restrict_onscene", 0.0, 0, "")` once per game session when a list opens inside a
+  scene (reset in Maintenance). compile + install_mo2. If AIAgent.log does not show `Setting _restrict_onscene to 0`,
+  the float/int argument mapping is wrong - try the int slot.
 - Runs on a staged copy: every unit suite, every questline mode (incl. --extended 2808/0, --stage=B 39/0) and the flows
   88/89 (only [18], which needs the MO2 profile).
 
