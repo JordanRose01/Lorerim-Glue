@@ -4436,12 +4436,12 @@ Function ClearRequest(bool abHard)
 EndFunction
 
 Function HoldListener()
-	{[v1.0.1] While her list is on screen the talk key must reach HER. Read from CHIM's source
+	;/[v1.0.1] While her list is on screen the talk key must reach HER. Read from CHIM's source
 	 (Plugin/PlayerConversationRouter.cpp, Papyrus.cpp): the router only ever considers CHIM AGENTS,
 	 so a speaker CHIM has not activated is invisible and the Narrator answers; with nobody under the
 	 crosshair it falls back to the nearest AUTO-eligible agent, and "in a Skyrim scene" removes that
 	 eligibility unless conf _restrict_onscene is 0. setDrivenByAIA is a TOGGLE for a manually
-	 activated agent (a second call REMOVES her), so it is called only for a speaker CHIM does not know.}
+	 activated agent (a second call REMOVES her), so it is called only for a speaker CHIM does not know./;
 	if speaker == None || dlgListenerHeld || quietArm || npcName == ""
 		return
 	endif
