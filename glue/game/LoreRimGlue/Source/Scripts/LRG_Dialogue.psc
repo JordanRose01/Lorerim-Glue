@@ -161,6 +161,8 @@ int lastSent = 0
 string sig = ""
 int readMode = 0
 int readFails = 0
+float Property READ_FAIL_SECS = 8.0 AutoReadOnly ; [v1.0.1] how long an empty list is re-read before the driver gives the menu back
+float readFailAt = 0.0 ; [v1.0.1] real time of the first failed read of this session (an engine forcegreet's list fills only after the greeting)
 bool readNoteLogged = false   ; [0.5 fix pass] the "mode 3 is empty" note is worth one line, not one per poll
 int staleCount = 0
 
@@ -1608,6 +1610,7 @@ Function Arm()
 	pollCount = 0
 	pendingLayer = false
 	readFails = 0
+	readFailAt = 0.0
 	readNoteLogged = false
 	staleCount = 0
 	frzHits = 0
@@ -2036,16 +2039,31 @@ bool Function ReadList(int aiCount)
 	endwhile
 	eHead = cap
 	if got == 0
+		;/[v1.0.1 / owner 2026-09-25, Arngeir] an ENGINE forcegreet opens the menu with one empty entry while the greeting
+		 plays; the real list fills seconds later (6 s at High Hrothgar). Two failed reads in one second used to stop the
+		 driver for good, so the summons was never clicked. Now the reads go on for READ_FAIL_SECS before the menu is
+		 given back - one log line for the first failure and one for the give-up, never one per poll./;
+		float rnow = Utility.GetCurrentRealTime()
 		readFails += 1
-		if m
-			m.LogC(sessCid, "read failed n=" + aiCount + " mode=" + readMode + " try=" + readFails, npcName)
+		if readFails == 1
+			readFailAt = rnow
+			if m
+				m.LogC(sessCid, "read failed n=" + aiCount + " mode=" + readMode + " try=1 - the list may still be filling; reading on for " + (READ_FAIL_SECS as int) + " s", npcName)
+			endif
 		endif
-		if readFails >= 2
+		if (rnow - readFailAt) > READ_FAIL_SECS
+			if m
+				m.LogC(sessCid, "read failed n=" + aiCount + " mode=" + readMode + " tries=" + readFails + " for " + ((rnow - readFailAt) as int) + " s - giving the menu back", npcName)
+			endif
 			StopDriving("read-failed", true)
 		endif
 		return false
 	endif
+	if readFails > 0 && m
+		m.LogC(sessCid, "read recovered after " + readFails + " failed tries (" + ((Utility.GetCurrentRealTime() - readFailAt) as int) + " s): n=" + aiCount, npcName)
+	endif
 	readFails = 0
+	readFailAt = 0.0
 	; the tail: never truncate before the server has ranked (design R12 / D-22)
 	tCount = 0
 	int tailTo = aiCount

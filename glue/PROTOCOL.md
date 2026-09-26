@@ -2622,3 +2622,9 @@ Papyrus change, no floor moved. By rule:
   (10.26, the one path of ours that sets a stage itself) stands down. Risk accepted and logged once: a CHIM beat may set a
   stage the click also sets (a same stage is a no-op). `false` restores the old exclusion (flow d35; d35b proves
   coexistence).
+- **[v1.0.1, 2026-09-25 22:39, the owner's log at Arngeir - the read that gave up]** `arming origin=engine drv=1` at once,
+  `read failed n=1 mode=3 try=1/try=2` within one second, `stopped driving why=read-failed`; the real list (`n=2`) arrived
+  6 s later on a session already read-only, so the summons was answered in words and never clicked. An ENGINE forcegreet
+  opens the menu with one empty entry while the greeting plays. `ReadList` now keeps re-reading for `READ_FAIL_SECS`
+  (8 s, `StepReading` stays in READING) before `StopDriving("read-failed")`; one log line on the first failure, one on
+  the give-up, one on recovery (`read recovered after N failed tries`). `.psc` changed: LRG_Dialogue.psc.

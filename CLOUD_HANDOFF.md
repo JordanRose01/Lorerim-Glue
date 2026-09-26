@@ -100,3 +100,6 @@ for quality over speed, with independent verification of every fix.
   at load + on the first scene list, activates a speaker only when CHIM has no agent for her (setDrivenByAIA removes a
   manual agent), and the server stays on beside CHIM's AI Quest Progression (`session.coexist_quest_engine` true; only
   the click-free entry stands down). `.psc` changed (LRG_Dialogue.psc) + server: compile + deploy_server + install_mo2.**
+- **2026-09-25 22:39 (owner log): the summons was never clicked because the driver gave the menu back after two failed
+  reads in one second - an engine forcegreet's list fills only after the greeting. `ReadList` re-reads for 8 s now
+  (READ_FAIL_SECS). `.psc` changed (LRG_Dialogue.psc): compile + install_mo2.**
