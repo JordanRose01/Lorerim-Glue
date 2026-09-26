@@ -378,6 +378,15 @@ Function Maintenance()
 	{[0.5.5] Called by OnLrgBoot on every game load, after LRG_Main's UnregisterForAllModEvents()
 	 and RegisterKeys(), so every registration this module needs is made here again.}
 	sceneSafetyRelaxed = false ; [v1.0.1] CHIM's conf does not survive a game restart: relax scene safety again on the first scene list
+	;/[v1.0.1] CHIM's "NPC Scene Safety" (Behavior page; conf _restrict_onscene, ON by default) refuses anyone inside a
+	 Skyrim scene as the player's listener and hands his words to the Narrator - every conversation an NPC starts.
+	 The owner could not find the toggle: the glue switches it off at every load (the call CHIM's own MCM makes),
+	 and again on the first scene list, in case CHIM re-applies its saved state after us./;
+	AIAgentFunctions.setConf("_restrict_onscene", 0.0, 0, "")
+	LRG_Main mm = Main()
+	if mm != None
+		mm.LogC("", "CHIM scene safety switched off at load (_restrict_onscene 0): people inside a scene can be talked to", "")
+	endif
 	attached = true
 	EnsureArrays()
 	setAt = 0.0

@@ -2605,3 +2605,20 @@ Papyrus change, no floor moved. By rule:
   test_gates 24/39, flows 31 / d26b / d55 / d66v; the questline harness at every clicks_ok 0 world unless the beat's cfg
   says otherwise); the default is proved by test_dialogue v41 and the `first_contact` beat `MQ105.arngeir.summons`
   (every pick holds at clicks_ok 0).
+- **[v1.0.1, 2026-09-26 - read in CHIM's source (github Dwemer-Dynamics/CHIM and HerikaServer)]** (1) **Who hears the talk
+  key.** `Plugin/PlayerConversationRouter.cpp` + `docs/conversation-routing-spec.md`: the responder is chosen among CHIM
+  AGENTS only - explicit Prisma target, "Hey <name>", the TRUE crosshair actor, else the nearest AUTO-eligible audible agent,
+  else the Narrator. Auto-eligibility fails for an actor inside a Skyrim scene unless conf `_restrict_onscene` is 0 ("NPC
+  Scene Safety", CHIM MCM > Behavior > NPC Behavior, ON by default): that is why Arngeir's summons, Irileth at the door and
+  Balgruuf's court went to the Narrator. Script 514 switches it off at every load (`LRG_Dialogue.Maintenance`) and again on
+  the first scene list (`HoldListener`), with `AIAgentFunctions.setConf("_restrict_onscene", 0.0, 0, "")` - the call CHIM's
+  MCM makes (`Papyrus.cpp`: f_Value 0 -> AllowActorsOnScene true). (2) **Activation.** `setDrivenByAIA` ->
+  `setDrivenByAIReal(..., removewhenexisting = true)`: an auto-activated agent is upgraded, a MANUALLY activated one is
+  REMOVED - so `HoldListener` activates the speaker only when `getAgentByName` finds no agent. (3) **CHIM's own menuless
+  questing (AI Quest Progression, `lib/chim_quest_engine.php`, 301 bundled quest definitions).** It never touches the menu:
+  on every player-driven CHIM turn it picks a "beat" by LLM intent and sets stages through `AIAgentQuestProgressionBridge`
+  (SetStage / objectives / StartQuest / console). The glue no longer stands down beside it (`session.coexist_quest_engine`,
+  ships true): the glue clicks the REAL menu (the engine's fragments set the stage), and only the click-free quest entry
+  (10.26, the one path of ours that sets a stage itself) stands down. Risk accepted and logged once: a CHIM beat may set a
+  stage the click also sets (a same stage is a no-op). `false` restores the old exclusion (flow d35; d35b proves
+  coexistence).

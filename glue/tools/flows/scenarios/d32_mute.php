@@ -112,7 +112,8 @@ fx_scenario('d34', 'speaker binding: a reply routed to another HERIKA_NAME (the 
     $t->must('the Narrator gets no block', !str_contains($q2['volatile'], '<business'), fx_short($q2['volatile'], 160));
 });
 
-fx_scenario('d35', 'CHIM\'s AI Quest Progression ON -> the whole menuless module stands down, and says so once', function (FxT $t) {
+fx_scenario('d35', 'CHIM\'s AI Quest Progression ON with session.coexist_quest_engine OFF -> the whole menuless module stands down, and says so once', function (FxT $t) {
+    $GLOBALS['LRG_DLG_TEST_CFG'] = ['session.coexist_quest_engine' => false];   // [v1.0.1] coexistence ships ON; this scenario tests the exclusion
     $npc = 'Brenna Flowtest';
     fxDlgCache($npc, ['I need work.' => [], 'Never mind.' => []]);
     $before = fxDlgLogMark();
@@ -129,6 +130,28 @@ fx_scenario('d35', 'CHIM\'s AI Quest Progression ON -> the whole menuless module
     $t->must('the stand-down was logged', str_contains($log, 'STAND DOWN'), 'log grew by ' . strlen($log) . ' bytes');
     $t->must('it is said ONCE, not once per turn', substr_count($log, 'STAND DOWN: CHIM AI Quest Progression') === 1,
         (string) substr_count($log, 'STAND DOWN: CHIM AI Quest Progression'));
+    unset($GLOBALS['FX_QUEST_ENGINE'], $GLOBALS['LRG_DLG_TEST_CFG']);
+});
+
+fx_scenario('d35b', '[v1.0.1] CHIM\'s AI Quest Progression ON with coexistence (the default): the module stays on and clicks the real menu; only the click-free quest entry stands down; said once', function (FxT $t) {
+    $npc = 'Brenna Flowtest';
+    fxDlgReset(fxDlgIndexFrom(['I need work.' => [], 'Never mind.' => []]));
+    fxSendSnapshot($npc, fxDlgSnap());
+    fxDlgTopics($npc, [], [fxDlgEntry(0, 'I need work.'), fxDlgEntry(1, 'Never mind.')]);
+    $before = fxDlgLogMark();
+    $GLOBALS['FX_QUEST_ENGINE'] = true;
+    $t->must('lrgDlgEnabled() stays TRUE beside CHIM\'s quest engine (session.coexist_quest_engine ships true)', lrgDlgEnabled() && lrgDlgCfg('session.coexist_quest_engine') === true);
+    $q = fxDlgSay($npc, fxDlgSnap(), 'Is there work going?');
+    $t->must('a turn is built and the business block is injected', $q['turn'] !== null && $q['volatile'] !== '', fx_short($q['volatile'], 160));
+    $work = array_search('I need work.', array_column($q['keys'], 'text'), true);
+    $workKey = $work === false ? 'T1' : array_keys($q['keys'])[$work];
+    fxDlgClearQueue();
+    $w = fxDlgLlm($npc, $workKey, '');
+    $t->must('the real menu line is still clicked (the engine\'s own fragment sets the stage)', count($w) === 1 && fxDlgDo($w[0]) === 'pick', json_encode(array_map('fxParam', $w)));
+    $t->must('the click-free quest entry (10.26) stands down: lrgDlgQuestEngineOn() is still true for it', lrgDlgQuestEngineOn());
+    $log = fxDlgLogFrom($before);
+    // the engine line is said once per PROCESS (a static in lrgDlgQuestEngineOn): d35 already spent it, so only the absence counts here
+    $t->must('no STAND DOWN is logged beside the quest engine (the module stays on)', !str_contains($log, 'STAND DOWN'), fx_short($log, 300));
     unset($GLOBALS['FX_QUEST_ENGINE']);
 });
 

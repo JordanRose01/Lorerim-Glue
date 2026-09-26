@@ -44,8 +44,12 @@ first - she quotes it and asks, "yes" picks it - and that confirmation is the sa
   talk key goes to THAT person while their list is on screen, even if you are not looking at them. Before 514 CHIM could
   send your words to the Narrator there. Log: `listener forced to <name> (her list is open)`.
 - **CHIM's "NPC Scene Safety".** CHIM refuses to let anyone inside a running quest scene be your listener (your words
-  go to the Narrator) - which is every conversation the NPC starts. From script 514 the glue switches that off itself
-  the first time such a list opens (log: `CHIM scene safety relaxed`), so you never have to find the setting.
+  go to the Narrator) - which is every conversation the NPC starts. From script 514 the glue switches that off itself at
+  every game load and again when such a list opens (log: `CHIM scene safety switched off at load`), so you never have to
+  find the setting (it is CHIM MCM > Behavior > NPC Behavior > "NPC Scene Safety", if you ever want it back on).
+- **CHIM's own Menuless Questing (AI Quest Progression).** It can stay on. The glue works beside it: the glue picks the
+  real line on the list; CHIM's engine may move a quest on its own judgement as well. If you ever see a quest jump a step
+  you did not say, that was CHIM's engine, and switching it off in CHIM's settings leaves the glue alone in charge.
 - **Trade.** "What have you got?" to an innkeeper or a merchant, even one you have never spoken to: her list appears,
   the trade line is picked in front of you, and the shop opens. "Show me your wares" works too.
   Buying and selling inside the shop is done with the mouse, as always. Close the shop (Tab) before you speak again:

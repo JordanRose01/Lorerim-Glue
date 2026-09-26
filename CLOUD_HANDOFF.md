@@ -96,3 +96,7 @@ row to go green unless the row is provably mislabelled (write why); a question, 
 near-miss must never click a commit, crit, priced, scripted or irreversible line; never silent / never empty /
 never false; condition truthfulness; light on latency. Keep agent counts sensible - the owner is paying and asked
 for quality over speed, with independent verification of every fix.
+- **2026-09-26, from CHIM's source (see PROTOCOL 10.29 last addendum): script 514 switches CHIM's "NPC Scene Safety" off
+  at load + on the first scene list, activates a speaker only when CHIM has no agent for her (setDrivenByAIA removes a
+  manual agent), and the server stays on beside CHIM's AI Quest Progression (`session.coexist_quest_engine` true; only
+  the click-free entry stands down). `.psc` changed (LRG_Dialogue.psc) + server: compile + deploy_server + install_mo2.**

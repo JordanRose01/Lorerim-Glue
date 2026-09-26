@@ -123,7 +123,8 @@ function lrgDlgDefaults(): array
         // kill switch (S1.3), the proof itself is clicks_ok >= 1; open_seconds: an open session older than this is
         // treated as closed (the game's own 900 s cap, model F23)
         'session' => ['result_fresh_seconds' => 10, 'settle_seconds' => 1.5, 'talk_again' => false,
-            'stage_rail' => false, 'drive_scene' => true, 'open_seconds' => 900],   // [v1.0.1] stage_rail OFF: the owner wants a quest line to work from the first conversation (the confirm is the safety)
+            'stage_rail' => false, 'drive_scene' => true, 'open_seconds' => 900,   // [v1.0.1] stage_rail OFF: the owner wants a quest line to work from the first conversation (the confirm is the safety)
+            'coexist_quest_engine' => true],   // [v1.0.1] the module stays on beside CHIM's AI Quest Progression (menuless questing beta); only the click-free quest entry (10.26) stands down
         'crit' => ['lethal_twat' => ['DGCrimeResistArrest']],
         'hide_chim' => ['RentRoom', 'HireCarriage', 'HireFerry', 'Brawl', 'Training', 'OpenInventory', 'OpenInventory2'],
         'hide_gold' => ['GiveGoldTo', 'TakeGoldFromPlayer'],
@@ -490,7 +491,10 @@ function lrgDlgOverrides(): array
 
 function lrgDlgEnabled(): bool
 {
-    return lrgEnabled() && !empty(lrgDlgCfg('enabled')) && !lrgDlgQuestEngineOn();
+    // [v1.0.1] beside CHIM's quest engine (session.coexist_quest_engine, ships true) the module stays on: the glue clicks the
+    // REAL menu (the engine's own fragments set the stage); CHIM's beats set stages directly - the click-free entry (10.26) is
+    // the one path of ours that also sets a stage, and it alone stands down (lrgFacQuestPlan / lrgFacQuestNet)
+    return lrgEnabled() && !empty(lrgDlgCfg('enabled')) && (!lrgDlgQuestEngineOn() || !empty(lrgDlgCfg('session.coexist_quest_engine', true)));
 }
 
 /** CHIM's own quest engine and this module must never both drive a quest (design 5.2 C5, flow test d35). */
@@ -500,8 +504,13 @@ function lrgDlgQuestEngineOn(): bool
     $on = function_exists('chimQuestEngineFeatureEnabled') && (bool) chimQuestEngineFeatureEnabled();
     if ($on && !$said) {
         $said = true;
-        lrgDlgLog('STAND DOWN: CHIM AI Quest Progression is ON - the menuless questing module is idle '
-            . '(two engines would set the same stage twice). Switch it off in the CHIM MCM.');
+        if (!empty(lrgDlgCfg('session.coexist_quest_engine', true))) {
+            lrgDlgLog('CHIM AI Quest Progression is ON - the menuless questing module stays on beside it (session.coexist_quest_engine): '
+                . 'the glue clicks the real menu, the click-free quest entry (10.26) stands down; a CHIM beat may set a stage the click also sets');
+        } else {
+            lrgDlgLog('STAND DOWN: CHIM AI Quest Progression is ON - the menuless questing module is idle '
+                . '(two engines would set the same stage twice). Switch it off in the CHIM MCM, or set session.coexist_quest_engine.');
+        }
     }
     return $on;
 }
