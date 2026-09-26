@@ -80,6 +80,7 @@ int layer = 0
 string origin = "engine"
 Actor speaker = None
 bool dlgListenerHeld = false ; [v1.0.1] CHIM's listener is forced to the speaker while her list is open (HoldListener)
+bool sceneSafetyRelaxed = false ; [v1.0.1] CHIM's "NPC Scene Safety" (_restrict_onscene) relaxed once this game session (HoldListener)
 string npcName = ""
 string sessCid = ""
 int crit = 0
@@ -376,6 +377,7 @@ EndEvent
 Function Maintenance()
 	{[0.5.5] Called by OnLrgBoot on every game load, after LRG_Main's UnregisterForAllModEvents()
 	 and RegisterKeys(), so every registration this module needs is made here again.}
+	sceneSafetyRelaxed = false ; [v1.0.1] CHIM's conf does not survive a game restart: relax scene safety again on the first scene list
 	attached = true
 	EnsureArrays()
 	setAt = 0.0
@@ -4442,6 +4444,16 @@ Function HoldListener()
 		if ost.HeldListener() != None
 			return
 		endif
+	endif
+	;/[v1.0.1] CHIM's "NPC Scene Safety" (conf _restrict_onscene, ON by default) refuses any actor who is inside a
+	 Skyrim scene as the player's listener ("ACTOR IN SCENE (not allowed) by conf") and hands his words to the
+	 Narrator - Arngeir's summons, Irileth at the door, Balgruuf's court. The list is open on that actor, so the
+	 player IS talking to him: relax it once per game session, with the call CHIM's own MCM makes. The glue's scene
+	 rules still decide what is clicked; the setting only lets CHIM route his words./;
+	if (inScene || sjScene) && !sceneSafetyRelaxed
+		AIAgentFunctions.setConf("_restrict_onscene", 0.0, 0, "")
+		sceneSafetyRelaxed = true
+		m.LogC(sessCid, "CHIM scene safety relaxed (_restrict_onscene 0): " + npcName + "'s list is open inside a scene", npcName)
 	endif
 	AIAgentFunctions.setDrivenByAIA(speaker, false)
 	dlgListenerHeld = true
