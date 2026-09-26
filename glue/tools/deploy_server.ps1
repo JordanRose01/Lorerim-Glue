@@ -36,7 +36,7 @@ $anchors = @(
     # "the statement the edit goes next to" to "the edited statement itself": a lost or duplicated
     # pass-through fails the deploy instead of dying silently in game.
     @{ f = 'lib\lrg_actions.php'; t = 'if (strcasecmp($code, ''ExtCmdLRG_SelectTopic'') === 0) { $out[] = $line; continue; }'; w = 'the D-12 pass-through itself' },
-    @{ f = 'lib\lrg_actions.php'; t = '|| stripos($raw, ''command@ExtCmdLRG_SelectTopic'') === 0) { return; }'; w = 'lrgRecordResult guard, D-12b half' },
+    @{ f = 'lib\lrg_actions.php'; t = 'if (stripos($raw, ''command@ExtCmdLRG_SelectTopic'') === 0) { lrgDlgTopicFuncret($raw); return; }'; w = 'lrgRecordResult guard, D-12b half (v1.0: the SelectTopic funcret is read by lrgDlgTopicFuncret, then dropped)' },
     @{ f = 'lib\lrg_actions.php'; t = 'lrgLog("gate: dropped unknown glue action $code", $cid);'; w = 'where an unrecognised glue action dies' },
     @{ f = 'globals.php'; t = '$GLOBALS[''external_fast_commands''] = array_values(array_unique(array_merge('; w = 'the fast-command merge' },
     @{ f = 'preprocessing.php'; t = 'if (strncmp($lrgType, ''lrg_'', 4) === 0'; w = 'the Phase 1 message block the Phase 2 block goes BEFORE' },
@@ -68,7 +68,7 @@ $anchors = @(
     @{ f = 'context_pre.php'; t = 'chimRegisterPromptInjection(''character_bottom'', ''lorerim_glue_companion'''; w = 'the <companion_status> injection, priority 204' }
     @{ f = 'lib\lrg_core.php'; t = 'function lrgFolState'; w = 'the fol= reader - without it every follower fact on the wire is dropped in silence' }
     @{ f = 'lib\lrg_dialogue.php'; t = 'function lrgDlgFollowerArbitrate'; w = 'the follower verbs: the rule that stops "it''s time we parted ways" dismissing the WRONG follower' }
-    @{ f = 'lib\lrg_dialogue.php'; t = 'a follower topic that is never selectable by voice'; w = 'the hard rail: a favour-blocking / ANIMAL follower topic is never selectable by voice, however it was resolved' }
+    @{ f = 'lib\lrg_dialogue.php'; t = ' - a follower topic that is never selectable by voice'')'; w = 'the hard rail: a favour-blocking / ANIMAL follower topic is never selectable by voice, however it was resolved (v1.0: lrgDlgNo on the gate; the fast path shares the rule)' }
     # ---- v0.5.2 anchor (PT9, audiofilterd). The whole auto-start of the feature is ONE line in
     # globals.php: lose it and the daemon is never started from a request, every spoken line keeps its
     # 0.25-0.31 s of dead air, and the only symptom is that nothing changed. That is exactly the shape
